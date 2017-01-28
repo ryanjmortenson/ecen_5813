@@ -13,7 +13,7 @@ outfile = main.elf
 mapfile = main.map
 
 -include prop/$(kl25zdir)/subdir.mk
--include src/subdir.mk
+-include app/src/subdir.mk
 
 # All of the sources participating in the build are defined here
 # -include sources.mk
