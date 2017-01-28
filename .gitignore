@@ -1,0 +1,9 @@
+# Binary files
+*.o
+*.a
+
+# Generic files
+*.out
+
+# Directories
+**/logs
