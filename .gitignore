@@ -7,6 +7,7 @@
 *.log
 *.swp
 *.swo
+*.d
 
 # Directories
 **/logs
