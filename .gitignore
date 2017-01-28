@@ -4,6 +4,10 @@
 
 # Generic files
 *.out
+*.log
+*.swp
+*.swo
 
 # Directories
 **/logs
+**/out
