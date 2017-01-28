@@ -4,7 +4,7 @@ C_SRCS += \
 S_UPPER_SRCS += \
 ./prop/kl25z/startup/startup_MKL25Z4.S 
 
-OBJS += \
+KL25Z_OBJS += \
 ./prop/kl25z/out/startup_MKL25Z4.o \
 ./prop/kl25z/out/system_MKL25Z4.o 
 
