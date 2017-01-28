@@ -2,7 +2,7 @@ C_SRCS += app/src/main.c
 
 OBJS += app/out/main.o 
 
-C_DEPS += app/src/main.d 
+C_DEPS += app/out/main.d 
 
 app/out/%.o: app/src/%.c
 	@echo 'Building file: $<'
