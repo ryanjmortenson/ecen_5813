@@ -17,6 +17,7 @@ S_UPPER_DEPS += \
 # Each subdirectory must supply rules for building sources it contributes
 ./prop/kl25z/out/%.o: ./prop/kl25z/startup/%.S
 	@echo 'Building file: $<'
+	mkdir -p ./prop/kl25z/out
 	@echo 'Invoking: Cross ARM GNU Assembler'
 	arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g3 -x assembler-with-cpp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -c -o "$@" "$<"
 	@echo 'Finished building: $<'
@@ -24,6 +25,7 @@ S_UPPER_DEPS += \
 
 ./prop/kl25z/out/%.o: ./prop/kl25z/startup/%.c
 	@echo 'Building file: $<'
+	mkdir -p ./prop/kl25z/out
 	@echo 'Invoking: Cross ARM C Compiler'
 	arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g3 -I"./prop/kl25z/src" -I"./prop/kl25z/inc" -std=c99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -c -o "$@" "$<"
 	@echo 'Finished building: $<'
