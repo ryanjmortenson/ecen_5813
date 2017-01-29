@@ -2,8 +2,8 @@ RM := rm -rf
 MKDIR := mkdir -p
 outdir=out
 kl25zdir=kl25z
-linuxdir=linux
-bbbdir=bbb
+linuxdir=linux-x86
+bbbdir=linux-arm
 outfile=main.elf
 mapfile=main.map
 kl25z_target=$(outdir)/$(kl25zdir)/$(outfile)
@@ -16,7 +16,6 @@ maps=$(subst elf,map,$(kl25z_target) $(linux_target) $(bbb_target))
 
 # All Target
 all: $(kl25z_target) $(linux_target) $(bbb_target)
-#all: $(outdir)/$(bbbdir)/$(outfile)
 
 debug:
 	@echo $(OBJS)
@@ -29,7 +28,7 @@ debug:
 # Tool invocations
 $(kl25z_target) : $(KL25Z_OBJS) $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: Cross ARM C++ Linker'
+	@echo 'Invoking: ARM Cross Linker'
 	@echo 'Creating out directory'
 	-$(MKDIR) $(outdir)/$(kl25zdir)
 	arm-none-eabi-g++ -mcpu=cortex-m0plus -mthumb -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g3 -T "MKL25Z128xxx4_flash.ld" -Xlinker --gc-sections -L"./prop/kl25z/linker" -Wl,-Map,"$(subst elf,map,$(kl25z_target))" -specs=nano.specs -specs=nosys.specs -o $(kl25z_target)  $(KL25Z_OBJS) $(USER_OBJS) $(LIBS)
@@ -38,7 +37,7 @@ $(kl25z_target) : $(KL25Z_OBJS) $(OBJS) $(USER_OBJS)
 
 $(linux_target) : $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Invoking native Linker'
+	@echo 'Invoking Linux-x86 Linker'
 	@echo 'Creating out directory'
 	-$(MKDIR) $(outdir)/$(linuxdir)
 	gcc -Xlinker -Map=$(subst elf,map,$(linux_target)) -o $(linux_target) $(OBJS) $(USER_OBJS) $(LIBS)
@@ -47,7 +46,7 @@ $(linux_target) : $(OBJS) $(USER_OBJS)
 
 $(bbb_target) : $(ARM_OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Invoking ARM Linker'
+	@echo 'Invoking Linux-ARM Cross Linker'
 	@echo 'Creating out directory'
 	-$(MKDIR) $(outdir)/$(bbbdir)
 	arm-linux-gnueabi-gcc -Xlinker -Map=$(subst elf,map,$(bbb_target)) -o $(bbb_target) $(ARM_OBJS) $(USER_OBJS) $(LIBS)
