@@ -49,7 +49,7 @@ $(bbb_target) : $(ARM_OBJS) $(USER_OBJS)
 	@echo 'Invoking Linux-ARM Cross Linker'
 	@echo 'Creating out directory'
 	-$(MKDIR) $(outdir)/$(bbbdir)
-	arm-linux-gnueabi-gcc -Xlinker -Map=$(subst elf,map,$(bbb_target)) -o $(bbb_target) $(ARM_OBJS) $(USER_OBJS) $(LIBS)
+	arm-linux-gnueabihf-gcc -Xlinker -Map=$(subst elf,map,$(bbb_target)) -o $(bbb_target) $(ARM_OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
