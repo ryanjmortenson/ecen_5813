@@ -60,7 +60,7 @@ $(linux_target) : $(OBJS) $(USER_OBJS)
 	@echo 'Invoking Linux-x86 Linker'
 	@echo 'Creating out directory'
 	-$(MKDIR) $(outdir)/$(linuxdir)
-	gcc -Xlinker -Map=$(subst elf,map,$(linux_target)) -o $(linux_target) $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -g3 -Xlinker -Map=$(subst elf,map,$(linux_target)) -o $(linux_target) $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -70,7 +70,7 @@ $(bbb_target) : $(ARM_OBJS) $(USER_OBJS)
 	@echo 'Invoking Linux-ARM Cross Linker'
 	@echo 'Creating out directory'
 	-$(MKDIR) $(outdir)/$(bbbdir)
-	arm-linux-gnueabihf-gcc -Xlinker -Map=$(subst elf,map,$(bbb_target)) -o $(bbb_target) $(ARM_OBJS) $(USER_OBJS) $(LIBS)
+	arm-linux-gnueabihf-gcc -g3 -Xlinker -Map=$(subst elf,map,$(bbb_target)) -o $(bbb_target) $(ARM_OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

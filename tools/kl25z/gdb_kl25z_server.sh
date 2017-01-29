@@ -13,11 +13,11 @@ else
   mkdir -p ${log_dir} 
 fi
 
-pegdb=`ps -ef | grep pegdb`
-if [ ${pegdb} = "" ] ; then
+pegdb=`ps -ef | grep pegdb | grep -v grep`
+if [ "${pegdb}" = "" ] ; then
 
   # Starts the debug server for KL25Z.  Ensure the directory to the peggbserver_console is added to the PATH environment variable. 
-  pegdbserver_console -showflashstatus -verbose -device=NXP_KL2x_KL25Z128M4 -startserver -serverport=7224 -gdbmiport=6224 -interface=OPENSDA -speed=5000 -port=USB > ${log_dir}/`date +%s`_console.log &
+  pegdbserver_console -showflashstatus -verbose -device=NXP_KL2x_KL25Z128M4 -startserver -serverport=7222 -gdbmiport=6224 -interface=OPENSDA -speed=5000 -port=USB > ${log_dir}/`date +%s`_console.log &
 else
   echo "pegdb server already started"
 fi

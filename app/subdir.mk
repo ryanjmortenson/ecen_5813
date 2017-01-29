@@ -39,7 +39,7 @@ $(APPOUTDIR)/$(LINUXDIR)/%.o: $(APPSRCDIR)/%.c
 	$(MKDIR) $(APPOUTDIR)/$(LINUXDIR)
 	@echo 'Building file: $<'
 	@echo 'Invoking Linux x86 Compiler'
-	gcc -I"./app/src" -I"./app/inc" -std=c99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -c -o "$@" "$<"
+	gcc -g3 -I"./app/src" -I"./app/inc" -std=c99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -c -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
@@ -49,6 +49,6 @@ $(APPOUTDIR)/$(BBBDIR)/%.o: $(APPSRCDIR)/%.c
 	@echo $(ARM_OBJS)
 	@echo 'Building file: $<'
 	@echo 'Invoking Linux ARM Cross Compiler'
-	arm-linux-gnueabihf-gcc -I"./app/src" -I"./app/inc" -std=c99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -c -o "$@" "$<"
+	arm-linux-gnueabihf-gcc -g3 -I"./app/src" -I"./app/inc" -std=c99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -c -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '

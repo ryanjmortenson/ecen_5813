@@ -1,0 +1,2 @@
+file out/kl25z/main.elf
+set architecture arm
