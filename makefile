@@ -1,59 +1,59 @@
-################################################################################
-# Automatically-generated file. Do not edit!
-################################################################################
-
--include ../makefile.init
-
 RM := rm -rf
 MKDIR := mkdir -p
-outdir = out
-kl25zdir = kl25z
-linuxdir = linux
-bbbdir = bbb
-outfile = main.elf
-mapfile = main.map
+outdir=out
+kl25zdir=kl25z
+linuxdir=linux
+bbbdir=bbb
+outfile=main.elf
+mapfile=main.map
+kl25z_target=$(outdir)/$(kl25zdir)/$(outfile)
+linux_target=$(outdir)/$(linuxdir)/$(outfile)
+bbb_target=$(outdir)/$(bbbdir)/$(outfile)
+maps=$(subst elf,map,$(kl25z_target) $(linux_target) $(bbb_target))
 
 -include prop/$(kl25zdir)/subdir.mk
 -include app/subdir.mk
 
-
-# Add inputs and outputs from these tool invocations to the build variables 
-
 # All Target
-all: $(outdir)/$(kl25zdir)/$(outfile) $(outdir)/$(linuxdir)/$(outfile) secondary-outputs
-#all: stuff
+all: $(kl25z_target) $(linux_target) $(bbb_target)
+#all: $(outdir)/$(bbbdir)/$(outfile)
 
-stuff:
+debug:
 	@echo $(OBJS)
-	@echo $(test)
+	@echo $(KL25Z_OBJS)
+	@echo $(ARM_OBJS)
+	@echo $(C_SRCS)
+	@echo $(DEPS)
+	@echo $(ALL_SRCS)
 
 # Tool invocations
-$(outdir)/$(kl25zdir)/$(outfile): $(KL25Z_OBJS) $(OBJS) $(USER_OBJS)
+$(kl25z_target) : $(KL25Z_OBJS) $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross ARM C++ Linker'
 	@echo 'Creating out directory'
-	-$(MKDIR) $(outdir)/$(kl25zdir) 
-	arm-none-eabi-g++ -mcpu=cortex-m0plus -mthumb -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g3 -T "MKL25Z128xxx4_flash.ld" -Xlinker --gc-sections -L"./prop/kl25z/linker" -Wl,-Map,"$(outdir)/$(kl25zdir)/$(mapfile)" -specs=nano.specs -specs=nosys.specs -o "$(outdir)/$(kl25zdir)/$(outfile)" $(KL25Z_OBJS) $(USER_OBJS) $(LIBS)
+	-$(MKDIR) $(outdir)/$(kl25zdir)
+	arm-none-eabi-g++ -mcpu=cortex-m0plus -mthumb -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g3 -T "MKL25Z128xxx4_flash.ld" -Xlinker --gc-sections -L"./prop/kl25z/linker" -Wl,-Map,"$(subst elf,map,$(kl25z_target))" -specs=nano.specs -specs=nosys.specs -o $(kl25z_target)  $(KL25Z_OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-$(outdir)/$(linuxdir)/$(outfile): $(OBJS) $(USER_OBJS)
+$(linux_target) : $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking native Linker'
 	@echo 'Creating out directory'
-	-$(MKDIR) $(outdir)/$(linuxdir) 
-	gcc -Xlinker -Map="$(outdir)/$(linuxdir)/$(mapfile)" -o "$(outdir)/$(linuxdir)/$(outfile)" $(OBJS) $(USER_OBJS) $(LIBS)
+	-$(MKDIR) $(outdir)/$(linuxdir)
+	gcc -Xlinker -Map=$(subst elf,map,$(linux_target)) -o $(linux_target) $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
+
+$(bbb_target) : $(ARM_OBJS) $(USER_OBJS)
+	@echo 'Building target: $@'
+	@echo 'Invoking ARM Linker'
+	@echo 'Creating out directory'
+	-$(MKDIR) $(outdir)/$(bbbdir)
+	arm-linux-gnueabi-gcc -Xlinker -Map=$(subst elf,map,$(bbb_target)) -o $(bbb_target) $(ARM_OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Finished building target: $@'
+	@echo ' '
+
 # Other Targets
-#
 clean:
-	-$(RM) $(C++_DEPS)$(OBJS)$(C_DEPS)$(ASM_DEPS)$(CC_DEPS)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS)$(S_UPPER_DEPS) $(outdir)/$(kl25zdir)/$(outfile)
-	-@echo ' '
-
-secondary-outputs:
-
-.PHONY: all clean dependents
-.SECONDARY:
-
--include ../makefile.targets
+	-$(RM) $(OBJS) $(KL25Z_OBJS) $(ARM_OBJS) $(DEPS) $(C_UPPER_DEPS) $(S_UPPER_DEPS) $(kl25z_target) $(linux_target) $(bbb_target) $(maps)
