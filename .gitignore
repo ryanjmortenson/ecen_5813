@@ -8,6 +8,8 @@
 *.swp
 *.swo
 *.d
+*.i
+*.asm
 .project
 .cproject
 
