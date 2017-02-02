@@ -8,7 +8,14 @@
 *.swp
 *.swo
 *.d
+*.i
+*.asm
+.project
+.cproject
 
 # Directories
 **/logs
 **/out
+.metadata/
+.settings/
+RemoteSystemsTempFiles/
