@@ -7,7 +7,7 @@
 ssh debian@192.168.7.2 'mkdir -p /home/debian/Workspace/ECEN5013'
 
 # Copy the binary into the directory just created 
-scp out/linux-arm/main.elf debian@192.168.7.2:/home/debian/Workspace/ECEN5013
+scp out/linux-arm/main debian@192.168.7.2:/home/debian/Workspace/ECEN5013
 
 # Execute binary
-ssh debian@192.168.7.2 '/home/debian/Workspace/ECEN5013/main.elf'
+ssh debian@192.168.7.2 '/home/debian/Workspace/ECEN5013/main'

@@ -10,6 +10,7 @@
 *.d
 *.i
 *.asm
+*.map
 .project
 .cproject
 

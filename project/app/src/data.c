@@ -112,7 +112,6 @@ int8_t big_to_little32(uint32_t * data, uint32_t length)
                    (value & 0x00ff0000) >> 8  |
                    (value & 0x0000ff00) << 8  |
                    (value & 0x000000ff) << 24);
-    printf("0x%4x:0x%4x\n", value, *(data + i));
   }
 }
 
@@ -125,7 +124,7 @@ void print_memory(uint8_t * start, uint32_t length)
 {
   for(int i = 0; i < length; i++)
   {
-    printf("0x%2x ", *(start + i));
+    printf("0x%02x ", *(start + i));
   }
   printf("\n");
 }

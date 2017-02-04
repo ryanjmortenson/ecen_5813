@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include "data.h"
+#include "memory.h"
 
 #define ARRAY_SIZE 32
 
@@ -60,9 +61,28 @@ void test_data1()
 void test_data2()
 {
   uint8_t buffer[100];
+  uint32_t buffer2[ARRAY_SIZE];
   for(int i = 0; i < ARRAY_SIZE; i++)
   {
     my_itoa(buffer, (int32_t) *(set_2 + i), 10);
     print_memory(buffer, 4);
   }
+  for(int i = 0; i < ARRAY_SIZE; i++)
+  {
+    *(buffer + i) = my_atoi(*(set_3 + i));
+    print_memory((uint8_t *)buffer, 4);
+  }
+}
+
+void test_memory()
+{
+  printf("Memory before manipulation\n");
+  print_memory(set_2, ARRAY_SIZE);
+  my_reverse(set_2, 12);
+  my_memset((set_2 + 16), 3, 0xEE);
+  my_memmove((set_2 + 25), (set_2 + 20), 6);
+  my_memzero((set_2 + 11), 3);
+  my_memmove(set_2, (set_2 + 8), 8);
+  printf("Memory after manipulation\n");
+  print_memory(set_2, ARRAY_SIZE);
 }
