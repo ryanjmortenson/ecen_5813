@@ -1,3 +1,0 @@
-target extended-remote localhost:7224
-load out/kl25z/main.elf
-file out/kl25z/main.elf
