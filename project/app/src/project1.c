@@ -47,12 +47,16 @@ void test_data1()
   // Print the memory before byte swap
   printf("Before big_to_little32\n");
   print_memory(set_1, ARRAY_SIZE);
-  big_to_little32((uint32_t *)set_1, 8);
+
+  // Cast the uint8_t as uint32_t and convert
+  big_to_little32((uint32_t *)set_1, ARRAY_SIZE*sizeof(uint8_t)/sizeof(uint32_t));
 
   // Print the memory after byte swap
   printf("After big_to_little32\n");
   print_memory(set_1, ARRAY_SIZE);
-  little_to_big32((uint32_t *)set_1, 8);
+
+  // Cast the uint8_t as uint32_t and convert
+  little_to_big32((uint32_t *)set_1, ARRAY_SIZE*sizeof(uint8_t)/sizeof(uint32_t));
 
   // Print the memory after second byte swap
   printf("After little_to_big32\n");
@@ -63,6 +67,8 @@ void test_data2()
 {
   // Make a buffer to store returns from my_atoi()
   uint32_t buffer[ARRAY_SIZE];
+
+  // Cast to uint8_t and memset to 0
   my_memset((uint8_t *)buffer, ARRAY_SIZE*sizeof(uint32_t)/sizeof(uint8_t), 0);
 
   // Convert all integers in buffer to ASCII characters
