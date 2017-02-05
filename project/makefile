@@ -57,6 +57,9 @@ MAP_FLAG=-Wl,-Map,"$@.map"
 # Set CFLAGS used by every build type
 CFLAGS=-I$(APP_INC_DIR) \
 			 -I$(APP_SRC_DIR) \
+			 -Wall \
+			 -Werror \
+			 -O0 \
 			 -std=c99 \
 			 -MMD \
 			 -MP \
@@ -66,7 +69,6 @@ CFLAGS=-I$(APP_INC_DIR) \
 ARM_CC=arm-linux-gnueabihf-gcc
 X86_CC=x86_64-linux-gnu-gcc
 25Z_CC=arm-none-eabi-gcc
-
 
 # Set compiler, flags, and objects based on platform type
 ifeq ($(PLATFORM),kl25z)
@@ -90,8 +92,7 @@ endif
 
 # If release isn't specfied build with debug symbols
 ifneq ($(TYPE),release)
-	CFLAGS+= -g3 \
-					 -O0
+	CFLAGS+= -g3 
 endif
 
 # Set a compile time flag is prvovided
