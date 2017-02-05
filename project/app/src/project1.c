@@ -59,12 +59,12 @@ void test_data1()
   // Print the memory before byte swap
   printf("Before big_to_little32\n");
   print_memory(set_1, ARRAY_SIZE);
-  big_to_little32((int32_t *)set_1, 8);
+  big_to_little32((uint32_t *)set_1, 8);
 
   // Print the memory after byte swap
   printf("After big_to_little32\n");
   print_memory(set_1, ARRAY_SIZE);
-  little_to_big32((int32_t *)set_1, 8);
+  little_to_big32((uint32_t *)set_1, 8);
 
   // Print the memory after second byte swap
   printf("After little_to_big32\n");
@@ -74,14 +74,13 @@ void test_data1()
 void test_data2()
 {
   uint8_t buffer[100];
-  uint32_t buffer2[ARRAY_SIZE];
   my_memset(buffer, 0, 100);
 
   // Convert all integers in buffer to ASCII characters
   printf("Converting integers into ASCII characters\n");
   for(int i = 0; i < ARRAY_SIZE; i++)
   {
-    my_itoa(buffer, *(set_2 + i), 10);
+    my_itoa((int8_t *)buffer, *(set_2 + i), 10);
     print_memory(buffer, 10);
     printf("%s \n", buffer);
   }
@@ -90,7 +89,7 @@ void test_data2()
   printf("Converting ASCII characters into integers\n");
   for(int i = 0; i < ARRAY_SIZE; i++)
   {
-    *(buffer + i) = my_atoi(&*(set_3 + i));
+    *(buffer + i) = my_atoi((int8_t *)&*(set_2 + i));
     print_memory((uint8_t *)buffer, 4);
   }
 } // test_data2()

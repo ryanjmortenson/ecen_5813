@@ -54,7 +54,7 @@ int8_t * my_itoa(int8_t * str, int32_t data, int32_t base)
   } while(data > 0);
 
   // As stated before the string will be backwards so reverse
-  my_reverse((str + rev_start), counter - rev_start);
+  my_reverse((uint8_t *)(str + rev_start), counter - rev_start);
 
   // Add a null terminator at the end of the string
   *(str + counter) = 0;
@@ -93,7 +93,7 @@ int32_t my_atoi(int8_t * str)
 
   // Loop over string converting ASCII characters to their
   // integer representation
-  while(current = *(str + counter))
+  while((current = *(str + counter)))
   {
     if(current < ASCII_NUM_OFFSET && current > ASCII_NUM_END)
       return 0;
@@ -120,6 +120,8 @@ int8_t big_to_little32(uint32_t * data, uint32_t length)
                    (value & 0x0000ff00) << 8  |
                    (value & 0x000000ff) << 24);
   }
+
+  return SUCCESS;
 } // big_to_little32()
 
 int8_t little_to_big32(uint32_t * data, uint32_t length)

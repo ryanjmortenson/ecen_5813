@@ -6,11 +6,7 @@
 #include "data.h"
 #include "project1.h"
 
-#define INVALID_PARAM 2
-#define NULL_POINTER 1
-#define SUCCESS 0
-
-void main()
+int main()
 {
 #ifdef TESTING
 
