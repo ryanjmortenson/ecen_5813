@@ -1,9 +1,34 @@
-########################################################
-# This make file builds all 3 targets kl25z, linux-86,
-# and linux-arm for beaglebone.  The make file from
-# kinetis-ide was used for reference.
-# #####################################################
-
+##############################################################################
+# This project requires the following tool-chains to be able to build all
+# targets:
+#
+# * **gcc-arm-linux-gnueabihf** - Used to build project for Beagle Bone Black.
+# * **gcc-arm-none-eabi** - Used to build the project for FRDM-KL25Z.
+# * **gcc** - Used to build the project for your development workstation.
+#
+# There are different targets in the make file that can be built.  When no
+# platform is supplied with the PLATFORM=<platform> option the build will use
+# the host machines compiler.
+#
+# * **make** - Will build the current project for the host.
+# * **make <c_file>.asm** - Output an assembly file for the source file
+#                           specified.
+# * **make allasm** - Output all assembly files for the project.
+# * **make <c_file>.i** - Output a preprocessor file for the source file
+# 												specified.
+# * **make alli** - Output all preprocessor files for the project.
+# * **make <c_file>.o** - Output an object file for the source file
+# 												specified.
+# * **make compile-all** - Output all object files project.
+# * **make <c_file>.map** - Output a map file for the source file specified.
+# * **make clean** - Clean all files for the project
+#
+# There are three types for the PLATFROM option:
+#
+# * **host** - X86_64 Linux
+# * **frdm** - FRDM-KL25Z
+# * **bbb** - ARM Linux
+##############################################################################
 
 # Some commands used for building
 RM:=rm -rf
@@ -17,7 +42,8 @@ ARM=linux-arm
 
 # Export variables to use in submake
 export $(25Z)
-export $(X86) export $(ARM)
+export $(X86)
+export $(ARM)
 
 # Map and output file name for built targets
 OUT_FILE=main
@@ -34,7 +60,9 @@ ARM_OUT=$(ARM_OUT_DIR)/$(OUT_FILE)
 X86_OUT=$(X86_OUT_DIR)/$(OUT_FILE)
 
 # List of map files used for cleaning
-MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) $(X86_OUT_DIR)/$(MAP_FILE) $(ARM_OUT_DIR)/$(MAP_FILE)
+MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
+		 $(X86_OUT_DIR)/$(MAP_FILE) \
+		 $(ARM_OUT_DIR)/$(MAP_FILE)
 
 # Call sub make files to build dependencies for each target
 -include sources.mk
@@ -90,7 +118,7 @@ else ifeq ($(PLATFORM),host)
 	OBJS=$(X86_OBJS)
 	OUT_DIR=$(LINUX_X86_OUT)
 else
-	CC=$(X86_CC)
+	CC=gcc
 	OBJS=$(X86_OBJS)
 	OUT_DIR=$(LINUX_X86_OUT)
 endif
