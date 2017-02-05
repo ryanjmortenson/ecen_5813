@@ -40,8 +40,6 @@ MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) $(X86_OUT_DIR)/$(MAP_FILE) $(ARM_OUT_DIR)/$(MAP_
 -include sources.mk
 -include prop/kl25z/subdir.mk
 
-MAP_FLAG=-Wl,-Map,"$@.map"
-
 # Set kl25z flags
 25Z_CFLAGS=-specs=nano.specs \
 			     -specs=nosys.specs \
@@ -65,6 +63,9 @@ CFLAGS=-I$(APP_INC_DIR) \
 			 -MP \
 			 -MF"$(subst .o,,$@).d"
 
+# Set a map flag to be added CFLAGS for certain targets
+MAP_FLAG=-Wl,-Map,"$@.map"
+
 # Set of 3 compilers use
 ARM_CC=arm-linux-gnueabihf-gcc
 X86_CC=x86_64-linux-gnu-gcc
@@ -81,7 +82,7 @@ else ifeq ($(PLATFORM),bbb)
 	OBJS=$(ARM_OBJS)
 	OUT_DIR=$(LINUX_ARM_OUT)
 else ifneq ($(findstring arm,$(shell uname -a)),)
-	CC=$(ARM_CC)
+	CC=gcc
 	OBJS=$(ARM_OBJS)
 	OUT_DIR=$(LINUX_ARM_OUT)
 else ifeq ($(PLATFORM),host)
@@ -94,8 +95,13 @@ else
 	OUT_DIR=$(LINUX_X86_OUT)
 endif
 
-# Set the size binary
-SIZE=$(subst gcc,size,$(CC))
+# On BBB the size binary isn't called arm-linux-gnueabihf-size so set it
+# to size
+ifeq ($(findstring arm,$(shell uname -a)),)
+	SIZE=size
+else
+	SIZE=$(subst gcc,size,$(CC))
+endif
 
 # If release isn't specfied build with debug symbols
 ifneq ($(TYPE),release)
