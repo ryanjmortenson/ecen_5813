@@ -24,4 +24,4 @@ pegdbserver_console -showflashstatus -verbose -device=NXP_KL2x_KL25Z128M4 -start
 sleep 2
 
 # Start gdb session
-arm-none-eabi-gdb --command=tools/kl25z/gdb_commands.txt
+arm-none-eabi-gdb --command=scripts/kl25z/gdb_commands.txt

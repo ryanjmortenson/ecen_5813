@@ -34,4 +34,4 @@ ssh debian@192.168.7.2 'gdbserver localhost:2345 /home/debian/Workspace/ECEN5013
 
 sleep 5
 
-gdb-multiarch --command=tools/linux-arm/gdb_commands.txt
+gdb-multiarch --command=scripts/linux-arm/gdb_commands.txt
