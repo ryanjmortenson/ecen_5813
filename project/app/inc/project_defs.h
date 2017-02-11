@@ -8,6 +8,7 @@
 #define NULL_POINTER 1
 #define SUCCESS 0
 
+// Null pointer check macro
 #define CHECK_NULL(x) if(x == NULL) return NULL_POINTER
 
 #endif
