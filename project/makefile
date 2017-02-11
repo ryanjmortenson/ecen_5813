@@ -69,14 +69,8 @@ MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
 -include sources.mk
 
 # Call this when building for kl25z
-#-include prop/kl25z/subdir.mk
+-include prop/kl25z/subdir.mk
 
-# Set kl25z flags
-25Z_CFLAGS=-specs=nosys.specs \
-			     -mcpu=cortex-m0plus \
-			     -mthumb \
-			     -T "MKL25Z128xxx4_flash.ld" \
-			     -Xlinker --gc-sections -L"./prop/kl25z/linker"
 
 # Set CFLAGS used by every build type
 CFLAGS=-I$(APP_INC_DIR) \
@@ -96,7 +90,7 @@ X86_CC=x86_64-linux-gnu-gcc
 # Set compiler, flags, and objects based on platform type
 ifeq ($(PLATFORM),frdm)
 	CC=$(25Z_CC)
-	CFLAGS+=$(25Z_CFLAGS) \
+	CFLAGS+=$(KL25Z_CFLAGS) \
 					-I$(KL25Z_PROP_INC_DIR)
 	OBJS=$(25Z_OBJS) \
 			 $(KL25Z_PROP_OBJS)
@@ -248,7 +242,7 @@ $(X86_OUT): $(X86_OBJS)
 
 # Build the 25z binary and places it in out/kl25z/main
 $(25Z_OUT): CC=$(25Z_CC)
-$(25Z_OUT): CFLAGS+=$(25Z_CFLAGS) $(MAP_FLAG) -I$(KL25Z_PROP_INC_DIR)
+$(25Z_OUT): CFLAGS+=$(KL25Z_CFLAGS) $(MAP_FLAG) -I$(KL25Z_PROP_INC_DIR)
 $(25Z_OUT): $(25Z_OBJS) $(KL25Z_PROP_OBJS)
 	$(BUILD_TARGET)
 	$(shell $(MK_DIR) $(25Z_APP_OUT))

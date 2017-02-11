@@ -14,6 +14,7 @@ APP_SRC+= \
 $(APP_SRC_DIR)/main.c \
 $(APP_SRC_DIR)/memory.c \
 $(APP_SRC_DIR)/data.c \
+$(APP_SRC_DIR)/unit_tests.c \
 $(APP_SRC_DIR)/project1.c
 
 # Make a src list without any directories to feed into the allasm/alli targets
