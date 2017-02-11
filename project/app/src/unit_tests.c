@@ -221,7 +221,7 @@ void data_unit()
   }
 
   // Validate null pointer returns start
-  if (my_itoa((int8_t *)NULL, 123, 10) != str)
+  if (my_itoa((int8_t *)NULL, 123, 10) != (int8_t *)NULL)
   {
     printf("my_itoa didn't return the correct pointer for null pointer\n");
   }
