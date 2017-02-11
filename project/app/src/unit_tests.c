@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -23,14 +24,14 @@ void memory_unit()
   // Test a normal copy with no overlap
   if((res = my_memmove(str, src, STR_LEN)) != SUCCESS)
   {
-    printf("my_memmove failed copying str with error %d\n", res);
+    printf("my_memmove failed copying str with error %"PRId32"\n", res);
   }
   printf("%s\n", src);
 
   // Verify the strings match
   if ((res = strncmp((char *)src, (char *)str, STR_LEN)))
   {
-    printf("my_memmove(str, src, STR_LEN) doesn't match expected: error %d\n", res);
+    printf("my_memmove(str, src, STR_LEN) doesn't match expected: error %"PRId32"\n", res);
   }
 
   // Test an overlap where dst starts inside of src
@@ -38,13 +39,13 @@ void memory_unit()
   printf("%s\n", src);
   if ((res = strncmp((char *)src, "1234534560", STR_LEN)))
   {
-    printf("my_memmove((src + 2), (src + 5), 4) doesn't match expected: strncmp error %d\n", res);
+    printf("my_memmove((src + 2), (src + 5), 4) doesn't match expected: strncmp error %"PRId32"\n", res);
   }
 
   // Copy original string back into src
   if((res = my_memmove(str, src, STR_LEN)) != SUCCESS)
   {
-    printf("my_memmove failed copying str with error %d\n", res);
+    printf("my_memmove failed copying str with error %"PRId32"\n", res);
   }
 
   // Test an overlap where dst ends inside of src
@@ -52,7 +53,7 @@ void memory_unit()
   printf("%s\n", src);
   if ((res = strncmp((char *)src, "1678967890", STR_LEN)))
   {
-    printf("my_memmove((src + 2), (src + 5), 4) doesn't match expected: strncmp error %d\n", res);
+    printf("my_memmove((src + 2), (src + 5), 4) doesn't match expected: strncmp error %"PRId32"\n", res);
   }
 
   // Test src null pointer
@@ -75,14 +76,14 @@ void memory_unit()
   // Test a normal memset
   if ((res = my_memset(src, STR_LEN, 'A')) != SUCCESS)
   {
-    printf("my_memset(src, STR_LEN, 'A') failed with res %d", res);
+    printf("my_memset(src, STR_LEN, 'A') failed with res %"PRId32"", res);
   }
   printf("%s\n", src);
 
   // Validate src
   if ((res = strncmp((char *)src, "AAAAAAAAAA", STR_LEN)))
   {
-    printf("my_memset(src, STR_LEN, 'A') doesn't match expected: strncmp error %d\n", res);
+    printf("my_memset(src, STR_LEN, 'A') doesn't match expected: strncmp error %"PRId32"\n", res);
   }
 
   // Test src null pointer
@@ -99,7 +100,7 @@ void memory_unit()
   // Test a normal memset
   if ((res = my_memzero(src, STR_LEN)) != SUCCESS)
   {
-    printf("my_memzero(src, STR_LEN) failed with res %d", res);
+    printf("my_memzero(src, STR_LEN) failed with res %"PRId32"", res);
   }
   printf("%s\n", src);
 
@@ -123,27 +124,27 @@ void memory_unit()
   // Copy original string into src
   if((res = my_memmove(str, src, STR_LEN)) != SUCCESS)
   {
-    printf("my_memmove failed copying str with error %d\n", res);
+    printf("my_memmove failed copying str with error %"PRId32"\n", res);
   }
   printf("%s\n", src);
 
   // Test an even reverse
   if ((res = my_reverse(src, STR_LEN)) != SUCCESS)
   {
-    printf("my_reverse(src, STR_LEN) failed with res %d", res);
+    printf("my_reverse(src, STR_LEN) failed with res %"PRId32"", res);
   }
   printf("%s\n", src);
 
   // Validate reverse
   if ((res = strncmp((char *)src, "0987654321", STR_LEN)))
   {
-    printf("my_reverse(src, STR_LEN) doesn't match expected: strncmp error %d\n", res);
+    printf("my_reverse(src, STR_LEN) doesn't match expected: strncmp error %"PRId32"\n", res);
   }
 
   // Copy original string into src
   if((res = my_memmove(str, src, STR_LEN - 1)) != SUCCESS)
   {
-    printf("my_memmove failed copying str with error %d\n", res);
+    printf("my_memmove failed copying str with error %"PRId32"\n", res);
   }
 
   // Add null terminator so printf displays correctly
@@ -153,14 +154,14 @@ void memory_unit()
   // Test an odd reverse
   if ((res = my_reverse(src, STR_LEN - 1)) != SUCCESS)
   {
-    printf("my_reverse(src, STR_LEN) failed with res %d", res);
+    printf("my_reverse(src, STR_LEN) failed with res %"PRId32"", res);
   }
   printf("%s\n", src);
 
   // Validate reverse
   if ((res = strncmp((char *)src, "987654321", STR_LEN - 1)))
   {
-    printf("my_reverse(src, STR_LEN) doesn't match expected: strncmp error %d\n", res);
+    printf("my_reverse(src, STR_LEN) doesn't match expected: strncmp error %"PRId32"\n", res);
   }
 
   // Test src null pointer
@@ -187,7 +188,7 @@ void data_unit()
   // Validate reverse
   if ((res = strncmp((char *)str, "-1589", 5)))
   {
-    printf("my_itoa doesn't match expected: strncmp error %d\n", res);
+    printf("my_itoa doesn't match expected: strncmp error %"PRId32"\n", res);
   }
 
   // Test base 10 conversion with positive number
@@ -197,7 +198,7 @@ void data_unit()
   // Validate reverse
   if ((res = strncmp((char *)str, "13456984", 8)))
   {
-    printf("my_itoa doesn't match expected: strncmp error %d\n", res);
+    printf("my_itoa doesn't match expected: strncmp error %"PRId32"\n", res);
   }
 
   // Test base 16 conversion with negative number
@@ -207,7 +208,7 @@ void data_unit()
   // Validate conversion
   if ((res = strncmp((char *)str, "-FE91", 5)))
   {
-    printf("my_itoa doesn't match expected: strncmp error %d\n", res);
+    printf("my_itoa doesn't match expected: strncmp error %"PRId32"\n", res);
   }
 
   // Test base 16 conversion with negative number
@@ -217,7 +218,7 @@ void data_unit()
   // Validate conversion
   if ((res = strncmp((char *)str, "ABC64", 5)))
   {
-    printf("my_itoa doesn't match expected: strncmp error %d\n", res);
+    printf("my_itoa doesn't match expected: strncmp error %"PRId32"\n", res);
   }
 
   // Validate null pointer returns start
@@ -234,16 +235,16 @@ void data_unit()
   // Check a positive integer
   if ((res = my_atoi((int8_t *)"123456")) != 123456)
   {
-    printf("my_atoi returned an incorrect value %d\n", res);
+    printf("my_atoi returned an incorrect value %"PRId32"\n", res);
   }
-  printf("%d\n", res);
+  printf("%"PRId32"\n", res);
 
   // Check a negative integer
   if ((res = my_atoi((int8_t *)"-7890")) != -7890)
   {
-    printf("my_atoi returned an incorrect value %d\n", res);
+    printf("my_atoi returned an incorrect value %"PRId32"\n", res);
   }
-  printf("%d\n", res);
+  printf("%"PRId32"\n", res);
 
   // Check a null pointer
   if ((res = my_atoi((int8_t *)NULL)) != 0)
@@ -268,13 +269,13 @@ void data_unit()
   // Execute big_to_little32
   if ((res = big_to_little32(&temp, 1)))
   {
-    printf("big_to_little failed with returning %d\n", res);
+    printf("big_to_little failed with returning %"PRId32"\n", res);
   }
 
   // Validate results
   if (temp != little_to_big)
   {
-    printf("big_to_little failed to get correct result %d\n", temp);
+    printf("big_to_little failed to get correct result %"PRId32"\n", temp);
   }
 
   // Check a null pointer
@@ -291,13 +292,13 @@ void data_unit()
   // Execute little_to_big32
   if ((res = little_to_big32(&temp, 1)))
   {
-    printf("little_to_big failed with returning %d\n", res);
+    printf("little_to_big failed with returning %"PRId32"\n", res);
   }
 
   // Validate results
   if (temp != big_to_little)
   {
-    printf("little_to_big failed to get correct result %d\n", temp);
+    printf("little_to_big failed to get correct result %"PRId32"\n", temp);
   }
 
   // Check a null pointer

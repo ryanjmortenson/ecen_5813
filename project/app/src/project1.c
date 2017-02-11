@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -118,27 +119,27 @@ void test_memory()
   // Execute memory manipulation requested
   if ((res = my_reverse(set_2, 12)) != SUCCESS)
   {
-    printf("my_reverse() returned failure of %d\n", res);
+    printf("my_reverse() returned failure of %"PRId32"\n", res);
   }
 
   if ((my_memset((set_2 + 16), 3, 0xEE)) != SUCCESS)
   {
-    printf("my_memset() returned failure of %d\n", res);
+    printf("my_memset() returned failure of %"PRId32"\n", res);
   }
 
   if ((res = my_memmove((set_2 + 25), (set_2 + 20), 6)) != SUCCESS)
   {
-    printf("my_memmove() returned failure of %d\n", res);
+    printf("my_memmove() returned failure of %"PRId32"\n", res);
   }
 
   if ((res = my_memzero((set_2 + 11), 3)) != SUCCESS)
   {
-    printf("my_memzero() returned failure of %d\n", res);
+    printf("my_memzero() returned failure of %"PRId32"\n", res);
   }
 
   if ((res = my_memmove(set_2, (set_2 + 8), 8)) != SUCCESS)
   {
-    printf("my_memmove() returned failure of %d\n", res);
+    printf("my_memmove() returned failure of %"PRId32"\n", res);
   }
 
   // Show memory after
