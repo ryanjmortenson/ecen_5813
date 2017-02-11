@@ -24,11 +24,15 @@ int8_t * my_itoa(int8_t * str, int32_t data, int32_t base)
 
   // Pointer is null return pointer to str
   if(str == NULL)
+  {
     return start;
+  }
 
   // Base is incorrect return pointer to str
-  if(!(base != 16 || base != BASE_10 || base != 8 || base != 2))
+  if(base > 35)
+  {
     return start;
+  }
 
   // If data is negative then the MINUS_SIGN must be the first element of the
   // string.  The converted string will be backwards and must be reversed so
@@ -65,45 +69,42 @@ int8_t * my_itoa(int8_t * str, int32_t data, int32_t base)
 int32_t my_atoi(int8_t * str)
 {
   uint32_t counter = 0;
-  uint8_t current = 0;
   uint32_t value = 0;
-  uint32_t magnitude = 1;
-  uint8_t negative = 0;
+  uint32_t negative = 1;
+  uint8_t current = 0;
 
   // String is NULL the only option for failure in atoi is NULL
-  CHECK_NULL(str);
+  if (str == NULL)
+  {
+    return 0;
+  }
 
   // If this is a negative number set negative flag and increment
   // counter to start converting the integer
   if(*str == MINUS_SIGN)
   {
-    negative++;
+    negative = -1;
     counter++;
   }
-
-  // Figure out the order of magnitude needed for conversion
-  while(*(str + counter + 1))
-  {
-    magnitude *= BASE_10;
-    counter++;
-  }
-
-  // Reset the counter to negative which is either 0 or 1
-  counter = negative;
 
   // Loop over string converting ASCII characters to their
   // integer representation
   while((current = *(str + counter)))
   {
-    if(current < ASCII_NUM_OFFSET && current > ASCII_NUM_END)
+    // Current value is not an integer fail with 0 (only available failure)
+    if(current < ASCII_NUM_OFFSET || current > ASCII_NUM_END)
+    {
       return 0;
-    value += magnitude * (current - ASCII_NUM_OFFSET);
-    magnitude /= BASE_10;
+    }
+
+    // Calculate the value by taken the ASCII  value and subtracting the
+    // ASCII number offset
+    value = BASE_10 * value + (current - ASCII_NUM_OFFSET);
     counter++;
   }
 
   // If the number is negative multiply by -1 before return
-  return (negative) ? value*-1 : value;
+  return negative*value;
 } // my_atoi()
 
 int8_t big_to_little32(uint32_t * data, uint32_t length)

@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "data.h"
 #include "project1.h"
+#include "unit_tests.h"
 
 int main()
 {
@@ -15,6 +16,12 @@ int main()
   test_data1();
   test_data2();
   test_memory();
+#endif
+
+#ifdef UNIT
+  // Execute unit tests for memory.c
+  memory_unit();
+  data_unit();
 #endif
 
   return 0;

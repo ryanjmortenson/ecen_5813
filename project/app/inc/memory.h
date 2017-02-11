@@ -5,7 +5,6 @@
 
 /*
  * \brief my_memmove: used to copy src array to dst array
- *                    does not handle overlap
  *
  * \param src pointer to array
  * \param dst  pointer to array

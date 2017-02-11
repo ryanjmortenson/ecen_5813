@@ -12,10 +12,21 @@ uint8_t my_memmove(uint8_t *src, uint8_t *dst, uint32_t length)
   CHECK_NULL(src);
   CHECK_NULL(dst);
 
-  // Copy src to dst
-  for (int i = 0; i < length; i++)
+  // Handle overlap when dst starts in source
+  if (dst > src && dst < src + length)
   {
-    *(dst + i) = *(src + i);
+    for (int i = length - 1; i >= 0; i--)
+    {
+      *(dst + i) = *(src + i);
+    }
+  }
+  // Handle the case when dst ends in source or dst doesn't overlap
+  else
+  {
+    for (int i = 0; i < length; i++)
+    {
+      *(dst + i) = *(src + i);
+    }
   }
 
   return SUCCESS;
