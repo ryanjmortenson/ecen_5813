@@ -10,6 +10,7 @@
 *.d
 *.i
 *.asm
+*.map
 .project
 .cproject
 
@@ -18,4 +19,4 @@
 **/out
 .metadata/
 .settings/
-RemoteSystemsTempFiles/
+homework/

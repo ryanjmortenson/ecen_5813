@@ -1,0 +1,3 @@
+target extended-remote localhost:7224
+file out/kl25z/main
+load out/kl25z/main
