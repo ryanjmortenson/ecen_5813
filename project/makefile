@@ -75,7 +75,6 @@ MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
 CFLAGS=-I$(APP_INC_DIR) \
 			 -Wall \
 			 -Werror \
-			 -O0 \
 			 -std=c99
 
 # Set a map flag to be added CFLAGS for certain targets
@@ -117,14 +116,16 @@ endif
 ifneq (,$(findstring arm,$(shell uname -a)))
 	SIZE=size
 	AR=ar
+	OBJDUMP=objdump
 else
 	SIZE=$(subst gcc,size,$(CC))
 	AR=$(subst gcc,ar,$(CC))
+	OBJDUMP=$(subst gcc,objdump,$(CC))
 endif
 
 # If release isn't specfied build with debug symbols
 ifneq ($(TYPE),release)
-	CFLAGS+=-g3
+	CFLAGS+=-g3 -O0
 endif
 
 # Set a compile time flag if it is prvovided or set to current project
@@ -139,7 +140,7 @@ BUILD_TARGET=@echo "Building Target $@"
 BUILD_WITH=@echo "Building with $<"
 
 # Set PHONY for all targets that don't have outputs for tracking
-.PHONY: build compile-all debug allasm alli clean
+.PHONY: build compile-all debug allasm alli allobjdump clean
 
 # Build will build project1
 build: $(OBJS)
@@ -200,6 +201,17 @@ alli :
 	$(BUILD_WITH)
 	$(CC) $(CFLAGS) -c -o "$@" "$<"
 
+# Covert all object file to objdump files
+allobjdump: $(patsubst %.c,%.o,$(SRC_LIST))
+	@echo "Build all objdump files"
+	$(MAKE) $(patsubst %.c,%.objdump,$(SRC_LIST))
+
+# Convert and object file
+%.objdump: %.o
+	$(BUILD_TARGET)
+	$(BUILD_WITH)
+	$(OBJDUMP) -D "$<" > "$@"
+
 # Builds .o files from .c files
 $(X86_APP_OUT)/%.o $(ARM_APP_OUT)/%.o $(25Z_APP_OUT)/%.o: CFLAGS+=-MD -MP
 $(X86_APP_OUT)/%.o $(ARM_APP_OUT)/%.o $(25Z_APP_OUT)/%.o: $(APP_SRC_DIR)/%.c
@@ -219,7 +231,8 @@ CLEAN+=$(25Z_OUT) \
 			 *.asm \
 			 *.o \
 			 project1* \
-			 libproject1.a
+			 libproject1.a \
+			 *.objdump
 
 # Clean should clean up all .elf, .map, .o, .d, and .S files created during
 # build
