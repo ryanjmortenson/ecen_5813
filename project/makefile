@@ -90,7 +90,8 @@ X86_CC=x86_64-linux-gnu-gcc
 ifeq ($(PLATFORM),frdm)
 	CC=$(25Z_CC)
 	CFLAGS+=$(KL25Z_CFLAGS) \
-					-I$(KL25Z_PROP_INC_DIR)
+					-I$(KL25Z_PROP_INC_DIR) \
+					-D FRDM
 	OBJS=$(25Z_OBJS) \
 			 $(KL25Z_PROP_OBJS)
 else ifeq ($(PLATFORM),bbb)
@@ -252,7 +253,7 @@ $(X86_OUT): $(X86_OBJS)
 
 # Build the 25z binary and places it in out/kl25z/main
 $(25Z_OUT): CC=$(25Z_CC)
-$(25Z_OUT): CFLAGS+=$(KL25Z_CFLAGS) $(MAP_FLAG) -I$(KL25Z_PROP_INC_DIR)
+$(25Z_OUT): CFLAGS+=$(KL25Z_CFLAGS) $(MAP_FLAG) -I$(KL25Z_PROP_INC_DIR) -D FRDM
 $(25Z_OUT): $(25Z_OBJS) $(KL25Z_PROP_OBJS)
 	$(BUILD_TARGET)
 	$(shell $(MK_DIR) $(25Z_APP_OUT))
