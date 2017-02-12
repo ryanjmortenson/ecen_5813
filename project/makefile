@@ -106,23 +106,19 @@ else ifeq ($(PLATFORM),host)
 	OBJS=$(X86_OBJS)
 	OUT_DIR=$(LINUX_X86_OUT)
 else
-	CC=gcc
+	CC=$(X86_CC)
 	OBJS=$(X86_OBJS)
 	OUT_DIR=$(LINUX_X86_OUT)
 endif
 
 # On BBB the size binary isn't called arm-linux-gnueabihf-size so set it
 # to size
-ifeq ($(findstring arm,$(shell uname -a)),)
+ifneq (,$(findstring arm,$(shell uname -a)))
 	SIZE=size
-else
-	SIZE=$(subst gcc,size,$(CC))
-endif
-
-ifeq ($(findstring arm,$(shell uname -a)),)
 	AR=ar
 else
-	ar=$(subst gcc,ar,$(CC))
+	SIZE=$(subst gcc,size,$(CC))
+	AR=$(subst gcc,ar,$(CC))
 endif
 
 # If release isn't specfied build with debug symbols
@@ -164,11 +160,12 @@ debug:
 # Compiles the project into project1 binary which can be executed with ./project1
 project1: CFLAGS+=$(MAP_FLAG)
 project1: $(OBJS)
-	@echo "Building project1"
+	$(BUILD_TARGET)
 	$(CC) $(CFLAGS) -o "$@" $(OBJS)
 	$(SIZE) $@
 
 libproject1.a: $(OBJS)
+	$(BUILD_TARGET)
 	$(AR) cr $@ $(OBJS)
 
 # Builds all objects files but doesn't link
