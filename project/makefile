@@ -46,9 +46,25 @@ export $(X86)
 export $(ARM)
 export $(MK_DIR)
 
+# Project output file names
 PROJECT_FILE=project1
 PROJECT_OUT_FILE=$(PROJECT_FILE).out
 LIB_OUT_FILE=lib$(PROJECT_FILE).a
+
+# Target out directories when building
+25Z_OUT_DIR=$(OUT)/$(25Z)
+X86_OUT_DIR=$(OUT)/$(X86)
+ARM_OUT_DIR=$(OUT)/$(ARM)
+
+# Target names for 3 built types
+25Z_OUT=$(25Z_OUT_DIR)/$(OUT_FILE)
+ARM_OUT=$(ARM_OUT_DIR)/$(OUT_FILE)
+X86_OUT=$(X86_OUT_DIR)/$(OUT_FILE)
+
+# List of map files used for cleaning
+MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
+		 $(X86_OUT_DIR)/$(MAP_FILE) \
+		 $(ARM_OUT_DIR)/$(MAP_FILE)
 
 # Call sub make files to build dependencies for each target
 -include sources.mk
@@ -78,22 +94,23 @@ ifeq ($(PLATFORM),frdm)
 					-D FRDM
 	OBJS=$(25Z_OBJS) \
 			 $(KL25Z_PROP_OBJS)
+	OUT_DIR=$(25Z_APP_OUT)
 else ifeq ($(PLATFORM),bbb)
 	CC=$(ARM_CC)
 	OBJS=$(ARM_OBJS)
-	OUT_DIR=$(LINUX_ARM_OUT)
+	OUT_DIR=$(ARM_APP_OUT)
 else ifneq ($(findstring arm,$(shell uname -a)),)
 	CC=gcc
 	OBJS=$(ARM_OBJS)
-	OUT_DIR=$(LINUX_ARM_OUT)
+	OUT_DIR=$(ARM_APP_OUT)
 else ifeq ($(PLATFORM),host)
 	CC=$(X86_CC)
 	OBJS=$(X86_OBJS)
-	OUT_DIR=$(LINUX_X86_OUT)
+	OUT_DIR=$(X86_APP_OUT)
 else
 	CC=$(X86_CC)
 	OBJS=$(X86_OBJS)
-	OUT_DIR=$(LINUX_X86_OUT)
+	OUT_DIR=$(X86_APP_OUT)
 endif
 
 # On BBB the size binary isn't called arm-linux-gnueabihf-size so set it
@@ -138,11 +155,7 @@ build-lib: $(OBJS)
 # Debug target is just used for debugging the make file
 debug:
 	@echo "Debug output"
-	@echo $(25Z_PROP_OUT)
-	@echo $(25Z_PROP_SRCS)
-	@echo $(OUT_FILE)
-	@echo $(SIZE)
-	@echo $(OBJS)
+	@echo $(OUT_DIR)
 
 # Compiles the project into project1 binary which can be executed with ./project1.out
 $(PROJECT_OUT_FILE): CFLAGS+=$(MAP_FLAG)
@@ -151,6 +164,7 @@ $(PROJECT_OUT_FILE): $(OBJS)
 	$(CC) $(CFLAGS) -o "$@" $(OBJS)
 	$(SIZE) $@
 
+# Build the library file for static linking
 $(LIB_OUT_FILE): $(OBJS)
 	$(BUILD_TARGET)
 	$(AR) cr $@ $(OBJS)
@@ -187,39 +201,35 @@ alli :
 	$(CC) $(CFLAGS) -c -o "$@" "$<"
 
 # Covert all object file to objdump files
-allobjdump: $(patsubst %.c,%.o,$(SRC_LIST)) $(PROJECT_OUT_FILE)
+allobjdump: $(OBJS) $(PROJECT_OUT_FILE)
 	@echo "Build all objdump files"
-	$(MAKE) $(patsubst %.c,%.objdump,$(SRC_LIST))
+	$(MAKE) $(patsubst %.o,%.objdump,$(OBJS))
 	$(MAKE) $(PROJECT_OUT_FILE).objdump
 
-# Convert and object file
+# Do an objdump on a file
 %.objdump: %.o
 	$(BUILD_TARGET)
 	$(BUILD_WITH)
 	$(OBJDUMP) -D "$<" > "$@"
 
+# Do an objdump on the project output file
 %.out.objdump: %.out
 	$(BUILD_TARGET)
 	$(BUILD_WITH)
 	$(OBJDUMP) -D "$<" > "$@"
 
 # Builds .o files from .c files
-$(X86_APP_OUT)/%.o $(ARM_APP_OUT)/%.o $(25Z_APP_OUT)/%.o: CFLAGS+=-MD -MP
-$(X86_APP_OUT)/%.o $(ARM_APP_OUT)/%.o $(25Z_APP_OUT)/%.o: $(APP_SRC_DIR)/%.c
+$(OUT_DIR)/%.o: CFLAGS+=-MD -MP
+$(OUT_DIR)/%.o: $(APP_SRC_DIR)/%.c
 	$(BUILD_TARGET)
 	$(BUILD_WITH)
-	$(shell $(MK_DIR) $(ARM_APP_OUT))
-	$(shell $(MK_DIR) $(X86_APP_OUT))
-	$(shell $(MK_DIR) $(25Z_APP_OUT))
+	$(shell $(MK_DIR) $(OUT_DIR))
 	$(CC) $(CFLAGS) -c -o "$@" "$<"
 
 # List of items that need to be cleaned
-CLEAN+=$(25Z_OUT) \
-			 $(X86_OUT) \
-			 $(ARM_OUT) \
+CLEAN+=$(OUT) \
 			 $(MAPS) \
-			 $(PROJECT_FILE) \
-			 $(PROJECT_OUT_FILE) \
+			 $(PROJECT_FILE)* \
 			 $(LIB_OUT_FILE) \
 			 *.i \
 			 *.asm \
@@ -240,47 +250,26 @@ clean:
 OUT_FILE=main
 MAP_FILE=main.map
 
-# Target out directories when building
-25Z_OUT_DIR=$(OUT)/$(25Z)
-X86_OUT_DIR=$(OUT)/$(X86)
-ARM_OUT_DIR=$(OUT)/$(ARM)
-
-# Target names for 3 built types
-25Z_OUT=$(25Z_OUT_DIR)/$(OUT_FILE)
-ARM_OUT=$(ARM_OUT_DIR)/$(OUT_FILE)
-X86_OUT=$(X86_OUT_DIR)/$(OUT_FILE)
-
-# List of map files used for cleaning
-MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
-		 $(X86_OUT_DIR)/$(MAP_FILE) \
-		 $(ARM_OUT_DIR)/$(MAP_FILE)
-
 # Build the arm binary and places it in out/linux-arm/main
-$(ARM_OUT): CC=$(ARM_CC)
 $(ARM_OUT): CFLAGS+=$(MAP_FLAG)
 $(ARM_OUT): $(ARM_OBJS)
 	$(BUILD_TARGET)
-	$(shell $(MK_DIR) $(ARM_APP_OUT))
 	$(shell $(MK_DIR) $(ARM_OUT_DIR))
 	$(CC) $(CFLAGS) -o "$@" $(ARM_OBJS)
 	$(SIZE) $@
 
 # Build the x86 binary and places it in out/linux-x86/main
-$(X86_OUT): CC=$(X86_CC)
 $(X86_OUT): CFLAGS+=$(MAP_FLAG)
 $(X86_OUT): $(X86_OBJS)
 	$(BUILD_TARGET)
-	$(shell $(MK_DIR) $(X86_APP_OUT))
 	$(shell $(MK_DIR) $(X86_OUT_DIR))
-	$(CC) $(CFLAGS)  -o "$@" $(X86_OBJS)
+	$(CC) $(CFLAGS) -o "$@" $(X86_OBJS)
 	$(SIZE) $@
 
 # Build the 25z binary and places it in out/kl25z/main
-$(25Z_OUT): CC=$(25Z_CC)
-$(25Z_OUT): CFLAGS+=$(KL25Z_CFLAGS) $(MAP_FLAG) -I$(KL25Z_PROP_INC_DIR) -D FRDM
+$(25Z_OUT): CFLAGS+=$(MAP_FLAG)
 $(25Z_OUT): $(25Z_OBJS) $(KL25Z_PROP_OBJS)
 	$(BUILD_TARGET)
-	$(shell $(MK_DIR) $(25Z_APP_OUT))
 	$(shell $(MK_DIR) $(25Z_OUT_DIR))
 	$(CC) $(CFLAGS) -o "$@" $(25Z_OBJS) $(KL25Z_PROP_OBJS)
 	$(SIZE) $@
