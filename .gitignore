@@ -11,6 +11,7 @@
 *.i
 *.asm
 *.map
+*.objdump
 .project
 .cproject
 
