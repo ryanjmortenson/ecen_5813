@@ -46,24 +46,9 @@ export $(X86)
 export $(ARM)
 export $(MK_DIR)
 
-# Map and output file name for built targets
-OUT_FILE=main
-MAP_FILE=main.map
-
-# Target out directories when building
-25Z_OUT_DIR=$(OUT)/$(25Z)
-X86_OUT_DIR=$(OUT)/$(X86)
-ARM_OUT_DIR=$(OUT)/$(ARM)
-
-# Target names for 3 built types
-25Z_OUT=$(25Z_OUT_DIR)/$(OUT_FILE)
-ARM_OUT=$(ARM_OUT_DIR)/$(OUT_FILE)
-X86_OUT=$(X86_OUT_DIR)/$(OUT_FILE)
-
-# List of map files used for cleaning
-MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
-		 $(X86_OUT_DIR)/$(MAP_FILE) \
-		 $(ARM_OUT_DIR)/$(MAP_FILE)
+PROJECT_FILE=project1
+PROJECT_OUT_FILE=$(PROJECT_FILE).out
+LIB_OUT_FILE=lib$(PROJECT_FILE).a
 
 # Call sub make files to build dependencies for each target
 -include sources.mk
@@ -144,11 +129,11 @@ BUILD_WITH=@echo "Building with $<"
 
 # Build will build project1
 build: $(OBJS)
-	$(MAKE) project1
+	$(MAKE) $(PROJECT_OUT_FILE)
 
 # Build will build project1
 build-lib: $(OBJS)
-	$(MAKE) libproject1.a
+	$(MAKE) $(LIB_OUT_FILE)
 
 # Debug target is just used for debugging the make file
 debug:
@@ -159,14 +144,14 @@ debug:
 	@echo $(SIZE)
 	@echo $(OBJS)
 
-# Compiles the project into project1 binary which can be executed with ./project1
-project1: CFLAGS+=$(MAP_FLAG)
-project1: $(OBJS)
+# Compiles the project into project1 binary which can be executed with ./project1.out
+$(PROJECT_OUT_FILE): CFLAGS+=$(MAP_FLAG)
+$(PROJECT_OUT_FILE): $(OBJS)
 	$(BUILD_TARGET)
 	$(CC) $(CFLAGS) -o "$@" $(OBJS)
 	$(SIZE) $@
 
-libproject1.a: $(OBJS)
+$(LIB_OUT_FILE): $(OBJS)
 	$(BUILD_TARGET)
 	$(AR) cr $@ $(OBJS)
 
@@ -202,12 +187,18 @@ alli :
 	$(CC) $(CFLAGS) -c -o "$@" "$<"
 
 # Covert all object file to objdump files
-allobjdump: $(patsubst %.c,%.o,$(SRC_LIST))
+allobjdump: $(patsubst %.c,%.o,$(SRC_LIST)) $(PROJECT_OUT_FILE)
 	@echo "Build all objdump files"
 	$(MAKE) $(patsubst %.c,%.objdump,$(SRC_LIST))
+	$(MAKE) $(PROJECT_OUT_FILE).objdump
 
 # Convert and object file
 %.objdump: %.o
+	$(BUILD_TARGET)
+	$(BUILD_WITH)
+	$(OBJDUMP) -D "$<" > "$@"
+
+%.out.objdump: %.out
 	$(BUILD_TARGET)
 	$(BUILD_WITH)
 	$(OBJDUMP) -D "$<" > "$@"
@@ -227,11 +218,12 @@ CLEAN+=$(25Z_OUT) \
 			 $(X86_OUT) \
 			 $(ARM_OUT) \
 			 $(MAPS) \
+			 $(PROJECT_FILE) \
+			 $(PROJECT_OUT_FILE) \
+			 $(LIB_OUT_FILE) \
 			 *.i \
 			 *.asm \
 			 *.o \
-			 project1* \
-			 libproject1.a \
 			 *.objdump
 
 # Clean should clean up all .elf, .map, .o, .d, and .S files created during
@@ -243,6 +235,25 @@ clean:
 # placed in seperate directories.  I prefer for the output binaries to be in
 # their corresponding platform directory.  Putting a project* binary in the top
 # level directory may cause confusion when loading binaries on platforms.
+
+# Map and output
+OUT_FILE=main
+MAP_FILE=main.map
+
+# Target out directories when building
+25Z_OUT_DIR=$(OUT)/$(25Z)
+X86_OUT_DIR=$(OUT)/$(X86)
+ARM_OUT_DIR=$(OUT)/$(ARM)
+
+# Target names for 3 built types
+25Z_OUT=$(25Z_OUT_DIR)/$(OUT_FILE)
+ARM_OUT=$(ARM_OUT_DIR)/$(OUT_FILE)
+X86_OUT=$(X86_OUT_DIR)/$(OUT_FILE)
+
+# List of map files used for cleaning
+MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
+		 $(X86_OUT_DIR)/$(MAP_FILE) \
+		 $(ARM_OUT_DIR)/$(MAP_FILE)
 
 # Build the arm binary and places it in out/linux-arm/main
 $(ARM_OUT): CC=$(ARM_CC)
