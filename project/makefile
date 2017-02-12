@@ -46,9 +46,10 @@ export $(X86)
 export $(ARM)
 export $(MK_DIR)
 
-# Map and output file name for built targets
-OUT_FILE=main
-MAP_FILE=main.map
+# Project output file names
+PROJECT_FILE=project1
+PROJECT_OUT_FILE=$(PROJECT_FILE).out
+LIB_OUT_FILE=lib$(PROJECT_FILE).a
 
 # Target out directories when building
 25Z_OUT_DIR=$(OUT)/$(25Z)
@@ -71,12 +72,10 @@ MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
 # Call this when building for kl25z
 -include prop/kl25z/subdir.mk
 
-
 # Set CFLAGS used by every build type
 CFLAGS=-I$(APP_INC_DIR) \
 			 -Wall \
 			 -Werror \
-			 -O0 \
 			 -std=c99
 
 # Set a map flag to be added CFLAGS for certain targets
@@ -91,38 +90,44 @@ X86_CC=x86_64-linux-gnu-gcc
 ifeq ($(PLATFORM),frdm)
 	CC=$(25Z_CC)
 	CFLAGS+=$(KL25Z_CFLAGS) \
-					-I$(KL25Z_PROP_INC_DIR)
+					-I$(KL25Z_PROP_INC_DIR) \
+					-D FRDM
 	OBJS=$(25Z_OBJS) \
 			 $(KL25Z_PROP_OBJS)
+	OUT_DIR=$(25Z_APP_OUT)
 else ifeq ($(PLATFORM),bbb)
 	CC=$(ARM_CC)
 	OBJS=$(ARM_OBJS)
-	OUT_DIR=$(LINUX_ARM_OUT)
+	OUT_DIR=$(ARM_APP_OUT)
 else ifneq ($(findstring arm,$(shell uname -a)),)
 	CC=gcc
 	OBJS=$(ARM_OBJS)
-	OUT_DIR=$(LINUX_ARM_OUT)
+	OUT_DIR=$(ARM_APP_OUT)
 else ifeq ($(PLATFORM),host)
 	CC=$(X86_CC)
 	OBJS=$(X86_OBJS)
-	OUT_DIR=$(LINUX_X86_OUT)
+	OUT_DIR=$(X86_APP_OUT)
 else
-	CC=gcc
+	CC=$(X86_CC)
 	OBJS=$(X86_OBJS)
-	OUT_DIR=$(LINUX_X86_OUT)
+	OUT_DIR=$(X86_APP_OUT)
 endif
 
 # On BBB the size binary isn't called arm-linux-gnueabihf-size so set it
 # to size
-ifeq ($(findstring arm,$(shell uname -a)),)
+ifneq (,$(findstring arm,$(shell uname -a)))
 	SIZE=size
+	AR=ar
+	OBJDUMP=objdump
 else
 	SIZE=$(subst gcc,size,$(CC))
+	AR=$(subst gcc,ar,$(CC))
+	OBJDUMP=$(subst gcc,objdump,$(CC))
 endif
 
 # If release isn't specfied build with debug symbols
 ifneq ($(TYPE),release)
-	CFLAGS+=-g3
+	CFLAGS+=-g3 -O0
 endif
 
 # Set a compile time flag if it is prvovided or set to current project
@@ -137,27 +142,32 @@ BUILD_TARGET=@echo "Building Target $@"
 BUILD_WITH=@echo "Building with $<"
 
 # Set PHONY for all targets that don't have outputs for tracking
-.PHONY: build compile-all debug allasm alli clean
+.PHONY: build compile-all debug allasm alli allobjdump clean
 
 # Build will build project1
 build: $(OBJS)
-	$(MAKE) project1
+	$(MAKE) $(PROJECT_OUT_FILE)
+
+# Build will build project1
+build-lib: $(OBJS)
+	$(MAKE) $(LIB_OUT_FILE)
 
 # Debug target is just used for debugging the make file
 debug:
 	@echo "Debug output"
-	@echo $(25Z_PROP_OUT)
-	@echo $(25Z_PROP_SRCS)
-	@echo $(OUT_FILE)
-	@echo $(SIZE)
-	@echo $(OBJS)
+	@echo $(OUT_DIR)
 
-# Compiles the project into project1 binary which can be executed with ./project1
-project1: CFLAGS+=$(MAP_FLAG)
-project1: $(OBJS)
-	@echo "Building project1"
+# Compiles the project into project1 binary which can be executed with ./project1.out
+$(PROJECT_OUT_FILE): CFLAGS+=$(MAP_FLAG)
+$(PROJECT_OUT_FILE): $(OBJS)
+	$(BUILD_TARGET)
 	$(CC) $(CFLAGS) -o "$@" $(OBJS)
 	$(SIZE) $@
+
+# Build the library file for static linking
+$(LIB_OUT_FILE): $(OBJS)
+	$(BUILD_TARGET)
+	$(AR) cr $@ $(OBJS)
 
 # Builds all objects files but doesn't link
 compile-all: $(OBJS)
@@ -190,25 +200,41 @@ alli :
 	$(BUILD_WITH)
 	$(CC) $(CFLAGS) -c -o "$@" "$<"
 
-# Builds .o files from .c files
-$(X86_APP_OUT)/%.o $(ARM_APP_OUT)/%.o $(25Z_APP_OUT)/%.o: CFLAGS+=-MD -MP
-$(X86_APP_OUT)/%.o $(ARM_APP_OUT)/%.o $(25Z_APP_OUT)/%.o: $(APP_SRC_DIR)/%.c
+# Covert all object file to objdump files
+allobjdump: $(OBJS) $(PROJECT_OUT_FILE)
+	@echo "Build all objdump files"
+	$(MAKE) $(patsubst %.o,%.objdump,$(OBJS))
+	$(MAKE) $(PROJECT_OUT_FILE).objdump
+
+# Do an objdump on a file
+%.objdump: %.o
 	$(BUILD_TARGET)
 	$(BUILD_WITH)
-	$(shell $(MK_DIR) $(ARM_APP_OUT))
-	$(shell $(MK_DIR) $(X86_APP_OUT))
-	$(shell $(MK_DIR) $(25Z_APP_OUT))
+	$(OBJDUMP) -D "$<" > "$@"
+
+# Do an objdump on the project output file
+%.out.objdump: %.out
+	$(BUILD_TARGET)
+	$(BUILD_WITH)
+	$(OBJDUMP) -D "$<" > "$@"
+
+# Builds .o files from .c files
+$(OUT_DIR)/%.o: CFLAGS+=-MD -MP
+$(OUT_DIR)/%.o: $(APP_SRC_DIR)/%.c
+	$(BUILD_TARGET)
+	$(BUILD_WITH)
+	$(shell $(MK_DIR) $(OUT_DIR))
 	$(CC) $(CFLAGS) -c -o "$@" "$<"
 
 # List of items that need to be cleaned
-CLEAN+=$(25Z_OUT) \
-			 $(X86_OUT) \
-			 $(ARM_OUT) \
+CLEAN+=$(OUT) \
 			 $(MAPS) \
+			 $(PROJECT_FILE)* \
+			 $(LIB_OUT_FILE) \
 			 *.i \
 			 *.asm \
 			 *.o \
-			 project1*
+			 *.objdump
 
 # Clean should clean up all .elf, .map, .o, .d, and .S files created during
 # build
@@ -220,32 +246,30 @@ clean:
 # their corresponding platform directory.  Putting a project* binary in the top
 # level directory may cause confusion when loading binaries on platforms.
 
+# Map and output
+OUT_FILE=main
+MAP_FILE=main.map
+
 # Build the arm binary and places it in out/linux-arm/main
-$(ARM_OUT): CC=$(ARM_CC)
 $(ARM_OUT): CFLAGS+=$(MAP_FLAG)
 $(ARM_OUT): $(ARM_OBJS)
 	$(BUILD_TARGET)
-	$(shell $(MK_DIR) $(ARM_APP_OUT))
 	$(shell $(MK_DIR) $(ARM_OUT_DIR))
 	$(CC) $(CFLAGS) -o "$@" $(ARM_OBJS)
 	$(SIZE) $@
 
 # Build the x86 binary and places it in out/linux-x86/main
-$(X86_OUT): CC=$(X86_CC)
 $(X86_OUT): CFLAGS+=$(MAP_FLAG)
 $(X86_OUT): $(X86_OBJS)
 	$(BUILD_TARGET)
-	$(shell $(MK_DIR) $(X86_APP_OUT))
 	$(shell $(MK_DIR) $(X86_OUT_DIR))
-	$(CC) $(CFLAGS)  -o "$@" $(X86_OBJS)
+	$(CC) $(CFLAGS) -o "$@" $(X86_OBJS)
 	$(SIZE) $@
 
 # Build the 25z binary and places it in out/kl25z/main
-$(25Z_OUT): CC=$(25Z_CC)
-$(25Z_OUT): CFLAGS+=$(KL25Z_CFLAGS) $(MAP_FLAG) -I$(KL25Z_PROP_INC_DIR)
+$(25Z_OUT): CFLAGS+=$(MAP_FLAG)
 $(25Z_OUT): $(25Z_OBJS) $(KL25Z_PROP_OBJS)
 	$(BUILD_TARGET)
-	$(shell $(MK_DIR) $(25Z_APP_OUT))
 	$(shell $(MK_DIR) $(25Z_OUT_DIR))
 	$(CC) $(CFLAGS) -o "$@" $(25Z_OBJS) $(KL25Z_PROP_OBJS)
 	$(SIZE) $@
