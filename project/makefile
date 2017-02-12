@@ -71,7 +71,6 @@ MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
 # Call this when building for kl25z
 -include prop/kl25z/subdir.mk
 
-
 # Set CFLAGS used by every build type
 CFLAGS=-I$(APP_INC_DIR) \
 			 -Wall \
@@ -120,6 +119,12 @@ else
 	SIZE=$(subst gcc,size,$(CC))
 endif
 
+ifeq ($(findstring arm,$(shell uname -a)),)
+	AR=ar
+else
+	ar=$(subst gcc,ar,$(CC))
+endif
+
 # If release isn't specfied build with debug symbols
 ifneq ($(TYPE),release)
 	CFLAGS+=-g3
@@ -143,6 +148,10 @@ BUILD_WITH=@echo "Building with $<"
 build: $(OBJS)
 	$(MAKE) project1
 
+# Build will build project1
+build-lib: $(OBJS)
+	$(MAKE) libproject1.a
+
 # Debug target is just used for debugging the make file
 debug:
 	@echo "Debug output"
@@ -158,6 +167,9 @@ project1: $(OBJS)
 	@echo "Building project1"
 	$(CC) $(CFLAGS) -o "$@" $(OBJS)
 	$(SIZE) $@
+
+libproject1.a: $(OBJS)
+	$(AR) cr $@ $(OBJS)
 
 # Builds all objects files but doesn't link
 compile-all: $(OBJS)
@@ -208,7 +220,8 @@ CLEAN+=$(25Z_OUT) \
 			 *.i \
 			 *.asm \
 			 *.o \
-			 project1*
+			 project1* \
+			 libproject1.a
 
 # Clean should clean up all .elf, .map, .o, .d, and .S files created during
 # build
