@@ -105,7 +105,7 @@ void memory_unit()
   PRINTF("%s\n", src);
 
   // Validate memory set to 0
-  if ((*src) != 0)
+  if ((res = strncmp((char *)src, "\0\0\0\0\0\0\0\0\0\0\0", STR_LEN)))
   {
     PRINTF("my_memzero(src, STR_LEN) didn't zero memory");
   }
@@ -137,6 +137,23 @@ void memory_unit()
 
   // Validate reverse
   if ((res = strncmp((char *)src, "0987654321", STR_LEN)))
+  {
+    PRINTF("my_reverse(src, STR_LEN) doesn't match expected: strncmp error %d\n", res);
+  }
+
+  // Place a single character string into src but copy the null terminator
+  // to be able to print using PRINTF
+  my_memmove((uint8_t *)"a", src, 2);
+
+  // Test a single character reverse
+  if ((res = my_reverse(src, 1)) != SUCCESS)
+  {
+    PRINTF("my_reverse(src, STR_LEN) failed with res %d", res);
+  }
+  PRINTF("%s\n", src);
+
+  // Validate reverse
+  if ((res = strncmp((char *)src, "a", STR_LEN)))
   {
     PRINTF("my_reverse(src, STR_LEN) doesn't match expected: strncmp error %d\n", res);
   }
