@@ -1,0 +1,23 @@
+# Binary files
+*.o
+*.a
+
+# Generic files
+*.out
+*.log
+*.swp
+*.swo
+*.d
+*.i
+*.asm
+*.map
+*.objdump
+.project
+.cproject
+
+# Directories
+**/logs
+**/out
+.metadata/
+.settings/
+homework/
