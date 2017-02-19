@@ -7,8 +7,8 @@
 #include "project1.h"
 #include "project_defs.h"
 
-#define ARRAY_SIZE 32
-#define MAX_ASCII_INT_CHARS 4
+#define ARRAY_SIZE (32)
+#define MAX_ASCII_INT_CHARS (4)
 
 uint8_t set_1[ARRAY_SIZE];
 uint8_t set_2[ARRAY_SIZE];

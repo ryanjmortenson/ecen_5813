@@ -8,7 +8,7 @@
 #include "project1.h"
 #include "project_defs.h"
 
-#define STR_LEN 10
+#define STR_LEN (10)
 
 void memory_unit()
 {
