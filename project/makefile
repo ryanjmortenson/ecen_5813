@@ -108,7 +108,7 @@ else ifeq ($(PLATFORM),host)
 	OBJS=$(X86_OBJS)
 	OUT_DIR=$(X86_APP_OUT)
 else
-	CC=$(X86_CC)
+	CC=gcc
 	OBJS=$(X86_OBJS)
 	OUT_DIR=$(X86_APP_OUT)
 endif
