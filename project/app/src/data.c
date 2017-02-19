@@ -6,11 +6,13 @@
 // REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #include <stdio.h>
 
-#define ASCII_NUM_OFFSET 48
-#define ASCII_NUM_END 57
-#define ASCII_ALPHA_OFFSET 55
-#define MINUS_SIGN 45
-#define BASE_10 10
+#define ASCII_NUM_OFFSET (48)
+#define ASCII_NUM_END (57)
+#define ASCII_ALPHA_OFFSET (55)
+#define MINUS_SIGN (45)
+#define BASE_10 (10)
+#define BASE_MIN (2)
+#define BASE_MAX (36)
 
 /*
  * Function definitions see data.h for documentation
@@ -29,7 +31,7 @@ int8_t * my_itoa(int8_t * str, int32_t data, int32_t base)
   }
 
   // Base is incorrect return pointer to str
-  if(base > 36 || base < 2)
+  if(base > BASE_MAX || base < BASE_MIN)
   {
     return start;
   }
