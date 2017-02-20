@@ -2,6 +2,7 @@
 #define __PROJECT_DEFS_H__
 
 #include <stddef.h>
+#include <stdio.h>
 
 // Return values used throughout the project
 #define INVALID_PARAM (2)
