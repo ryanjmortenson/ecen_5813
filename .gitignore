@@ -1,6 +1,7 @@
 # Binary files
 *.o
 *.a
+test
 
 # Generic files
 *.out
@@ -14,6 +15,7 @@
 *.objdump
 .project
 .cproject
+cmocka-out
 
 # Directories
 **/logs

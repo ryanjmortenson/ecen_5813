@@ -33,6 +33,9 @@
 # Some commands used for building
 RM:=rm -rf
 MK_DIR:=mkdir -p
+CD:=cd
+MAKE_CMD=make
+CMAKE_CMD=cmake
 
 # Directory names used for building targets
 OUT=out
@@ -50,6 +53,13 @@ export $(MK_DIR)
 PROJECT_FILE=project1
 PROJECT_OUT_FILE=$(PROJECT_FILE).out
 LIB_OUT_FILE=lib$(PROJECT_FILE).a
+
+# CMOCKA unit test variables
+CMOCKA_BUILD_DIR=cmocka-out
+CMOCKA_DIR=cmocka
+CMOCKA_LIB_OUT_DIR=$(CMOCKA_BUILD_DIR)/lib
+CMOCKA_INC_OUT_DIR=$(CMOCKA_BUILD_DIR)/include
+CMOCKA_LIB=$(CMOCKA_LIB_OUT_DIR)/libcmocka.a
 
 # Target out directories when building
 25Z_OUT_DIR=$(OUT)/$(25Z)
@@ -131,10 +141,14 @@ ifneq ($(TYPE),release)
 endif
 
 # Set a compile time flag if it is prvovided or set to current project
+ifneq ($(MAKECMDGOALS),test)
 ifneq ($(FLAG),)
 	CFLAGS+=-D $(FLAG)
 else
 	CFLAGS+=-D PROJECT1
+endif
+else
+	CFLAGS+=-D UNITTEST
 endif
 
 # Setup some build strings
@@ -147,6 +161,22 @@ BUILD_WITH=@echo "Building with $<"
 # Build will build project1
 build: $(OBJS)
 	$(MAKE) $(PROJECT_OUT_FILE)
+
+test: CFLAGS+=-I$(CMOCKA_INC_OUT_DIR)
+test: $(CMOCKA_LIB) $(OBJS) $(TEST_OBJS)
+	@echo "Building Unit Tests"
+	$(CC) $(CFLAGS) -o "$@" $(OBJS) $(TEST_OBJS) $(CMOCKA_LIB) -lm
+
+$(CMOCKA_LIB):
+	@echo "Installing and making CMOCKA static library"
+	$(MK_DIR) $(CMOCKA_BUILD_DIR)
+	$(CD) $(CMOCKA_BUILD_DIR) && \
+	$(CMAKE_CMD) \
+	-DCMAKE_INSTALL_PREFIX=. \
+	-DCMAKE_BUILD_TYPE=debug \
+	-DCC=$(CC) -DWITH_STATIC_LIB=ON \
+	../cmocka/ && \
+	$(MAKE_CMD) install
 
 # Build will build project1
 build-lib: $(OBJS)
@@ -230,11 +260,13 @@ $(OUT_DIR)/%.o: $(APP_SRC_DIR)/%.c
 CLEAN+=$(OUT) \
 			 $(MAPS) \
 			 $(PROJECT_FILE)* \
-			 $(LIB_OUT_FILE) \
 			 *.i \
 			 *.asm \
 			 *.o \
-			 *.objdump
+			 *.objdump \
+			 test \
+			 $(LIB_OUT_FILE) \
+			 $(CMOCKA_BUILD_DIR) \
 
 # Clean should clean up all .elf, .map, .o, .d, and .S files created during
 # build

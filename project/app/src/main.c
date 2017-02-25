@@ -5,9 +5,15 @@
 #include "memory.h"
 #include "data.h"
 #include "project1.h"
-#include "unit_tests.h"
 #include "project_defs.h"
 #include "circbuf.h"
+
+#ifdef UNITTEST
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
+#include "unit_tests.h"
+#endif
 
 int main()
 {
@@ -20,10 +26,29 @@ int main()
   test_memory();
 #endif
 
-#ifdef UNIT
+#ifdef UNITTEST
   // Execute unit tests for memory.c
-  memory_unit();
-  data_unit();
+  const struct CMUnitTest tests[] = {
+    cmocka_unit_test(test_my_memmove),
+    cmocka_unit_test(test_my_memmove_dst_starts_in_src),
+    cmocka_unit_test(test_my_memmove_dst_ends_in_src),
+    cmocka_unit_test(test_my_memmove_null_ptrs),
+    cmocka_unit_test(test_my_memset),
+    cmocka_unit_test(test_my_memset_null_ptr),
+    cmocka_unit_test(test_my_memzero),
+    cmocka_unit_test(test_my_memzero_null_ptr),
+    cmocka_unit_test(test_my_reverse_odd),
+    cmocka_unit_test(test_my_reverse_even),
+    cmocka_unit_test(test_my_reverse_single),
+    cmocka_unit_test(test_my_reverse_max),
+    cmocka_unit_test(test_my_reverse_null_ptr),
+    cmocka_unit_test(test_big_to_little32),
+    cmocka_unit_test(test_big_to_little32_null_ptr),
+    cmocka_unit_test(test_little_to_big32),
+    cmocka_unit_test(test_little_to_big32_null_ptr)
+  };
+
+  return cmocka_run_group_tests(tests, NULL, NULL);
 #endif
 
 #ifdef CIRCBUF
