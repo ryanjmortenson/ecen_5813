@@ -10,15 +10,22 @@ ARM_APP_OUT=$(APP_OUT)/$(ARM)
 25Z_APP_OUT=$(APP_OUT)/$(25Z)
 
 # Sources for the application
-APP_SRC+= \
-$(APP_SRC_DIR)/main.c \
+NON_MAIN_SRC+= \
 $(APP_SRC_DIR)/memory.c \
 $(APP_SRC_DIR)/data.c \
 $(APP_SRC_DIR)/circbuf.c \
 $(APP_SRC_DIR)/project1.c
 
+APP_SRC+= \
+$(NON_MAIN_SRC) \
+$(APP_SRC_DIR)/main.c
+
 TEST_SRC+= \
+$(NON_MAIN_SRC) \
 $(APP_SRC_DIR)/unit_tests.c \
+$(APP_SRC_DIR)/unit_data.c \
+$(APP_SRC_DIR)/unit_memory.c \
+$(APP_SRC_DIR)/unit_circbuf.c
 
 # Make a src list without any directories to feed into the allasm/alli targets
 SRC_LIST = $(subst $(APP_SRC_DIR)/,,$(APP_SRC))

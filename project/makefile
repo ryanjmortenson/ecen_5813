@@ -163,9 +163,9 @@ build: $(OBJS)
 	$(MAKE) $(PROJECT_OUT_FILE)
 
 test: CFLAGS+=-I$(CMOCKA_INC_OUT_DIR)
-test: $(CMOCKA_LIB) $(OBJS) $(TEST_OBJS)
+test: $(CMOCKA_LIB) $(TEST_OBJS)
 	@echo "Building Unit Tests"
-	$(CC) $(CFLAGS) -o "$@" $(OBJS) $(TEST_OBJS) $(CMOCKA_LIB) -lm
+	$(CC) $(CFLAGS) -o "$@" $(TEST_OBJS) $(CMOCKA_LIB) -lm
 
 $(CMOCKA_LIB):
 	@echo "Installing and making CMOCKA static library"
@@ -185,6 +185,8 @@ build-lib: $(OBJS)
 # Debug target is just used for debugging the make file
 debug:
 	@echo "Debug output"
+	@echo $(KL25Z_PROP_OBJS)
+	@echo $(KL25Z_PROP_SRCS)
 	@echo $(OUT_DIR)
 
 # Compiles the project into project1 binary which can be executed with ./project1.out
@@ -266,12 +268,16 @@ CLEAN+=$(OUT) \
 			 *.objdump \
 			 test \
 			 $(LIB_OUT_FILE) \
-			 $(CMOCKA_BUILD_DIR) \
+			 $(CMOCKA_LIB)
 
 # Clean should clean up all .elf, .map, .o, .d, and .S files created during
 # build
 clean:
 	$(RM) $(CLEAN)
+
+super-clean:
+	$(RM) $(CLEAN) $(CMOCKA_BUILD_DIR)
+
 
 # The following targets are specifically made so all 3 targets can be built and
 # placed in seperate directories.  I prefer for the output binaries to be in

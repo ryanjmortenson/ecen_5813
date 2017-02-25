@@ -1,114 +1,24 @@
 #ifndef __UNIT_TESTS_H__
 #define __UNIT_TESTS_H__
 
+#
 
 /*
- * \brief test_my_memmove: test my_memmove function in normal operation
+ * \brief test_memory: runs all unit tests for memory
  *
  */
-void test_my_memmove(void **state);
+uint32_t unit_test_memory();
 
 /*
- * \brief test_my_memmove_dst_starts_in_src: test my_memmove function where
- *                                           destination starts in source
+ * \brief test_data: runs all unit tests for data
  *
  */
-void test_my_memmove_dst_starts_in_src(void **state);
+uint32_t unit_test_data();
 
 /*
- * \brief test_my_memmove_dst_ends_in_src: test my_memmove function where
- *                                         destination ends in source
+ * \brief test_circbuf: runs all unit tests for circbuf
  *
  */
-void test_my_memmove_dst_ends_in_src(void **state);
-
-/*
- * \brief test_my_memmove_null_ptrs: test my_memmove function trying to catch
- *                                   null pointers
- *
- */
-void test_my_memmove_null_ptrs(void **state);
-
-/*
- * \brief test_my_memset: test my_memset under normal operations
- *
- */
-void test_my_memset(void **state);
-
-/*
- * \brief test_my_memset_null_ptr: test my_memset trying to catch null
- *                                   pointers
- *
- */
-void test_my_memset_null_ptr(void **state);
-
-/*
- * \brief test_my_memzero: test my_memzero under normal operations
- *
- */
-void test_my_memzero(void **state);
-
-/*
- * \brief test_my_memzero_null_ptr: test my_memzero trying to catch null
- *                                  pointers
- *
- */
-void test_my_memzero_null_ptr(void **state);
-
-/*
- * \brief test_my_reverse_odd: test my_reverse with odd length string
- *
- */
-void test_my_reverse_odd(void **state);
-
-/*
- * \brief test_my_reverse_even: test my_reverse with even length string
- *
- */
-void test_my_reverse_even(void **state);
-
-/*
- * \brief test_my_reverse_single: test my_reverse with single character
- *
- */
-void test_my_reverse_single(void **state);
-
-/*
- * \brief test_my_reverse_null_ptr: test my_reverse trying to catch null pointer
- *
- */
-void test_my_reverse_null_ptr(void **state);
-
-/*
- * \brief test_my_reverse_max: test my_reverse with 255 character string
- *
- */
-void test_my_reverse_max(void **state);
-
-/*
- * \brief test_big_to_little32: test big_to_little32 under normal operations
- *
- */
-void test_big_to_little32(void **state);
-
-/*
- * \brief test_big_to_little32_null_ptr: test big_to_little32 trying to catch
- *                                       null pointer
- *
- */
-void test_big_to_little32_null_ptr(void **state);
-
-/*
- * \brief test_little_to_big32: test little_to_big32 under normal operations
- *
- */
-void test_little_to_big32(void **state);
-
-/*
- * \brief test_little_to_big32_null_ptr: test little_to_big32 trying to catch
- *                                       null pointer
- *
- */
-void test_little_to_big32_null_ptr(void **state);
+uint32_t unit_test_circbuf();
 
 #endif

@@ -23,7 +23,7 @@ typedef enum cb_enum
 typedef struct circbuf circbuf_t;
 
 /*
- * \brief circ_buf_init: Initialize circular buffer with a length this will
+ * \brief circbuf_init: Initialize circular buffer with a length this will
  *                       call malloc to put the buffer and the structure
  *                       on the heap
  *
@@ -32,19 +32,19 @@ typedef struct circbuf circbuf_t;
  * \return: success or error
  *
  */
-cb_enum_t circ_buf_init(circbuf_t ** buf, uint8_t length);
+cb_enum_t circbuf_init(circbuf_t ** buf, uint8_t length);
 
 /*
- * \brief circ_buf_destroy: calls free on the buffer and the structure
+ * \brief circbuf_destroy: calls free on the buffer and the structure
  *
  * \param buf: pointer to a pointer for the circular buffer structure
  * \return: success or error
  *
  */
-cb_enum_t circ_buf_destroy(circbuf_t * buf);
+cb_enum_t circbuf_destroy(circbuf_t * buf);
 
 /*
- * \brief circ_buf_add_item: adds and item to the head pointer and increments
+ * \brief circbuf_add_item: adds and item to the head pointer and increments
  *                           head
  *
  * \param buf: pointer to a pointer for the circular buffer structure
@@ -52,38 +52,38 @@ cb_enum_t circ_buf_destroy(circbuf_t * buf);
  * \return: success or error
  *
  */
-cb_enum_t circ_buf_add_item(circbuf_t * buf, uint8_t payload);
+cb_enum_t circbuf_add_item(circbuf_t * buf, uint8_t payload);
 
 /*
- * \brief circ_buf_remove_item: removes and item from tail and in payload
+ * \brief circbuf_remove_item: removes and item from tail and in payload
  *
  * \param buf: pointer to a pointer for the circular buffer structure
  * \param payload: memory location where removed item will be placed
  * \return: success or error
  *
  */
-cb_enum_t circ_buf_remove_item(circbuf_t * buf, uint8_t * payload);
+cb_enum_t circbuf_remove_item(circbuf_t * buf, uint8_t * payload);
 
 /*
- * \brief circ_buf_full: checks if buffer is full
+ * \brief circbuf_full: checks if buffer is full
  *
  * \param buf: pointer to a pointer for the circular buffer structure
  * \return: success if full or error if not full
  *
  */
-cb_enum_t circ_buf_full(circbuf_t * buf);
+cb_enum_t circbuf_full(circbuf_t * buf);
 
 /*
- * \brief circ_buf_empty: checks if buffer is empty
+ * \brief circbuf_empty: checks if buffer is empty
  *
  * \param buf: pointer to a pointer for the circular buffer structure
  * \return: success if empty or error if not empty
  *
  */
-cb_enum_t circ_buf_empty(circbuf_t * buf);
+cb_enum_t circbuf_empty(circbuf_t * buf);
 
 /*
- * \brief circ_buf_peak: gets the index item from tail
+ * \brief circbuf_peak: gets the index item from tail
  *
  * \param buf: pointer to a pointer for the circular buffer structure
  * \param index: index from tail to get payload from
@@ -91,6 +91,6 @@ cb_enum_t circ_buf_empty(circbuf_t * buf);
  * \return: success if empty or error if not empty
  *
  */
-cb_enum_t circ_buf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload);
+cb_enum_t circbuf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload);
 
 #endif // __CIRCBUF_H__

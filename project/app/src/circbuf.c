@@ -13,8 +13,11 @@ struct circbuf
   uint8_t count;
 };
 
-cb_enum_t circ_buf_init(circbuf_t ** buf, uint8_t length)
+cb_enum_t circbuf_init(circbuf_t ** buf, uint8_t length)
 {
+  // Check for null pointers
+  CB_CHECK_NULL(buf);
+
   // Make sure size is valid
   if (length <= 0)
   {
@@ -44,8 +47,13 @@ cb_enum_t circ_buf_init(circbuf_t ** buf, uint8_t length)
 } // CircBufInitialize()
 
 
-cb_enum_t circ_buf_destroy(circbuf_t * buf)
+cb_enum_t circbuf_destroy(circbuf_t * buf)
 {
+
+  // Check for null pointers
+  CB_CHECK_NULL(buf);
+  CB_CHECK_NULL(buf->buffer);
+
   // Free the buffer
   free(buf->buffer);
 
@@ -56,10 +64,11 @@ cb_enum_t circ_buf_destroy(circbuf_t * buf)
   return CB_ENUM_NO_ERROR;
 } // CircBufDestroy()
 
-cb_enum_t circ_buf_add_item(circbuf_t * buf, uint8_t payload)
+cb_enum_t circbuf_add_item(circbuf_t * buf, uint8_t payload)
 {
   // Check for null pointer
   CB_CHECK_NULL(buf);
+  CB_CHECK_NULL(buf->buffer);
 
   // Make sure there is room in the buffer
   if (buf->count == buf->length)
@@ -88,10 +97,11 @@ cb_enum_t circ_buf_add_item(circbuf_t * buf, uint8_t payload)
   return CB_ENUM_NO_ERROR;
 } // CircBufAddItem()
 
-cb_enum_t circ_buf_remove_item(circbuf_t * buf, uint8_t * payload)
+cb_enum_t circbuf_remove_item(circbuf_t * buf, uint8_t * payload)
 {
   // Check for null pointer
   CB_CHECK_NULL(buf);
+  CB_CHECK_NULL(buf->buffer);
 
   // Make sure there is an item to read
   if (buf->count == 0)
@@ -102,31 +112,32 @@ cb_enum_t circ_buf_remove_item(circbuf_t * buf, uint8_t * payload)
   // Put tail in payload
   *payload = *(buf->tail);
 
+  // Decrement count
+  buf->count--;
+
   // Wrap buffer if needed
   if (buf->tail - buf->buffer == buf->length - 1)
   {
     buf->tail = buf->buffer;
   }
   // No wrap is necessary increment head
-  else
+  else if (buf->count != 0)
   {
     buf->tail++;
   }
-
-  // Decrement count
-  buf->count--;
 
   // Return success
   return CB_ENUM_NO_ERROR;
 } // CircBufRemoveItem()
 
-cb_enum_t circ_buf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload)
+cb_enum_t circbuf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload)
 {
   // Make a variable for
   int32_t diff = 0;
 
   // Check for null pointer
   CB_CHECK_NULL(buf);
+  CB_CHECK_NULL(buf->buffer);
 
   // Make sure there are enough items to have the index item
   if (index > buf->length - 1)
@@ -148,7 +159,7 @@ cb_enum_t circ_buf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload)
   return CB_ENUM_NO_ERROR;
 } // CircBufPeak()
 
-cb_enum_t circ_buf_full(circbuf_t * buf)
+cb_enum_t circbuf_full(circbuf_t * buf)
 {
   // Check null pointer
   CB_CHECK_NULL(buf);
@@ -163,7 +174,7 @@ cb_enum_t circ_buf_full(circbuf_t * buf)
   return CB_ENUM_FAILURE;
 } // CircBufFull()
 
-cb_enum_t circ_buf_empty(circbuf_t * buf)
+cb_enum_t circbuf_empty(circbuf_t * buf)
 {
   // Check null pointer
   CB_CHECK_NULL(buf);
