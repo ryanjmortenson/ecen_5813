@@ -156,7 +156,7 @@ BUILD_TARGET=@echo "Building Target $@"
 BUILD_WITH=@echo "Building with $<"
 
 # Set PHONY for all targets that don't have outputs for tracking
-.PHONY: build compile-all debug allasm alli allobjdump clean
+.PHONY: build compile-all debug allasm alli allobjdump clean super-clean
 
 # Build will build project1
 build: $(OBJS)

@@ -60,6 +60,7 @@ uint32_t unit_test_circbuf()
   return cmocka_run_group_tests(tests, NULL, NULL);
 }
 
+// Main for unit tests
 int main()
 {
   unit_test_memory();
@@ -68,4 +69,3 @@ int main()
 
   return 0;
 }
-

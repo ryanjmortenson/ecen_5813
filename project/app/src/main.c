@@ -1,13 +1,4 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stddef.h>
 #include "project1.h"
-#include "project_defs.h"
-#include "circbuf.h"
-
-#ifdef UNITTEST
-#include "unit_tests.h"
-#endif
 
 int main()
 {

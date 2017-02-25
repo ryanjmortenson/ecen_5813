@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "circbuf.h"
-#include "project_defs.h"
 
 // Circular buffer structure
 struct circbuf

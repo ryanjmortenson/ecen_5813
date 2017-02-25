@@ -3,9 +3,6 @@
 #include "memory.h"
 #include "project_defs.h"
 
-// REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#include <stdio.h>
-
 #define ASCII_NUM_OFFSET (48)
 #define ASCII_NUM_END (57)
 #define ASCII_ALPHA_OFFSET (55)
