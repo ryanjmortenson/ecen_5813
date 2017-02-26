@@ -11,17 +11,21 @@
 # the host machines compiler.
 #
 # * **make** - Will build the current project for the host.
-# * **make <c_file>.asm** - Output an assembly file for the source file
+# * **make *<c_file*.asm** - Output an assembly file for the source file
 #                           specified.
 # * **make allasm** - Output all assembly files for the project.
-# * **make <c_file>.i** - Output a preprocessor file for the source file
+# * **make *c_file*.i** - Output a preprocessor file for the source file
 # 												specified.
 # * **make alli** - Output all preprocessor files for the project.
-# * **make <c_file>.o** - Output an object file for the source file
+# * **make *c_file*.o** - Output an object file for the source file
 # 												specified.
 # * **make compile-all** - Output all object files project.
-# * **make <c_file>.map** - Output a map file for the source file specified.
+# * **make *c_file*.map** - Output a map file for the source file specified.
+# * **make test** - Create the unit tests for host.
+# * **make build-lib** - Create a static library for the project.
 # * **make clean** - Clean all files for the project
+# * **make super-clean** - Clean all files for the project and the cmocka out
+# 												 directory
 #
 # There are three types for the PLATFROM option:
 #
@@ -143,11 +147,11 @@ endif
 
 # Set a compile time flag if it is prvovided or set to current project
 ifneq ($(MAKECMDGOALS),test)
-ifneq ($(FLAG),)
-	CFLAGS+=-D $(FLAG)
-else
-	CFLAGS+=-D PROJECT2
-endif
+	ifneq ($(FLAG),)
+		CFLAGS+=-D $(FLAG)
+	else
+		CFLAGS+=-D PROJECT2
+	endif
 else
 	CFLAGS+=-D UNITTEST
 endif
