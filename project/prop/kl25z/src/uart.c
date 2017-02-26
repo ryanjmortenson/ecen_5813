@@ -6,7 +6,7 @@
 #define CORE_CLOCK (20970000L)
 #define MCGFLLCLK (1)
 
-// User the lowest over sample for more speed
+// Use a sample rate of 4 because higher sample rates at 115200 seemed off
 #define OVER_SAMPLE (0x03)
 
 // Used to put the transmit/receive into GPIO
@@ -45,7 +45,7 @@ int8_t uart_configure(uint32_t baud)
 
   // Enable the transmitter and receiver
   UART0_C2 = UARTLP_C2_RE_MASK | UARTLP_C2_TE_MASK;
-  return 0;
+  return SUCCESS;
 }
 
 int8_t uart_send_byte(uint8_t byte)
@@ -53,9 +53,8 @@ int8_t uart_send_byte(uint8_t byte)
   // Wait for the ready flag to transmit
   while(!(UART0_S1_REG(UART0_BASE_PTR) & UART0_S1_TDRE_MASK));
   UART_D_REG(UART0_BASE_PTR) = byte;
-  return 0;
+  return SUCCESS;
 }
-
 int8_t uart_send_byte_n(uint8_t * bytes, uint8_t length)
 {
   // Loop over length sending each byte
@@ -63,7 +62,8 @@ int8_t uart_send_byte_n(uint8_t * bytes, uint8_t length)
   {
     uart_send_byte(*(bytes + i));
   }
-  return 0; }
+  return SUCCESS;
+}
 
 uint8_t uart_receive_byte()
 {
