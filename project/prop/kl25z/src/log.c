@@ -11,6 +11,11 @@
  * Function definitions see log.h for documentation
  */
 
+void USB0_IRQHandler()
+{
+
+} // USB0_IRQHandler
+
 int8_t log_data(uint8_t * bytes, uint8_t length)
 {
   // Createa a buffer to hold the integer
@@ -73,3 +78,8 @@ void log_flush()
 {
   // Currently just a stub
 } // log_flush()
+
+uint8_t log_item(log_item_t * item)
+{
+  return SUCCESS;
+} // log_item()
