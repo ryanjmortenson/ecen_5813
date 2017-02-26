@@ -7,10 +7,8 @@
 #include "project_defs.h"
 #include "unit_circbuf.h"
 
-// TODO: Remove
-#include <stdio.h>
-
-#define BUF_SIZE (10)
+#define BUF_SIZE (100)
+#define HALF_BUF_SIZE (BUF_SIZE >> 1)
 
 // Result used in most tests
 uint32_t circbuf_res = 0;
@@ -93,13 +91,12 @@ void test_circbuf_wrap_add_remove(void **state)
   assert_int_equal(circbuf_res, CB_ENUM_NO_ERROR);
 
   // Loop over buf size adding values
-  for (uint32_t i = 0; i < 6; i++)
-  {
+  for (uint32_t i = 0; i < HALF_BUF_SIZE; i++) {
     assert_int_equal(circbuf_add_item(buf, i), CB_ENUM_NO_ERROR);
   }
 
   // Loop over buf size removing values and checking contents
-  for (uint32_t i = 0; i < 6; i++)
+  for (uint32_t i = 0; i < HALF_BUF_SIZE; i++)
   {
     assert_int_equal(circbuf_remove_item(buf, &value), CB_ENUM_NO_ERROR);
     assert_int_equal(value, i);
