@@ -3,44 +3,40 @@
 
 #include <stdint.h>
 
-// TODO: FIX COMMENTS!!!!
+#define BAUD_RATE (115200)
 
 /*
- * \brief my_itoa: used to convert an integer to a string
+ * \brief uart_configure: configures uart for baud rate
  *
- * \param str pointer to array to place string into
- * \param data data to be converted to string
- * \param base base of integer when converted to string (16, 10, 8, 2)
- * \return pointer to input param str
+ * \param baud baud rate for uart communications
+ * \return success/fail
  *
  */
 int8_t uart_configure(uint32_t baud);
 
 /*
- * \brief my_atoi: used to convert an ASCII character sequence into an integer
+ * \brief uart_send_byte: sends one byte through uart communication
  *
- * \param str pointer to string for conversion
- * \return fail result or pointer to converted string
+ * \param byte the byte to send
+ * \return success/fail
  *
  */
 int8_t uart_send_byte(uint8_t byte);
 
 /*
- * \brief big_to_little32: used to convert an array from big endian to little endian
+ * \brief uart_send_byte_n: send n bytes through uart communication
  *
- * \param data pointer to data for conversion from big endian to little endian
- * \param length length of data to convert
- * \return converted integer or failure
+ * \param bytes array of bytes to send through uart communication
+ * \param length length of bytes to send
+ * \return success/fail
  *
  */
 int8_t uart_send_byte_n(uint8_t * byte, uint32_t length);
 
 /*
- * \brief little_to_big32: used to convert an array from little endian to big endian
+ * \brief uart_receive_byte: blocking receive for one byte of data
  *
- * \param data pointer to data for conversion from little endian to big endian
- * \param length length of data to convert
- * \return pass/fail
+ * \return byte received
  *
  */
 uint8_t uart_receive_byte();
