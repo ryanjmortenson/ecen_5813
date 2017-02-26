@@ -20,6 +20,11 @@ APP_SRC+= \
 $(NON_MAIN_SRC) \
 $(APP_SRC_DIR)/main.c
 
+ifneq ($(PLATFORM),frdm)
+	APP_SRC+=$(APP_SRC_DIR)/log.c
+endif
+
+
 TEST_SRC+= \
 $(NON_MAIN_SRC) \
 $(APP_SRC_DIR)/unit_tests.c \
