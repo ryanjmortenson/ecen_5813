@@ -3,12 +3,14 @@
 
 #include <stdint.h>
 
+#define BASE_10 (10)
+
 /*
  * \brief my_itoa: used to convert an integer to a string
  *
  * \param str pointer to array to place string into
  * \param data data to be converted to string
- * \param base base of integer when converted to string (16, 10, 8, 2)
+ * \param base base of integer when converted to string (2-36 for base)
  * \return pointer to input param str
  *
  */

@@ -1,13 +1,13 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "memory.h"
+#include "data.h"
 #include "project_defs.h"
 
 #define ASCII_NUM_OFFSET (48)
 #define ASCII_NUM_END (57)
 #define ASCII_ALPHA_OFFSET (55)
 #define MINUS_SIGN (45)
-#define BASE_10 (10)
 #define BASE_MIN (2)
 #define BASE_MAX (36)
 
