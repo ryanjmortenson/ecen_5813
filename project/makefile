@@ -52,11 +52,15 @@ export $(25Z)
 export $(X86)
 export $(ARM)
 export $(MK_DIR)
+export $(CFLAGS)
 
 # Project output file names
 PROJECT_FILE=project1
 PROJECT_OUT_FILE=$(PROJECT_FILE).out
 LIB_OUT_FILE=lib$(PROJECT_FILE).a
+
+# Unit test output filename
+UNIT_TEST_OUT=test.out
 
 # CMOCKA unit test variables
 CMOCKA_BUILD_DIR=cmocka-out
@@ -105,7 +109,6 @@ ifeq ($(PLATFORM),frdm)
 	CC=$(25Z_CC)
 	CFLAGS+=$(KL25Z_CFLAGS) \
 					-I$(KL25Z_PROP_INC_DIR) \
-					-I$(APP_INC_DIR) \
 					-D FRDM
 	OBJS=$(25Z_OBJS) \
 			 $(KL25Z_PROP_OBJS)
@@ -145,6 +148,11 @@ ifneq ($(TYPE),release)
 	CFLAGS+=-g3 -O0
 endif
 
+# If VERBOSE is no turn of verbose flag
+ifneq ($(VERBOSE),NO)
+	CFLAGS+=-D VERBOSE
+endif
+
 # Set a compile time flag if it is prvovided or set to current project
 ifneq ($(MAKECMDGOALS),test)
 	ifneq ($(FLAG),)
@@ -167,10 +175,10 @@ BUILD_WITH=@echo "Building with $<"
 build: $(OBJS)
 	$(MAKE) $(PROJECT_OUT_FILE)
 
-test: CFLAGS+=-I$(CMOCKA_INC_OUT_DIR)
-test: $(CMOCKA_LIB) $(TEST_OBJS)
+$(UNIT_TEST_OUT): CFLAGS+=-I$(CMOCKA_INC_OUT_DIR)
+$(UNIT_TEST_OUT): $(CMOCKA_LIB) $(TEST_OBJS)
 	@echo "Building Unit Tests"
-	$(CC) $(CFLAGS) -o "$@" $(TEST_OBJS) $(CMOCKA_LIB) -lm
+	$(CC) $(CFLAGS) -o "$@" $(TEST_OBJS) $(CMOCKA_LIB)
 
 $(CMOCKA_LIB):
 	@echo "Installing and making CMOCKA static library"
@@ -271,7 +279,7 @@ CLEAN+=$(OUT) \
 			 *.asm \
 			 *.o \
 			 *.objdump \
-			 test \
+			 $(UNIT_TEST_OUT) \
 			 $(LIB_OUT_FILE) \
 			 $(CMOCKA_LIB)
 
@@ -280,9 +288,9 @@ CLEAN+=$(OUT) \
 clean:
 	$(RM) $(CLEAN)
 
+# Cleans everything including the cmocka build dir
 super-clean:
 	$(RM) $(CLEAN) $(CMOCKA_BUILD_DIR)
-
 
 # The following targets are specifically made so all 3 targets can be built and
 # placed in seperate directories.  I prefer for the output binaries to be in

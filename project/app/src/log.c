@@ -52,3 +52,26 @@ int8_t log_integer(int32_t integer)
   // Log the string
   return SUCCESS;
 } // log_integer()
+
+void log_flush()
+{
+  // Currently just a stub
+} // log_flush()
+
+uint8_t log_item(log_item_t * item)
+{
+  // Check for null pointer
+  CHECK_NULL(item);
+
+  // Print the items in the structure
+  printf("log_id: %d\n", item->log_id);
+  printf("log_length: %d\n", item->log_length);
+  printf("payload: ");
+  for (uint8_t i = 0; i < item->log_length; i++)
+  {
+    printf("%s%02x ", HEX_START, *(item->payload + i));
+  }
+  printf("\n");
+
+  return SUCCESS;
+} // log_item()

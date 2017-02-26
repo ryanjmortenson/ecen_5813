@@ -1,8 +1,11 @@
+#include <stdint.h>
 #include "project1.h"
+#include "log.h"
+#include "log_item.h"
 #ifdef FRDM
 #include "uart.h"
-#include "log.h"
 #endif // FRDM
+
 
 int main()
 {
@@ -13,16 +16,28 @@ int main()
   test_data1();
   test_data2();
   test_memory();
-#endif
+#endif // PROJECT1
 
 #ifdef PROJECT2
   // Execute the required functions for project2
 #if FRDM
-  uart_configure(115200);
-  while(1)
-    log_string((uint8_t *)"TRYING LOG\n");
+  // Initialize uart
+  uart_configure(BAUD_RATE);
 #endif // FRDM
-#endif
+
+  log_item_t * item;
+  create_log_item(&item, LOG_ID_ERROR, (uint8_t *)"test", 5);
+  log_item(item);
+  destroy_log_item(item);
+
+  while(0)
+  {
+    LOG_RAW_STRING("TRYING LOG\n");
+    LOG_RAW_INT(-7235);
+    LOG_RAW_DATA("LOGGING DATA", 12);
+  }
+
+#endif // PROJECT2
 
   return 0;
 }

@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include "circbuf.h"
 
-// TODO: Remove
-#include <stdio.h>
-
 // Circular buffer structure
 struct circbuf
 {

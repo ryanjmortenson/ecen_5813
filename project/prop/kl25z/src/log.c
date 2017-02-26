@@ -68,3 +68,8 @@ int8_t log_integer(int32_t integer)
 
   return SUCCESS;
 } // log_integer()
+
+void log_flush()
+{
+  // Currently just a stub
+} // log_flush()
