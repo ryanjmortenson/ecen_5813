@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include "circbuf.h"
 
+// TODO: Remove
+#include <stdio.h>
+
 // Circular buffer structure
 struct circbuf
 {
@@ -30,7 +33,7 @@ cb_enum_t circbuf_init(circbuf_t ** buf, uint8_t length)
   }
 
   // Allocate the internal buffer to size requested
-  if (((*buf)->buffer = malloc(sizeof(length))) == NULL)
+  if (((*buf)->buffer = malloc(sizeof(uint8_t)*length)) == NULL)
   {
     return CB_ENUM_ALLOC_FAILURE;
   }
@@ -43,7 +46,7 @@ cb_enum_t circbuf_init(circbuf_t ** buf, uint8_t length)
 
   // Return success
   return CB_ENUM_NO_ERROR;
-} // CircBufInitialize()
+} // circbuf_init()
 
 
 cb_enum_t circbuf_destroy(circbuf_t * buf)
@@ -61,7 +64,7 @@ cb_enum_t circbuf_destroy(circbuf_t * buf)
 
   // Return success
   return CB_ENUM_NO_ERROR;
-} // CircBufDestroy()
+} // circbuf_destroy()
 
 cb_enum_t circbuf_add_item(circbuf_t * buf, uint8_t payload)
 {

@@ -101,6 +101,7 @@ ifeq ($(PLATFORM),frdm)
 	CC=$(25Z_CC)
 	CFLAGS+=$(KL25Z_CFLAGS) \
 					-I$(KL25Z_PROP_INC_DIR) \
+					-I$(APP_INC_DIR) \
 					-D FRDM
 	OBJS=$(25Z_OBJS) \
 			 $(KL25Z_PROP_OBJS)
@@ -145,7 +146,7 @@ ifneq ($(MAKECMDGOALS),test)
 ifneq ($(FLAG),)
 	CFLAGS+=-D $(FLAG)
 else
-	CFLAGS+=-D PROJECT1
+	CFLAGS+=-D PROJECT2
 endif
 else
 	CFLAGS+=-D UNITTEST

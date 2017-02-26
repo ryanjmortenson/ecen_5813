@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 // Return values used throughout the project
+#define FAILURE (4)
 #define INVALID_PARAM (2)
 #define NULL_POINTER (1)
 #define SUCCESS (0)
