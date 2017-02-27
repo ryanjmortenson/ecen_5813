@@ -1,16 +1,50 @@
 #include <stdint.h>
+#include "circbuf.h"
 #include "MKL25Z4.h"
 #include "project_defs.h"
+#include "uart.h"
 
 // Typical clock speed for the fll
 #define CORE_CLOCK (20970000L)
 #define MCGFLLCLK (1)
 
-// Use a sample rate of 4 because higher sample rates at 115200 seemed off
-#define OVER_SAMPLE (0x03)
+// Reduce sample rate because higher sample rates at 115200 garbled characters
+#define OVER_SAMPLE (0x08)
 
 // Used to put the transmit/receive into GPIO
 #define ALT_2 (2)
+
+circbuf_t * receive;
+circbuf_t * transmit;
+
+void UART0_IRQHandler()
+{
+  NVIC_DisableIRQ(UART0_IRQn);
+  uint8_t tx_byte = 0;
+  if (UART0_S1 & UART_S1_RDRF_MASK)
+  {
+    if (circbuf_full(receive) != CB_ENUM_NO_ERROR)
+    {
+      circbuf_add_item(receive, uart_receive_byte());
+    }
+  }
+
+  if (UART0_S1 & UART_S1_TDRE_MASK)
+  {
+    if (circbuf_empty(transmit) != CB_ENUM_NO_ERROR)
+    {
+      circbuf_remove_item(transmit, &tx_byte);
+      uart_send_byte(tx_byte);
+    }
+    else
+    {
+      // Disable transmit buffer ready interrupt
+      UART0_C2 &= ~UART_C2_TIE_MASK;
+    }
+
+  }
+  NVIC_EnableIRQ(UART0_IRQn);
+}
 
 int8_t uart_configure(uint32_t baud)
 {
@@ -43,19 +77,22 @@ int8_t uart_configure(uint32_t baud)
   UART0_BDH = (brmd >> 8) & UARTLP_BDH_SBR_MASK;
   UART0_BDL = (brmd & UARTLP_BDL_SBR_MASK);
 
-  // Enable the transmitter and receiver
-  UART0_C2 = UARTLP_C2_RE_MASK | UARTLP_C2_TE_MASK;
+  // Enable the transmitter and receiver and their interrupts
+  UART0_C2 = UARTLP_C2_RE_MASK | UARTLP_C2_TE_MASK | UART_C2_RIE_MASK;
+
+  // Enable the UART0 IRQ
+  NVIC_EnableIRQ(UART0_IRQn);
   return SUCCESS;
-}
+} // uart_configure()
 
 int8_t uart_send_byte(uint8_t byte)
 {
   // Wait for the ready flag to transmit
-  while(!(UART0_S1_REG(UART0_BASE_PTR) & UART0_S1_TDRE_MASK));
-  UART_D_REG(UART0_BASE_PTR) = byte;
+  UART0_D = byte;
   return SUCCESS;
-}
-int8_t uart_send_byte_n(uint8_t * bytes, uint8_t length)
+} // uart_send_byte()
+
+int8_t uart_send_byte_n(uint8_t * bytes, uint32_t length)
 {
   // Loop over length sending each byte
   for(uint8_t i = 0; i < length; i++)
@@ -63,11 +100,15 @@ int8_t uart_send_byte_n(uint8_t * bytes, uint8_t length)
     uart_send_byte(*(bytes + i));
   }
   return SUCCESS;
-}
+} // uart_send_byte_n()
 
 uint8_t uart_receive_byte()
 {
-  while (!(UART_S1_REG(UART0_BASE_PTR) & UART_S1_RDRF_MASK));
-  return UART_D_REG(UART0_BASE_PTR);
-}
+  return UART0_D;
+} // uart_receive_byte()
 
+uint8_t signal_transmit()
+{
+  UART0_C2 |= UART_C2_TIE_MASK;
+  return SUCCESS;
+} // uart_receive_byte()

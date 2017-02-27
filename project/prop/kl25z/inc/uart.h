@@ -31,7 +31,7 @@ int8_t uart_send_byte(uint8_t byte);
  * \return success/fail
  *
  */
-int8_t uart_send_byte_n(uint8_t * byte, uint32_t length);
+int8_t uart_send_byte_n(uint8_t * bytes, uint32_t length);
 
 /*
  * \brief uart_receive_byte: blocking receive for one byte of data
@@ -41,4 +41,5 @@ int8_t uart_send_byte_n(uint8_t * byte, uint32_t length);
  */
 uint8_t uart_receive_byte();
 
+uint8_t signal_transmit();
 #endif
