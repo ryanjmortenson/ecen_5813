@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "circbuf.h"
 #include "data.h"
 #include "log.h"
 #include "uart.h"
@@ -10,6 +11,8 @@
 /*
  * Function definitions see log.h for documentation
  */
+
+extern circbuf_t * transmit;
 
 int8_t log_data(uint8_t * bytes, uint8_t length)
 {
@@ -44,7 +47,7 @@ int8_t log_string(int8_t * str)
   // Loop over string sending bytes
   while(*str)
   {
-    uart_send_byte(*str++);
+    circbuf_add_item(transmit, (*str++));
   }
 
   return SUCCESS;
@@ -61,17 +64,14 @@ int8_t log_integer(int32_t integer)
     return FAILURE;
   }
 
-  // Log the integer string
-  log_string((int8_t *)INT_STRING);
   log_string((int8_t *)buffer);
-  log_string((int8_t *)"\n");
 
   return SUCCESS;
 } // log_integer()
 
 void log_flush()
 {
-  // Currently just a stub
+  while(circbuf_empty(transmit) != CB_ENUM_NO_ERROR);
 } // log_flush()
 
 uint8_t log_item(log_item_t * item)

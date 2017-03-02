@@ -2,8 +2,14 @@
 #define __UART_H__
 
 #include <stdint.h>
+#include "MKL25Z4.h"
 
-#define BAUD_RATE (115200)
+#define BAUD_RATE (230400)
+
+#define TRANSMIT_READY (UART0_C2 |= UART_C2_TIE_MASK)
+#define TRANSMIT_DONE (UART0_C2 &= ~UART_C2_TIE_MASK)
+#define RECEIVE_READY (UART0_C2 |= UART_C2_RIE_MASK)
+#define RECEIVE_DONE (UART0_C2 &= ~UART_C2_RIE_MASK)
 
 /*
  * \brief uart_configure: configures uart for baud rate
@@ -41,5 +47,4 @@ int8_t uart_send_byte_n(uint8_t * bytes, uint32_t length);
  */
 uint8_t uart_receive_byte();
 
-uint8_t signal_transmit();
 #endif

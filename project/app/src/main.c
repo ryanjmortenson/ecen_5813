@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "circbuf.h"
+#include "data.h"
 #include "project1.h"
 #include "log.h"
 #include "log_item.h"
@@ -9,6 +10,7 @@
 
 extern circbuf_t * receive;
 extern circbuf_t * transmit;
+extern circbuf_t * receive_16;
 
 int main()
 {
@@ -23,12 +25,12 @@ int main()
 
 #ifdef PROJECT2
   // Execute the required functions for project2
+#define NUM_ANALYSIS (16)
 #if FRDM
 
-  uint8_t byte = 0;
-
-  circbuf_init(&receive, 100);
-  circbuf_init(&transmit, 100);
+  circbuf_init(&receive, 1024);
+  circbuf_init(&transmit, 1024);
+  analysis_t result;
 
   // Initialize uart
   uart_configure(BAUD_RATE);
@@ -40,15 +42,21 @@ int main()
 
   while(1)
   {
-    if(circbuf_empty(receive) != CB_ENUM_NO_ERROR)
+    uint8_t byte;
+    if (circbuf_peak(receive, NUM_ANALYSIS, &byte) == CB_ENUM_NO_ERROR)
     {
-      circbuf_remove_item(receive, &byte);
-      if (byte == 'q')
-      {
-        break;
-      }
-      circbuf_add_item(transmit, byte);
-      signal_transmit();
+      analyze_bytes(receive, &result, NUM_ANALYSIS);
+      LOG_RAW_STRING("\nAlpha chars: ");
+      LOG_RAW_INT(result.alpha);
+      LOG_RAW_STRING("\nNum chars: ");
+      LOG_RAW_INT(result.num);
+      LOG_RAW_STRING("\nPunc chars: ");
+      LOG_RAW_INT(result.punc);
+      LOG_RAW_STRING("\nMisc chars: ");
+      LOG_RAW_INT(result.misc);
+      LOG_RAW_STRING("\n");
+      TRANSMIT_READY;
+      LOG_RAW_FLUSH();
     }
   }
 

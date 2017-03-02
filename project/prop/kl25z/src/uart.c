@@ -8,7 +8,7 @@
 #define CORE_CLOCK (20970000L)
 #define MCGFLLCLK (1)
 
-// Reduce sample rate because higher sample rates at 115200 garbled characters
+// Use oversampling of 8 + 1
 #define OVER_SAMPLE (0x08)
 
 // Used to put the transmit/receive into GPIO
@@ -17,7 +17,7 @@
 circbuf_t * receive;
 circbuf_t * transmit;
 
-void UART0_IRQHandler()
+extern void UART0_IRQHandler()
 {
   NVIC_DisableIRQ(UART0_IRQn);
   uint8_t tx_byte = 0;
@@ -25,11 +25,15 @@ void UART0_IRQHandler()
   {
     if (circbuf_full(receive) != CB_ENUM_NO_ERROR)
     {
-      circbuf_add_item(receive, uart_receive_byte());
+      uint8_t rx_byte = uart_receive_byte();
+      circbuf_add_item(receive, rx_byte);
     }
   }
-
-  if (UART0_S1 & UART_S1_TDRE_MASK)
+  else if (UART0_S1 & UART_S1_OR_MASK)
+  {
+    UART0_S1 |= UART0_S1_OR_MASK;
+  }
+  else if (UART0_S1 & UART_S1_TDRE_MASK)
   {
     if (circbuf_empty(transmit) != CB_ENUM_NO_ERROR)
     {
@@ -38,10 +42,8 @@ void UART0_IRQHandler()
     }
     else
     {
-      // Disable transmit buffer ready interrupt
-      UART0_C2 &= ~UART_C2_TIE_MASK;
+      TRANSMIT_DONE;
     }
-
   }
   NVIC_EnableIRQ(UART0_IRQn);
 }
@@ -82,12 +84,12 @@ int8_t uart_configure(uint32_t baud)
 
   // Enable the UART0 IRQ
   NVIC_EnableIRQ(UART0_IRQn);
+
   return SUCCESS;
 } // uart_configure()
 
 int8_t uart_send_byte(uint8_t byte)
 {
-  // Wait for the ready flag to transmit
   UART0_D = byte;
   return SUCCESS;
 } // uart_send_byte()
@@ -105,10 +107,4 @@ int8_t uart_send_byte_n(uint8_t * bytes, uint32_t length)
 uint8_t uart_receive_byte()
 {
   return UART0_D;
-} // uart_receive_byte()
-
-uint8_t signal_transmit()
-{
-  UART0_C2 |= UART_C2_TIE_MASK;
-  return SUCCESS;
 } // uart_receive_byte()

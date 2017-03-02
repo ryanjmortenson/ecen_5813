@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include "memory.h"
 #include "circbuf.h"
 
 // Circular buffer structure
@@ -8,11 +9,11 @@ struct circbuf
   uint8_t * buffer;
   uint8_t * head;
   uint8_t * tail;
-  uint8_t length;
+  uint16_t length;
   uint8_t count;
 };
 
-cb_enum_t circbuf_init(circbuf_t ** buf, uint8_t length)
+cb_enum_t circbuf_init(circbuf_t ** buf, uint16_t length)
 {
   // Check for null pointers
   CB_CHECK_NULL(buf);
@@ -40,6 +41,8 @@ cb_enum_t circbuf_init(circbuf_t ** buf, uint8_t length)
   (*buf)->tail     = (*buf)->buffer;
   (*buf)->length   = length;
   (*buf)->count    = 0;
+
+  my_memzero((*buf)->buffer, length);
 
   // Return success
   return CB_ENUM_NO_ERROR;
@@ -139,7 +142,7 @@ cb_enum_t circbuf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload)
   CB_CHECK_NULL(buf->buffer);
 
   // Make sure there are enough items to have the index item
-  if (index > buf->length - 1)
+  if (index > buf->count)
   {
     return CB_ENUM_BAD_INDEX;
   }

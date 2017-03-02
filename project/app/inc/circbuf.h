@@ -32,7 +32,7 @@ typedef struct circbuf circbuf_t;
  * \return: success or error
  *
  */
-cb_enum_t circbuf_init(circbuf_t ** buf, uint8_t length);
+cb_enum_t circbuf_init(circbuf_t ** buf, uint16_t length);
 
 /*
  * \brief circbuf_destroy: calls free on the buffer and the structure
