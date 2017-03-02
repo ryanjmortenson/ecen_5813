@@ -1,15 +1,31 @@
 #include <stdint.h>
 #include <stddef.h>
-#include "memory.h"
+#include "circbuf.h"
 #include "data.h"
+#include "memory.h"
 #include "project_defs.h"
 
 #define ASCII_NUM_OFFSET (48)
 #define ASCII_NUM_END (57)
 #define ASCII_ALPHA_OFFSET (55)
+#define ASCII_ALPHA_LOWER_START (97)
+#define ASCII_ALPHA_LOWER_STOP (122)
+#define ASCII_ALPHA_UPPER_START (65)
+#define ASCII_ALPHA_UPPER_STOP (90)
 #define MINUS_SIGN (45)
+
 #define BASE_MIN (2)
 #define BASE_MAX (36)
+
+#define EXCLAMATION (33)
+#define DOUBLE_QUOTE (34)
+#define SINGLE_QUOTE (39)
+#define OPEN_PAREN (40)
+#define CLOSE_PAREN (41)
+#define PERIOD (46)
+#define COLON (58)
+#define SEMICOLON (59)
+#define QUESTION (63)
 
 /*
  * Function definitions see data.h for documentation
@@ -129,6 +145,61 @@ int8_t little_to_big32(uint32_t * data, uint32_t length)
   // Swapping little to big is the same as swapping big to little
   return big_to_little32(data, length);
 } // little_to_big32()
+
+uint8_t analyze_bytes(circbuf_t * buf, analysis_t * results, uint8_t num_bytes)
+{
+  uint32_t num = 0;
+  uint32_t alpha = 0;
+  uint32_t punc = 0;
+  uint32_t misc = 0;
+
+  // Check for null pointers
+  CHECK_NULL(buf);
+  CHECK_NULL(results);
+
+  for(uint8_t i = 0; i < num_bytes; i++)
+  {
+    uint8_t item = 0;
+    circbuf_remove_item(buf, &item);
+    if (item >= ASCII_NUM_OFFSET && item <= ASCII_NUM_END)
+    {
+      num++;
+    }
+    else if (item >= ASCII_ALPHA_UPPER_START &&
+             item <= ASCII_ALPHA_UPPER_STOP)
+    {
+      alpha++;
+    }
+    else if (item >= ASCII_ALPHA_LOWER_START &&
+             item <= ASCII_ALPHA_LOWER_STOP)
+    {
+      alpha++;
+    }
+    else if (item == EXCLAMATION  ||
+             item == DOUBLE_QUOTE ||
+             item == SINGLE_QUOTE ||
+             item == OPEN_PAREN   ||
+             item == CLOSE_PAREN  ||
+             item == PERIOD       ||
+             item == COLON        ||
+             item == SEMICOLON    ||
+             item == QUESTION)
+    {
+      punc++;
+    }
+    else
+    {
+      misc++;
+    }
+  }
+
+  results->alpha = alpha;
+  results->num = num;
+  results->punc = punc;
+  results->misc = misc;
+
+  return SUCCESS;
+}
 
 void print_memory(uint8_t * start, uint32_t length)
 {
