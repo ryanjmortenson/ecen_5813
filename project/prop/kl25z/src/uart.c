@@ -21,8 +21,12 @@ extern circbuf_t * transmit;
 // Uart ISR
 extern void UART0_IRQHandler()
 {
+  // Critical section don't allow an interrupt in an interrupt
   NVIC_DisableIRQ(UART0_IRQn);
+
   uint8_t tx_byte = 0;
+
+  // Take a byte out of the circular buffer and send it
   if (UART0_S1 & UART_S1_RDRF_MASK)
   {
     if (circbuf_full(receive) != CB_ENUM_NO_ERROR)
@@ -31,12 +35,7 @@ extern void UART0_IRQHandler()
       circbuf_add_item(receive, rx_byte);
     }
   }
-#if 0
-  else if (UART0_S1 & UART_S1_OR_MASK)
-  {
-    UART0_S1 |= UART0_S1_OR_MASK;
-  }
-#endif
+  // Transmit a byte until the buffer is empty then shut off the TIE
   else if (UART0_S1 & UART_S1_TDRE_MASK)
   {
     if (circbuf_empty(transmit) != CB_ENUM_NO_ERROR)
@@ -46,13 +45,16 @@ extern void UART0_IRQHandler()
     }
     else
     {
+      // Signal transmit is done
       TRANSMIT_DONE;
     }
   }
+
+  // Turn interrupts back on
   NVIC_EnableIRQ(UART0_IRQn);
 }
 
-int8_t uart_configure(uint32_t baud)
+void uart_configure(uint32_t baud)
 {
   // Calculate baud rate modulo devisor
   uint16_t brmd = (CORE_CLOCK / ((OVER_SAMPLE + 1) * baud));
@@ -89,17 +91,18 @@ int8_t uart_configure(uint32_t baud)
   // Enable the UART0 IRQ
   NVIC_EnableIRQ(UART0_IRQn);
 
-  return SUCCESS;
 } // uart_configure()
 
-int8_t uart_send_byte(uint8_t byte)
+void uart_send_byte(uint8_t byte)
 {
   UART0_D = byte;
-  return SUCCESS;
 } // uart_send_byte()
 
 int8_t uart_send_byte_n(uint8_t * bytes, uint32_t length)
 {
+  // Check for null pointer
+  CHECK_NULL(bytes);
+
   // Loop over length sending each byte
   for(uint8_t i = 0; i < length; i++)
   {

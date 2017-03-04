@@ -13,19 +13,17 @@
  * \brief uart_configure: configures uart for baud rate
  *
  * \param baud baud rate for uart communications
- * \return success/fail
  *
  */
-int8_t uart_configure(uint32_t baud);
+void uart_configure(uint32_t baud);
 
 /*
  * \brief uart_send_byte: sends one byte through uart communication
  *
  * \param byte the byte to send
- * \return success/fail
  *
  */
-int8_t uart_send_byte(uint8_t byte);
+void uart_send_byte(uint8_t byte);
 
 /*
  * \brief uart_send_byte_n: send n bytes through uart communication
