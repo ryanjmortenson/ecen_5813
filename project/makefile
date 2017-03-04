@@ -169,11 +169,15 @@ BUILD_TARGET=@echo "Building Target $@"
 BUILD_WITH=@echo "Building with $<"
 
 # Set PHONY for all targets that don't have outputs for tracking
-.PHONY: build compile-all debug allasm alli allobjdump clean super-clean
+.PHONY: build compile-all debug allasm alli allobjdump clean super-clean test
 
 # Build will build project1
 build: $(OBJS)
 	$(MAKE) $(PROJECT_OUT_FILE)
+
+# PHONY target so you don't have to type .out
+test:
+	$(MAKE) $(UNIT_TEST_OUT)
 
 $(UNIT_TEST_OUT): CFLAGS+=-I$(CMOCKA_INC_OUT_DIR)
 $(UNIT_TEST_OUT): $(CMOCKA_LIB) $(TEST_OBJS)

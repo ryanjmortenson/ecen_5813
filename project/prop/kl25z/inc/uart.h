@@ -8,8 +8,6 @@
 
 #define TRANSMIT_READY (UART0_C2 |= UART_C2_TIE_MASK)
 #define TRANSMIT_DONE (UART0_C2 &= ~UART_C2_TIE_MASK)
-#define RECEIVE_READY (UART0_C2 |= UART_C2_RIE_MASK)
-#define RECEIVE_DONE (UART0_C2 &= ~UART_C2_RIE_MASK)
 
 /*
  * \brief uart_configure: configures uart for baud rate

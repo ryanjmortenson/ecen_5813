@@ -13,6 +13,7 @@
 #include "memory.h"
 #endif // FRDM
 
+// Circular buffers for logging found in log.c
 extern circbuf_t * receive;
 extern circbuf_t * transmit;
 
@@ -35,7 +36,11 @@ int main()
   int8_t itoa_buffer[ITOA_SIZE] = {0};
 
   analysis_t result;
+
+#ifdef VERBOSE
+  // No need for a log item if not verbose
   log_item_t * item;
+#endif // VERBOSE
 
   // Init log and bail out if a failure occurs
   if (log_init())
@@ -56,7 +61,8 @@ int main()
 #define SCANF_SIZE (100)
     // Emulate uart putting characters into the receive buffer by using scanf
     uint8_t input[SCANF_SIZE];
-    // See if there are NUM_ANALYSIS characters in the receive buffer
+
+    // Only wait for input if there are less than NUM_ANALYSIS tyes in circular buffer
     if (circbuf_peak(receive, NUM_ANALYSIS, &byte) == CB_ENUM_BAD_INDEX)
     {
       scanf("%s", input);

@@ -5,6 +5,7 @@
 #include "log_item.h"
 #include "project_defs.h"
 
+#ifdef VERBOSE
 char * log_id_str[] =
 {
 	"LOG_ID_LOGGER_INITIALIZED",
@@ -22,6 +23,7 @@ char * log_id_str[] =
 	"LOG_ID_DATA_MISC_COUNT",
 	"LOG_ID_DATA_ANALYSIS_COMPLETED"
 };
+#endif // VERBOSE
 
 uint8_t create_log_item(log_item_t ** item, log_id_t log_id, uint8_t * payload)
 {
@@ -46,7 +48,6 @@ uint8_t create_log_item(log_item_t ** item, log_id_t log_id, uint8_t * payload)
   {
     return FAILURE;
   }
-
 
   // Allocate the internal buffer to size requested
   if (((*item)->payload = malloc(sizeof(uint8_t)*length)) == NULL)
