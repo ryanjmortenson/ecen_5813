@@ -4,10 +4,10 @@
 
 # Set kl25z flags
 KL25Z_CFLAGS=-specs=nosys.specs \
-   			     -mcpu=cortex-m0plus \
-	  		     -mthumb \
-	  		     -T "MKL25Z128xxx4_flash.ld" \
-	  		     -Xlinker --gc-sections -L"./prop/kl25z/linker"
+             -mcpu=cortex-m0plus \
+             -mthumb \
+             -T "MKL25Z128xxx4_flash.ld" \
+             -Xlinker --gc-sections -L"./prop/kl25z/linker"
 
 # Set up rules for proprietary kl25z targets
 $(KL25Z_PROP_OUT)/%.o: CFLAGS+=-MD -MP

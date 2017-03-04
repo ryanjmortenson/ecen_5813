@@ -2,13 +2,25 @@
 #define __DATA_H__
 
 #include <stdint.h>
+#include "circbuf.h"
+
+#define BASE_10 (10)
+
+// Struct to hold results from analysis
+typedef struct analysis
+{
+  uint32_t alpha;
+  uint32_t num;
+  uint32_t punc;
+  uint32_t misc;
+} analysis_t;
 
 /*
  * \brief my_itoa: used to convert an integer to a string
  *
  * \param str pointer to array to place string into
  * \param data data to be converted to string
- * \param base base of integer when converted to string (16, 10, 8, 2)
+ * \param base base of integer when converted to string (2-36 for base)
  * \return pointer to input param str
  *
  */
@@ -52,4 +64,5 @@ int8_t little_to_big32(uint32_t * data, uint32_t length);
  */
 void print_memory(uint8_t * start, uint32_t length);
 
+uint8_t analyze_bytes(circbuf_t * buf, analysis_t * results, uint8_t num_bytes);
 #endif
