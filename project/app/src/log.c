@@ -9,8 +9,6 @@
 #include "uart.h"
 #endif // FRDM
 
-#define BASE_16 (16)
-#define MAX_HEX_BYTE_LEN (3)
 #define CIRC_BUF_SIZE (1024)
 
 /*
@@ -29,7 +27,10 @@ int8_t log_data(uint8_t * bytes, uint8_t length)
   // Loop over string sending bytes
   for (uint8_t i = 0; i < length; i++)
   {
-    circbuf_add_item(transmit, *(bytes + i));
+    if (circbuf_add_item(transmit, *(bytes + i)) != CB_ENUM_NO_ERROR)
+    {
+      return FAILURE;
+    }
   }
 
   return SUCCESS;
@@ -43,7 +44,10 @@ int8_t log_string(int8_t * str)
   // Loop over string sending bytes
   while(*str)
   {
-    circbuf_add_item(transmit, (*str++));
+    if (circbuf_add_item(transmit, (*str++)) != CB_ENUM_NO_ERROR)
+    {
+      return FAILURE;
+    }
   }
 
   return SUCCESS;
