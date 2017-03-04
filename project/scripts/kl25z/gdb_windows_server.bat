@@ -1,0 +1,1 @@
+C:\Freescale\KDS_v3\eclipse\plugins\com.pemicro.debug.gdbjtag.pne_2.8.5.201702221447\win32\pegdbserver_console.exe -showflashstatus -verbose -device=NXP_KL2x_KL25Z128M4 -startserver -serverport=7222 -gdbmiport=6224 -interface=OPENSDA -speed=5000 -port=USB -serverip=192.168.56.1
