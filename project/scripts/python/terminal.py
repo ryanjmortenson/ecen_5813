@@ -6,8 +6,8 @@ import sys
 import traceback
 
 def process_char(char):
+    #return char + ', 0x' + char.encode('hex') + ' \n'
     return char
-    #return char.encode('hex')
 
 def recv_process(ser):
     try:

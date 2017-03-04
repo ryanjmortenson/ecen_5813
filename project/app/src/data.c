@@ -146,7 +146,7 @@ int8_t little_to_big32(uint32_t * data, uint32_t length)
   return big_to_little32(data, length);
 } // little_to_big32()
 
-uint8_t analyze_bytes(circbuf_t * buf, analysis_t * results, uint8_t num_bytes)
+uint8_t analyze_bytes(uint8_t * buf, analysis_t * results, uint8_t num_bytes)
 {
   uint32_t num = 0;
   uint32_t alpha = 0;
@@ -159,8 +159,9 @@ uint8_t analyze_bytes(circbuf_t * buf, analysis_t * results, uint8_t num_bytes)
 
   for(uint8_t i = 0; i < num_bytes; i++)
   {
-    uint8_t item = 0;
-    circbuf_remove_item(buf, &item);
+
+    uint8_t item = *(buf + i);
+
     if (item >= ASCII_NUM_OFFSET && item <= ASCII_NUM_END)
     {
       num++;

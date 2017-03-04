@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "circbuf.h"
+#include "log.h"
 #include "MKL25Z4.h"
 #include "project_defs.h"
 #include "uart.h"
@@ -14,9 +15,10 @@
 // Used to put the transmit/receive into GPIO
 #define ALT_2 (2)
 
-circbuf_t * receive;
-circbuf_t * transmit;
+extern circbuf_t * receive;
+extern circbuf_t * transmit;
 
+// Uart ISR
 extern void UART0_IRQHandler()
 {
   NVIC_DisableIRQ(UART0_IRQn);
@@ -29,10 +31,12 @@ extern void UART0_IRQHandler()
       circbuf_add_item(receive, rx_byte);
     }
   }
+#if 0
   else if (UART0_S1 & UART_S1_OR_MASK)
   {
     UART0_S1 |= UART0_S1_OR_MASK;
   }
+#endif
   else if (UART0_S1 & UART_S1_TDRE_MASK)
   {
     if (circbuf_empty(transmit) != CB_ENUM_NO_ERROR)
@@ -69,7 +73,7 @@ int8_t uart_configure(uint32_t baud)
   PORTA_PCR1 = PORT_PCR_MUX(ALT_2);
   PORTA_PCR2 = PORT_PCR_MUX(ALT_2);
 
-  // Set the oversample to 4
+  // Set the oversample to OVER_SAMPLE
   UART0_C4 = UARTLP_C4_OSR(OVER_SAMPLE);
 
   // Set the BOTHEDGE bit because the sample rate is really low

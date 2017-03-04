@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include "log.h"
 
 // Return values used throughout the project
 #define FAILURE (4)

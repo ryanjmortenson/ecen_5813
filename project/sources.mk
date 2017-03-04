@@ -15,15 +15,12 @@ NON_MAIN_SRC+= \
 	$(APP_SRC_DIR)/data.c \
 	$(APP_SRC_DIR)/circbuf.c \
 	$(APP_SRC_DIR)/log_item.c \
-	$(APP_SRC_DIR)/project1.c
+	$(APP_SRC_DIR)/project1.c \
+	$(APP_SRC_DIR)/log.c
 
 APP_SRC+= \
 	$(NON_MAIN_SRC) \
 	$(APP_SRC_DIR)/main.c
-
-ifneq ($(PLATFORM),frdm)
-	APP_SRC+=$(APP_SRC_DIR)/log.c
-endif
 
 TEST_SRC+= \
 	$(NON_MAIN_SRC) \

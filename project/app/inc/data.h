@@ -64,5 +64,5 @@ int8_t little_to_big32(uint32_t * data, uint32_t length);
  */
 void print_memory(uint8_t * start, uint32_t length);
 
-uint8_t analyze_bytes(circbuf_t * buf, analysis_t * results, uint8_t num_bytes);
+uint8_t analyze_bytes(uint8_t * buf, analysis_t * results, uint8_t num_bytes);
 #endif

@@ -2,6 +2,7 @@
 #define __LOG_H__
 
 #include <stdint.h>
+#include "log_item.h"
 
 #define MAX_INT_LEN (12)
 #define INT_STRING "Integer: "
@@ -14,41 +15,16 @@
 #define LOG_RAW_STRING(str) log_string((int8_t *)str)
 #define LOG_RAW_INT(integer) log_integer(integer)
 #define LOG_RAW_FLUSH() log_flush()
-#define LOG_ITEM()
+#define LOG_ITEM(item, id, buf) create_log_item(&item, id, (uint8_t *)buf); \
+                                log_item(item)
 #else
 #define LOG_RAW_DATA(bytes, length)
 #define LOG_RAW_STRING(str)
 #define LOG_RAW_INT(integer)
 #define LOG_RAW_FLUSH()
-#define LOG_ITEM()
+#define LOG_ITEM(item, log_id, buffer)
 #endif // VERBOSE
 
-// Enum of log ids used in log item structure
-typedef enum log_id
-{
-	LOG_ID_LOGGER_INITIALZED,
-	LOG_ID_GPIO_INITIALZED,
-	LOG_ID_SYSTEM_INITIALIZED,
-	LOG_ID_SYSTEM_HALTED,
-	LOG_ID_INFO,
-	LOG_ID_WARNING,
-	LOG_ID_ERROR,
-	LOG_ID_DATA_RECEIVED,
-	LOG_ID_DATA_ANALYSIS_STARTED,
-	LOG_ID_DATA_ALPHA_COUNT,
-	LOG_ID_DATA_NUMERIC_COUNT,
-	LOG_ID_DATA_PUNCTUATION_COUNT,
-	LOG_ID_DATA_MISC_COUNT,
-	LOG_ID_DATA_ANALYSIS_COMPLETED
-} log_id_t;
-
-// An item to be logged
-typedef struct log_item_struct
-{
-  uint8_t log_id;
-  uint8_t log_length;
-  uint8_t * payload;
-} log_item_t;
 
 /*
  * \brief log_data: logs bytes in hex prepending string DATA_STRING to
@@ -92,5 +68,19 @@ void log_flush();
  *
  */
 uint8_t log_item(log_item_t * item);
+
+/*
+ * \brief log_item: initialize logging system
+ * \return: success/fail
+ *
+ */
+uint8_t log_init();
+
+/*
+ * \brief log_destroy: destroy logs
+ * \return: success/fail
+ *
+ */
+void log_destroy();
 
 #endif // __LOG_H__
