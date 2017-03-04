@@ -6,7 +6,15 @@
 
 #define BASE_10 (10)
 
-// Struct to hold results from analysis
+/*
+ * \brief analysis_t: structure holding data from analysis
+ *
+ * \param alpha: number of alpha characters
+ * \param num: number of number characters
+ * \param punc: number of punctuation characters
+ * \param misc: number of misc characters
+ *
+ */
 typedef struct analysis
 {
   uint32_t alpha;
@@ -64,5 +72,15 @@ int8_t little_to_big32(uint32_t * data, uint32_t length);
  */
 void print_memory(uint8_t * start, uint32_t length);
 
+/*
+ * \brief analyze_bytes: count bytes from categories alpha, num, misc, and punctuation
+ *
+ * \param buf: buffer holding bytes
+ * \param results: structure holding results
+ * \param num_bytes: number of bytesin buf
+ * \return pass/fail
+ *
+ */
 uint8_t analyze_bytes(uint8_t * buf, analysis_t * results, uint8_t num_bytes);
+
 #endif

@@ -157,25 +157,30 @@ uint8_t analyze_bytes(uint8_t * buf, analysis_t * results, uint8_t num_bytes)
   CHECK_NULL(buf);
   CHECK_NULL(results);
 
+  // Loop over inputs and count number of each character
   for(uint8_t i = 0; i < num_bytes; i++)
   {
 
     uint8_t item = *(buf + i);
 
+    // Add numbers
     if (item >= ASCII_NUM_OFFSET && item <= ASCII_NUM_END)
     {
       num++;
     }
+    // Add upper case letters
     else if (item >= ASCII_ALPHA_UPPER_START &&
              item <= ASCII_ALPHA_UPPER_STOP)
     {
       alpha++;
     }
+    // Add lower case letters
     else if (item >= ASCII_ALPHA_LOWER_START &&
              item <= ASCII_ALPHA_LOWER_STOP)
     {
       alpha++;
     }
+    // Add punctuation
     else if (item == EXCLAMATION  ||
              item == DOUBLE_QUOTE ||
              item == SINGLE_QUOTE ||
@@ -188,12 +193,14 @@ uint8_t analyze_bytes(uint8_t * buf, analysis_t * results, uint8_t num_bytes)
     {
       punc++;
     }
+    // Add misc
     else
     {
       misc++;
     }
   }
 
+  // Set members of results structure
   results->alpha = alpha;
   results->num = num;
   results->punc = punc;
