@@ -12,6 +12,12 @@ uint8_t my_memmove(uint8_t *src, uint8_t *dst, int32_t length)
   CHECK_NULL(src);
   CHECK_NULL(dst);
 
+  // If src and dst are the same no need for copying
+  if (src == dst)
+  {
+    return SUCCESS;
+  }
+
   // Handle overlap when dst starts in source
   if (dst > src && dst < src + length)
   {
