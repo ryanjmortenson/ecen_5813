@@ -210,6 +210,7 @@ debug:
 	@echo $(KL25Z_PROP_OBJS)
 	@echo $(KL25Z_PROP_SRCS)
 	@echo $(OUT_DIR)
+	@echo $(TEST_OBJS)
 
 # Compiles the project into project1 binary which can be executed with ./project1.out
 $(PROJECT_OUT_FILE): CFLAGS+=$(MAP_FLAG)
