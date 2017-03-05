@@ -180,9 +180,8 @@ test:
 	$(MAKE) $(UNIT_TEST_OUT)
 
 $(UNIT_TEST_OUT): CFLAGS+=-I$(CMOCKA_INC_OUT_DIR)
-$(UNIT_TEST_OUT): $(CMOCKA_LIB) $(TEST_OBJS)
-	@echo "Building Unit Tests"
-	$(CC) $(CFLAGS) -o "$@" $(TEST_OBJS) $(CMOCKA_LIB)
+$(UNIT_TEST_OUT): $(CMOCKA_LIB) $(OBJS)
+	$(CC) $(CFLAGS) -o "$@" $(OBJS) $(CMOCKA_LIB)
 
 $(CMOCKA_LIB):
 	@echo "Installing and making CMOCKA static library"
@@ -191,7 +190,8 @@ $(CMOCKA_LIB):
 	$(CMAKE_CMD) \
 	-DCMAKE_INSTALL_PREFIX=. \
 	-DCMAKE_BUILD_TYPE=debug \
-	-DCC=$(CC) -DWITH_STATIC_LIB=ON \
+	-DCMAKE_C_COMPILER=$(CC) \
+	-DWITH_STATIC_LIB=ON \
 	../cmocka/ && \
 	$(MAKE_CMD) install
 
