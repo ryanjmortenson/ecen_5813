@@ -55,7 +55,7 @@ export $(MK_DIR)
 export $(CFLAGS)
 
 # Project output file names
-PROJECT_FILE=project1
+PROJECT_FILE=project2
 PROJECT_OUT_FILE=$(PROJECT_FILE).out
 LIB_OUT_FILE=lib$(PROJECT_FILE).a
 
@@ -154,19 +154,15 @@ ifneq ($(TYPE),release)
 endif
 
 # If VERBOSE is no turn of verbose flag
-ifneq ($(VERBOSE),NO)
-	CFLAGS+=-D VERBOSE
+ifneq ($(VERBOSE),no)
+	VERB=-D VERBOSE
 endif
 
-# Set a compile time flag if it is prvovided or set to current project
-ifneq ($(MAKECMDGOALS),test)
-	ifneq ($(FLAG),)
-		CFLAGS+=-D $(FLAG)
-	else
-		CFLAGS+=-D PROJECT2
-	endif
+# Set define of project 2 as default
+ifneq ($(FLAG),)
+	DEFINE=-D $(FLAG)
 else
-	CFLAGS+=-D UNITTEST
+	DEFINE=-D PROJECT2
 endif
 
 # Setup some build strings
@@ -176,18 +172,22 @@ BUILD_WITH=@echo "Building with $<"
 # Set PHONY for all targets that don't have outputs for tracking
 .PHONY: build compile-all debug allasm alli allobjdump clean super-clean test
 
-# Build will build project1
+# Build will build project
 build: $(OBJS)
 	$(MAKE) $(PROJECT_OUT_FILE)
 
 # PHONY target so you don't have to type .out
 test:
+	@echo $(MAKECMDGOALS)
+	@echo $(CFLAGS)
 	$(MAKE) $(UNIT_TEST_OUT)
 
+# Build the unit test binary
 $(UNIT_TEST_OUT): CFLAGS+=-I$(CMOCKA_INC_OUT_DIR)
 $(UNIT_TEST_OUT): $(CMOCKA_LIB) $(TEST_OBJS)
 	$(CC) $(CFLAGS) -o "$@" $(TEST_OBJS) $(CMOCKA_LIB)
 
+# Build the cmocka library
 $(CMOCKA_LIB):
 	@echo "Installing and making CMOCKA static library"
 	$(MK_DIR) $(CMOCKA_BUILD_DIR)
@@ -200,7 +200,7 @@ $(CMOCKA_LIB):
 	../cmocka/ && \
 	$(MAKE_CMD) install
 
-# Build will build project1
+# Build will build project library
 build-lib: $(OBJS)
 	$(MAKE) $(LIB_OUT_FILE)
 
@@ -212,8 +212,8 @@ debug:
 	@echo $(OUT_DIR)
 	@echo $(TEST_OBJS)
 
-# Compiles the project into project1 binary which can be executed with ./project1.out
-$(PROJECT_OUT_FILE): CFLAGS+=$(MAP_FLAG)
+# Compiles the project into project binary which can be executed with ./project*.out
+$(PROJECT_OUT_FILE): CFLAGS+=$(MAP_FLAG) $(DEFINE) $(VERB)
 $(PROJECT_OUT_FILE): $(OBJS)
 	$(BUILD_TARGET)
 	$(CC) $(CFLAGS) -o "$@" $(OBJS)
@@ -274,7 +274,7 @@ allobjdump: $(OBJS) $(PROJECT_OUT_FILE)
 	$(OBJDUMP) -D "$<" > "$@"
 
 # Builds .o files from .c files
-$(OUT_DIR)/%.o: CFLAGS+=-MD -MP
+$(OUT_DIR)/%.o: CFLAGS+=-MD -MP $(DEFINE) $(VERB)
 $(OUT_DIR)/%.o: $(APP_SRC_DIR)/%.c
 	$(BUILD_TARGET)
 	$(BUILD_WITH)
