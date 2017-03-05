@@ -83,7 +83,7 @@ cb_enum_t circbuf_full(circbuf_t * buf);
 cb_enum_t circbuf_empty(circbuf_t * buf);
 
 /*
- * \brief circbuf_peak: gets the index item from tail
+ * \brief circbuf_peek: gets the index item from tail
  *
  * \param buf: pointer to a pointer for the circular buffer structure
  * \param index: index from tail to get payload from
@@ -91,6 +91,6 @@ cb_enum_t circbuf_empty(circbuf_t * buf);
  * \return: success if empty or error if not empty
  *
  */
-cb_enum_t circbuf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload);
+cb_enum_t circbuf_peek(circbuf_t * buf, uint32_t index, uint8_t * payload);
 
 #endif // __CIRCBUF_H__

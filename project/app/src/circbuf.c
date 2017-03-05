@@ -97,7 +97,7 @@ cb_enum_t circbuf_add_item(circbuf_t * buf, uint8_t payload)
 
   // Return success
   return CB_ENUM_NO_ERROR;
-} // CircBufAddItem()
+} // circbuf_add_item()
 
 cb_enum_t circbuf_remove_item(circbuf_t * buf, uint8_t * payload)
 {
@@ -130,9 +130,9 @@ cb_enum_t circbuf_remove_item(circbuf_t * buf, uint8_t * payload)
 
   // Return success
   return CB_ENUM_NO_ERROR;
-} // CircBufRemoveItem()
+} // circbuf_remove_item()
 
-cb_enum_t circbuf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload)
+cb_enum_t circbuf_peek(circbuf_t * buf, uint32_t index, uint8_t * payload)
 {
   // Make a variable for
   int32_t diff = 0;
@@ -159,7 +159,7 @@ cb_enum_t circbuf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload)
   }
 
   return CB_ENUM_NO_ERROR;
-} // CircBufPeak()
+} // circbuf_peek()
 
 cb_enum_t circbuf_full(circbuf_t * buf)
 {
@@ -169,7 +169,7 @@ cb_enum_t circbuf_full(circbuf_t * buf)
   // Buffer is full return success
   if (buf->length == buf->count)
   {
-    return CB_ENUM_NO_ERROR;
+    return CB_ENUM_FULL;
   }
 
   // Buffer is not full return failure
@@ -184,7 +184,7 @@ cb_enum_t circbuf_empty(circbuf_t * buf)
   // Buffer is full return success
   if (buf->count == 0)
   {
-    return CB_ENUM_NO_ERROR;
+    return CB_ENUM_EMPTY;
   }
 
   // Buffer is not full return failure

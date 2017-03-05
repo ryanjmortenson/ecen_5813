@@ -31,7 +31,7 @@ void test_circbuf_ops_null_ptr(void **state)
   assert_int_equal(circbuf_destroy((circbuf_t *)NULL), CB_ENUM_NULL_POINTER);
   assert_int_equal(circbuf_add_item((circbuf_t *)NULL, 1), CB_ENUM_NULL_POINTER);
   assert_int_equal(circbuf_remove_item((circbuf_t *)NULL, &value), CB_ENUM_NULL_POINTER);
-  assert_int_equal(circbuf_peak((circbuf_t *)NULL, 1, &value), CB_ENUM_NULL_POINTER);
+  assert_int_equal(circbuf_peek((circbuf_t *)NULL, 1, &value), CB_ENUM_NULL_POINTER);
   assert_int_equal(circbuf_empty((circbuf_t *)NULL), CB_ENUM_NULL_POINTER);
   assert_int_equal(circbuf_full((circbuf_t *)NULL), CB_ENUM_NULL_POINTER);
 } // test_circbuf_init_null_ptr()
@@ -130,14 +130,14 @@ void test_circbuf_check_full(void **state)
     assert_int_equal(circbuf_add_item(buf, i), CB_ENUM_NO_ERROR);
   }
 
-  assert_int_equal(circbuf_full(buf), CB_ENUM_NO_ERROR);
+  assert_int_equal(circbuf_full(buf), CB_ENUM_FULL);
   assert_int_equal(circbuf_destroy(buf), CB_ENUM_NO_ERROR);
 } // test_circbuf_check_full()
 
 void test_circbuf_check_empty(void **state)
 {
   assert_int_equal(circbuf_init(&buf, BUF_SIZE), CB_ENUM_NO_ERROR);
-  assert_int_equal(circbuf_empty(buf), CB_ENUM_NO_ERROR);
+  assert_int_equal(circbuf_empty(buf), CB_ENUM_EMPTY);
   assert_int_equal(circbuf_add_item(buf, 1), CB_ENUM_NO_ERROR);
   assert_int_equal(circbuf_empty(buf), CB_ENUM_FAILURE);
   assert_int_equal(circbuf_destroy(buf), CB_ENUM_NO_ERROR);
