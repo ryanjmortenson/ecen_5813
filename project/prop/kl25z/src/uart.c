@@ -59,16 +59,18 @@ void uart_configure(uint32_t baud)
   // Calculate baud rate modulo devisor
   uint16_t brmd = (CORE_CLOCK / ((OVER_SAMPLE + 1) * baud));
 
-  // Set the SIM_SCGC5 register PORTA bit to 1
+  // Set the SIM_SCGC5 register PORTA bit to 1 which allows
+  // the clock to go to port a
   SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
 
   // Set the system gating clock control register UART0 bit to 1
+  // allowing clock to uart subsystem
   SIM_SCGC4 |= SIM_SCGC4_UART0_MASK;
 
   // Reset the SIM_SOPT2 register UART0 bits to 0
   SIM_SOPT2 &= ~SIM_SOPT2_UART0SRC_MASK;
 
-  // Reset the SIM_SOPT2 register UART0 bits to 10 which MCGFLLCLK
+  // Set the SIM_SOPT2 register UART0 bits to 10 which MCGFLLCLK
   SIM_SOPT2 |= SIM_SOPT2_UART0SRC(MCGFLLCLK);
 
   // Select ALT_2 usage to enable UART0 on pins
@@ -78,7 +80,7 @@ void uart_configure(uint32_t baud)
   // Set the oversample to OVER_SAMPLE
   UART0_C4 = UARTLP_C4_OSR(OVER_SAMPLE);
 
-  // Set the BOTHEDGE bit because the sample rate is really low
+  // Set the BOTHEDGE bit because the sample rate is low
   UART0_C5 = UART0_C5_BOTHEDGE_MASK;
 
   // Set the baud rate modulo divisor to the calculated value
