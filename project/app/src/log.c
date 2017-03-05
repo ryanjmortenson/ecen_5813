@@ -73,9 +73,9 @@ void log_flush()
 {
   // Loop until the buffer is empty
 #ifdef FRDM
-  while (circbuf_empty(transmit) != CB_ENUM_NO_ERROR);
+  while (circbuf_empty(transmit) != CB_ENUM_EMPTY);
 #else
-  while (circbuf_empty(transmit) != CB_ENUM_NO_ERROR)
+  while (circbuf_empty(transmit) != CB_ENUM_EMPTY)
   {
     uint8_t byte = 0;
     circbuf_remove_item(transmit, &byte);

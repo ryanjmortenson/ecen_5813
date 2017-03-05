@@ -50,23 +50,28 @@ uint8_t project_2_data_analysis()
 
     // Wait for input if there are less than NUM_ANALYSIS bytes in
     // circular buffer
-    if (circbuf_peak(receive, NUM_ANALYSIS, &byte) == CB_ENUM_BAD_INDEX)
+    if (circbuf_peek(receive, NUM_ANALYSIS, &byte) == CB_ENUM_BAD_INDEX)
     {
       scanf("%s", input);
       for (uint8_t i = 0; i < SCANF_SIZE; i++)
       {
+        // Break out of a null terminator is reached before scanf size
         if (input[i] == 0)
         {
           break;
         }
+
+        // Add each item to circular buffer
         circbuf_add_item(receive, input[i]);
       }
     }
+
+    // Zero out input for next read
     my_memzero(input, SCANF_SIZE);
 #endif // FRDM
 
     // See if there are NUM_ANALYSIS characters in the receive buffer
-    if (circbuf_peak(receive, NUM_ANALYSIS, &byte) == CB_ENUM_NO_ERROR)
+    if (circbuf_peek(receive, NUM_ANALYSIS, &byte) == CB_ENUM_NO_ERROR)
     {
       // Empty out circular buffer into a recv buffer for processing
       for (uint8_t i = 0; i < NUM_ANALYSIS; i++)
@@ -116,5 +121,4 @@ uint8_t project_2_data_analysis()
   log_destroy();
 
   return SUCCESS;
-
 } // project_2_data_analysis()

@@ -29,7 +29,7 @@ extern void UART0_IRQHandler()
   // Take a byte out of the circular buffer and send it
   if (UART0_S1 & UART_S1_RDRF_MASK)
   {
-    if (circbuf_full(receive) != CB_ENUM_NO_ERROR)
+    if (circbuf_full(receive) != CB_ENUM_FULL)
     {
       uint8_t rx_byte = uart_receive_byte();
       circbuf_add_item(receive, rx_byte);
@@ -38,7 +38,7 @@ extern void UART0_IRQHandler()
   // Transmit a byte until the buffer is empty then shut off the TIE
   else if (UART0_S1 & UART_S1_TDRE_MASK)
   {
-    if (circbuf_empty(transmit) != CB_ENUM_NO_ERROR)
+    if (circbuf_empty(transmit) != CB_ENUM_EMPTY)
     {
       circbuf_remove_item(transmit, &tx_byte);
       uart_send_byte(tx_byte);
