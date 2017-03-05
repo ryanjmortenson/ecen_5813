@@ -1,16 +1,31 @@
 #include <stdint.h>
 #include <stddef.h>
+#include "circbuf.h"
+#include "data.h"
 #include "memory.h"
 #include "project_defs.h"
 
-// REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#include <stdio.h>
+#define ASCII_NUM_OFFSET (48)
+#define ASCII_NUM_END (57)
+#define ASCII_ALPHA_OFFSET (55)
+#define ASCII_ALPHA_LOWER_START (97)
+#define ASCII_ALPHA_LOWER_STOP (122)
+#define ASCII_ALPHA_UPPER_START (65)
+#define ASCII_ALPHA_UPPER_STOP (90)
+#define MINUS_SIGN (45)
 
-#define ASCII_NUM_OFFSET 48
-#define ASCII_NUM_END 57
-#define ASCII_ALPHA_OFFSET 55
-#define MINUS_SIGN 45
-#define BASE_10 10
+#define BASE_MIN (2)
+#define BASE_MAX (36)
+
+#define EXCLAMATION (33)
+#define DOUBLE_QUOTE (34)
+#define SINGLE_QUOTE (39)
+#define OPEN_PAREN (40)
+#define CLOSE_PAREN (41)
+#define PERIOD (46)
+#define COLON (58)
+#define SEMICOLON (59)
+#define QUESTION (63)
 
 /*
  * Function definitions see data.h for documentation
@@ -29,7 +44,7 @@ int8_t * my_itoa(int8_t * str, int32_t data, int32_t base)
   }
 
   // Base is incorrect return pointer to str
-  if(base > 35)
+  if(base > BASE_MAX || base < BASE_MIN)
   {
     return start;
   }
@@ -113,7 +128,7 @@ int8_t big_to_little32(uint32_t * data, uint32_t length)
   CHECK_NULL(data);
 
   // Loop over data swapping bytes
-  for(int i = 0; i < length; i++)
+  for(uint32_t i = 0; i < length; i++)
   {
     uint32_t value = *(data + i);
     *(data + i) = ((value & 0xff000000) >> 24 |
@@ -131,6 +146,69 @@ int8_t little_to_big32(uint32_t * data, uint32_t length)
   return big_to_little32(data, length);
 } // little_to_big32()
 
+uint8_t analyze_bytes(uint8_t * buf, analysis_t * results, uint8_t num_bytes)
+{
+  uint32_t num = 0;
+  uint32_t alpha = 0;
+  uint32_t punc = 0;
+  uint32_t misc = 0;
+
+  // Check for null pointers
+  CHECK_NULL(buf);
+  CHECK_NULL(results);
+
+  // Loop over inputs and count number of each character
+  for(uint8_t i = 0; i < num_bytes; i++)
+  {
+
+    uint8_t item = *(buf + i);
+
+    // Add numbers
+    if (item >= ASCII_NUM_OFFSET && item <= ASCII_NUM_END)
+    {
+      num++;
+    }
+    // Add upper case letters
+    else if (item >= ASCII_ALPHA_UPPER_START &&
+             item <= ASCII_ALPHA_UPPER_STOP)
+    {
+      alpha++;
+    }
+    // Add lower case letters
+    else if (item >= ASCII_ALPHA_LOWER_START &&
+             item <= ASCII_ALPHA_LOWER_STOP)
+    {
+      alpha++;
+    }
+    // Add punctuation
+    else if (item == EXCLAMATION  ||
+             item == DOUBLE_QUOTE ||
+             item == SINGLE_QUOTE ||
+             item == OPEN_PAREN   ||
+             item == CLOSE_PAREN  ||
+             item == PERIOD       ||
+             item == COLON        ||
+             item == SEMICOLON    ||
+             item == QUESTION)
+    {
+      punc++;
+    }
+    // Add misc
+    else
+    {
+      misc++;
+    }
+  }
+
+  // Set members of results structure
+  results->alpha = alpha;
+  results->num = num;
+  results->punc = punc;
+  results->misc = misc;
+
+  return SUCCESS;
+}
+
 void print_memory(uint8_t * start, uint32_t length)
 {
   if (start == NULL)
@@ -140,10 +218,10 @@ void print_memory(uint8_t * start, uint32_t length)
   else
   {
     // Loop over memory printing hex output
-    for(int i = 0; i < length; i++)
+    for(uint32_t i = 0; i < length; i++)
     {
       PRINTF("0x%02x ", *(start + i));
     }
     PRINTF("\n");
   }
-}
+} // print_memory()

@@ -5,10 +5,14 @@ import multiprocessing
 import sys
 import traceback
 
+def process_char(char):
+    #return char + ', 0x' + char.encode('hex') + ' \n'
+    return char
+
 def recv_process(ser):
     try:
         while(True):
-            sys.stdout.write(ser.read())
+            sys.stdout.write(process_char(ser.read()))
             sys.stdout.flush()
     except:
         print("Done Receving")

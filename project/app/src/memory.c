@@ -6,7 +6,7 @@
  * Function definitions see memory.h for documentation
  */
 
-uint8_t my_memmove(uint8_t *src, uint8_t *dst, uint32_t length)
+uint8_t my_memmove(uint8_t *src, uint8_t *dst, int32_t length)
 {
   // Check for null pointers
   CHECK_NULL(src);
@@ -15,7 +15,7 @@ uint8_t my_memmove(uint8_t *src, uint8_t *dst, uint32_t length)
   // Handle overlap when dst starts in source
   if (dst > src && dst < src + length)
   {
-    for (int i = length - 1; i >= 0; i--)
+    for (int32_t i = length - 1; i >= 0; i--)
     {
       *(dst + i) = *(src + i);
     }
@@ -23,7 +23,7 @@ uint8_t my_memmove(uint8_t *src, uint8_t *dst, uint32_t length)
   // Handle the case when dst ends in source or dst doesn't overlap
   else
   {
-    for (int i = 0; i < length; i++)
+    for (int32_t i = 0; i < length; i++)
     {
       *(dst + i) = *(src + i);
     }
@@ -39,7 +39,7 @@ uint8_t my_memset(uint8_t *src, uint32_t length, uint8_t value)
   CHECK_NULL(src);
 
   // Copy value to src
-  for (int i = 0; i < length; i++)
+  for (uint32_t i = 0; i < length; i++)
   {
     *(src + i) = value;
   }
@@ -63,7 +63,7 @@ uint8_t my_reverse(uint8_t *src, uint32_t length)
   CHECK_NULL(src);
 
   // Reverse array by swapping elements around a center point
-  for (int i = 0; i < middle; i++)
+  for (uint32_t i = 0; i < middle; i++)
   {
     temp = *(src + end - i);
     *(src + end - i) = *(src + i);

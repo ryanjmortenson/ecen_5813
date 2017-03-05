@@ -1,17 +1,24 @@
 #ifndef __UNIT_TESTS_H__
 #define __UNIT_TESTS_H__
 
+#
 
 /*
- * \brief memory_unit: used to execute memory.c unit tests
+ * \brief test_memory: runs all unit tests for memory
  *
  */
-void memory_unit();
+uint32_t unit_test_memory();
 
 /*
- * \brief data_unit: used to execute data.c unit tests
+ * \brief test_data: runs all unit tests for data
  *
  */
-void data_unit();
+uint32_t unit_test_data();
+
+/*
+ * \brief test_circbuf: runs all unit tests for circbuf
+ *
+ */
+uint32_t unit_test_circbuf();
 
 #endif

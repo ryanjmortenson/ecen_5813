@@ -28,20 +28,25 @@ This project requires the following tool-chains to be able to build all targets:
 * **gcc-arm-none-eabi** - Used to build the project for FRDM-KL25Z.
 * **gcc** - Used to build the project for your development workstation.
 
-There are different targets in the make file that can be built.  When no platform is supplied with the PLATFORM=<platform> option the build will use the host machines compiler.
+There are different targets in the make file that can be built.  When no
+platform is supplied with the PLATFORM=*platform* option the build will use
+the host machines compiler.
 
 * **make** - Will build the current project for the host.
-* **make <c_file>.asm** - Output an assembly file for the source file specified.
+* **make *c_file*.asm** - Output an assembly file for the source file specified.
 * **make allasm** - Output all assembly files for the project.
-* **make <c_file>.i** - Output a preprocessor file for the source file specified.
+* **make *c_file*.i** - Output a preprocessor file for the source file specified.
 * **make alli** - Output all preprocessor files for the project.
-* **make <c_file>.o** - Output an object file for the source file specified.
+* **make *c_file*.o** - Output an object file for the source file specified.
 * **make compile-all** - Output all object files project.
-* **make <c_file>.map** - Output a map file for the source file specified.
-* **make clean** - Clean all files for the project 
+* **make *c_file*.map** - Output a map file for the source file specified.
+* **make test** - Create the unit tests for host.
+* **make build-lib** - Create a static library for the project.
+* **make clean** - Clean all files for the project.
+* **make super-clean** - Clean all files for the project and the cmocka out directory.
 
 There are three types for the PLATFROM option:
 
-* **host** - X86_64 Linux 
-* **frdm** - FRDM-KL25Z 
+* **host** - X86_64 Linux
+* **frdm** - FRDM-KL25Z
 * **bbb** - ARM Linux
