@@ -84,4 +84,4 @@ void test_my_reverse_null_ptr(void **state);
  */
 void test_my_reverse_max(void **state);
 
-#endif
+#endif // __UNIT_MEMORY_H__

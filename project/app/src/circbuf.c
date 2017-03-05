@@ -190,3 +190,20 @@ cb_enum_t circbuf_empty(circbuf_t * buf)
   // Buffer is not full return failure
   return CB_ENUM_FAILURE;
 } // CircBufEmpty()
+
+#ifdef UNITTEST
+// This is a test function used to set buffer to null
+cb_enum_t circbuf_null_buffer(circbuf_t * buf)
+{
+  // Check for null pointer
+  CB_CHECK_NULL(buf);
+
+  // Free the buffer
+  free(buf->buffer);
+
+  // Set internal buffer to null
+  buf->buffer = NULL;
+
+  return CB_ENUM_NO_ERROR;
+} // circbuf_null_buffer()
+#endif // UNITTEST

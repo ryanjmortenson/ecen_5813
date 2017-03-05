@@ -93,4 +93,12 @@ cb_enum_t circbuf_empty(circbuf_t * buf);
  */
 cb_enum_t circbuf_peek(circbuf_t * buf, uint32_t index, uint8_t * payload);
 
+/*
+ * \brief circbuf_null_buffer: nulls internal buffer
+ *
+ * \param buf: pointer to a pointer for the circular buffer structure
+ * \return: success/fail
+ *
+ */
+cb_enum_t circbuf_null_buffer(circbuf_t * buf);
 #endif // __CIRCBUF_H__
