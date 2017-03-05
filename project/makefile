@@ -112,22 +112,27 @@ ifeq ($(PLATFORM),frdm)
             -D FRDM
 	OBJS=$(25Z_OBJS) \
          $(KL25Z_PROP_OBJS)
+	TEST_OBJS=$(25Z_TEST_OBJS)
 	OUT_DIR=$(25Z_APP_OUT)
 else ifeq ($(PLATFORM),bbb)
 	CC=$(ARM_CC)
 	OBJS=$(ARM_OBJS)
+	TEST_OBJS=$(ARM_TEST_OBJS)
 	OUT_DIR=$(ARM_APP_OUT)
 else ifneq ($(findstring arm,$(shell uname -a)),)
 	CC=gcc
 	OBJS=$(ARM_OBJS)
+	TEST_OBJS=$(ARM_TEST_OBJS)
 	OUT_DIR=$(ARM_APP_OUT)
 else ifeq ($(PLATFORM),host)
 	CC=$(X86_CC)
 	OBJS=$(X86_OBJS)
+	TEST_OBJS=$(X86_TEST_OBJS)
 	OUT_DIR=$(X86_APP_OUT)
 else
 	CC=gcc
 	OBJS=$(X86_OBJS)
+	TEST_OBJS=$(X86_TEST_OBJS)
 	OUT_DIR=$(X86_APP_OUT)
 endif
 
@@ -180,8 +185,8 @@ test:
 	$(MAKE) $(UNIT_TEST_OUT)
 
 $(UNIT_TEST_OUT): CFLAGS+=-I$(CMOCKA_INC_OUT_DIR)
-$(UNIT_TEST_OUT): $(CMOCKA_LIB) $(OBJS)
-	$(CC) $(CFLAGS) -o "$@" $(OBJS) $(CMOCKA_LIB)
+$(UNIT_TEST_OUT): $(CMOCKA_LIB) $(TEST_OBJS)
+	$(CC) $(CFLAGS) -o "$@" $(TEST_OBJS) $(CMOCKA_LIB)
 
 $(CMOCKA_LIB):
 	@echo "Installing and making CMOCKA static library"

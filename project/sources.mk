@@ -36,7 +36,9 @@ SRC_LIST = $(subst $(APP_SRC_DIR)/,,$(APP_SRC))
 X86_OBJS = $(subst src,out/$(X86),$(patsubst %.c,%.o,$(APP_SRC)))
 ARM_OBJS = $(subst src,out/$(ARM),$(patsubst %.c,%.o,$(APP_SRC)))
 25Z_OBJS = $(subst src,out/$(25Z),$(patsubst %.c,%.o,$(APP_SRC)))
-TEST_OBJS = $(subst src,out/$(X86),$(patsubst %.c,%.o,$(TEST_SRC)))
+X86_TEST_OBJS = $(subst src,out/$(X86),$(patsubst %.c,%.o,$(TEST_SRC)))
+ARM_TEST_OBJS = $(subst src,out/$(X86),$(patsubst %.c,%.o,$(TEST_SRC)))
+25Z_TEST_OBJS = $(subst src,out/$(X86),$(patsubst %.c,%.o,$(TEST_SRC)))
 
 # Build a list of .d files to clean
 APP_DEPS += $(patsubst %.o,%.d, $(OBJS) $(25Z_OBJS) $(ARM_OBJS))
