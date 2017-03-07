@@ -25,16 +25,25 @@ char * log_id_str[] =
 };
 #endif // VERBOSE
 
-uint8_t create_log_item(log_item_t ** item, log_id_t log_id, uint8_t * payload)
+uint8_t create_log_item(log_item_t ** item, log_id_t log_id, uint8_t * payload, int16_t length)
 {
-  uint8_t length = 0;
   uint8_t * start = payload;
 
   // Check for null pointers
   CHECK_NULL(item);
 
-  if (payload != NULL)
+  // Check to make sure length isn't less than -1 which indicates calculate
+  // the length of a c string
+  if (length < -1)
   {
+    return FAILURE;
+  }
+
+  if (payload != NULL && length == -1)
+  {
+    // Set length to zero
+    length = 0;
+
     // Find the length of the string
     while(*(start))
     {

@@ -15,14 +15,17 @@
 #define LOG_RAW_STRING(str) log_string((int8_t *)str)
 #define LOG_RAW_INT(integer) log_integer(integer)
 #define LOG_RAW_FLUSH() log_flush()
-#define LOG_ITEM(item, id, buf) create_log_item(&item, id, (uint8_t *)buf); \
-                                log_item(item)
+#define LOG_ITEM(item) log_item(item)
+#define CREATE_ITEM_STRING(item, log_id, buf) create_log_item(&item, log_id, (uint8_t *)buf, -1)
+#define CREATE_ITEM_DATA(item, log_id, buf, len) create_log_item(&item, log_id, (uint8_t *)buf, len)
 #else
 #define LOG_RAW_DATA(bytes, length)
 #define LOG_RAW_STRING(str)
 #define LOG_RAW_INT(integer)
 #define LOG_RAW_FLUSH()
-#define LOG_ITEM(item, log_id, buffer)
+#define LOG_ITEM(item)
+#define CREATE_ITEM_STRING(item, log_id, buf)
+#define CREATE_ITEM_DATA(item, log_id, buf, len)
 #endif // VERBOSE
 
 

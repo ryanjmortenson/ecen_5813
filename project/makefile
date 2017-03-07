@@ -27,11 +27,18 @@
 # * **make super-clean** - Clean all files for the project and the cmocka out
 #                          directory
 #
-# There are three types for the PLATFROM option:
+# There are three types for the PLATFORM option:
 #
 # * **host** - X86_64 Linux
 # * **frdm** - FRDM-KL25Z
 # * **bbb** - ARM Linux
+#
+# There are 3 different LOGGER options
+# * **INTERRUPTS** - Binary logger using interrupts and circular buffer
+# * **BINARY** - Binary logger using circular buffer
+# * **CIRCBUF** - Text logging with circular buffer
+# * **TEXT** - Text logging using interrupts and circular buffer
+#
 ##############################################################################
 
 # Some commands used for building
@@ -151,18 +158,35 @@ endif
 # If release isn't specfied build with debug symbols
 ifneq ($(TYPE),release)
 	CFLAGS+=-g3 -O0
+else
+	CFLAGS+=-03
 endif
 
 # If VERBOSE is no turn of verbose flag
 ifneq ($(VERBOSE),no)
-	VERB=-D VERBOSE
+	CFLAGS+=-D VERBOSE
+endif
+
+# Setup logger options
+ifeq ($(LOGGER),INTERRUPTS)
+	CFLAGS+=-D BINARY_LOGGER \
+          -D UART_INTERRUPTS \
+          -D CIRCBUF
+else ifeq ($(LOGGER),BINARY)
+	CFLAGS+=-D BINARY_LOGGER \
+          -D CIRCBUF
+else ifeq ($(LOGGER),TEXT)
+	CFLAGS+=-D CIRCBUF \
+          -D UART_INTERRUPTS
+else ifeq ($(LOGGER),CIRCBUF)
+	CFLAGS+=-D CIRCBUF
 endif
 
 # Set define of project 2 as default
 ifneq ($(FLAG),)
-	DEFINE=-D $(FLAG)
+	CFLAGS+=-D $(FLAG)
 else
-	DEFINE=-D PROJECT2
+	CFLAGS+=-D PROJECT2
 endif
 
 # Setup some build strings

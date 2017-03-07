@@ -19,11 +19,6 @@ extern circbuf_t * transmit;
 
 uint8_t project_2_data_analysis()
 {
-  // Make a buffer on analysis + 1 size for null terminator
-  uint8_t recv_buffer[NUM_ANALYSIS + 1] = {0};
-  int8_t itoa_buffer[ITOA_SIZE] = {0};
-
-  analysis_t result;
 
 #ifdef VERBOSE
   // No need for a log item if not verbose
@@ -35,9 +30,18 @@ uint8_t project_2_data_analysis()
   {
     return FAILURE;
   }
+
   // Send log system initialized
-  LOG_ITEM(item, LOG_ID_LOGGER_INITIALIZED, NULL);
-  LOG_ITEM(item, LOG_ID_SYSTEM_INITIALIZED, NULL);
+  CREATE_ITEM_DATA(item, LOG_ID_LOGGER_INITIALIZED, NULL, 0);
+  LOG_ITEM(item);
+  CREATE_ITEM_DATA(item, LOG_ID_SYSTEM_INITIALIZED, NULL, 0);
+  LOG_ITEM(item);
+#ifdef UART_INTERRUPTS
+  // Make a buffer on analysis + 1 size for null terminator
+  uint8_t recv_buffer[NUM_ANALYSIS + 1] = {0};
+
+  // Hold results of analysis
+  analysis_t result;
 
   // Loop forever receiving NUM_ANALYSIS bytes at a time and analyzing
   while(1)
@@ -69,7 +73,6 @@ uint8_t project_2_data_analysis()
     // Zero out input for next read
     my_memzero(input, SCANF_SIZE);
 #endif // FRDM
-
     // See if there are NUM_ANALYSIS characters in the receive buffer
     if (circbuf_peek(receive, NUM_ANALYSIS, &byte) == CB_ENUM_NO_ERROR)
     {
@@ -78,44 +81,76 @@ uint8_t project_2_data_analysis()
       {
         if (circbuf_remove_item(receive, (recv_buffer + i)) != CB_ENUM_NO_ERROR)
         {
-          LOG_ITEM(item, LOG_ID_ERROR, "Circbuf remove failure");
+          CREATE_ITEM_STRING(item, LOG_ID_ERROR, "Circbuf remove failure");
+          LOG_ITEM(item);
         }
       }
 
       // Return received buffer
-      LOG_ITEM(item, LOG_ID_DATA_RECEIVED, recv_buffer);
-
-      // Add a null terminator to the end of the receive buffer for
-      // retransmit
-      recv_buffer[NUM_ANALYSIS + 1] = 0;
+      CREATE_ITEM_DATA(item, LOG_ID_DATA_RECEIVED, recv_buffer, NUM_ANALYSIS);
+      LOG_ITEM(item);
 
       // Indicate analysis has started
-      LOG_ITEM(item, LOG_ID_DATA_ANALYSIS_STARTED, NULL);
+      CREATE_ITEM_DATA(item, LOG_ID_DATA_ANALYSIS_STARTED, NULL, 0);
+      LOG_ITEM(item);
 
       // Do analysis
       if (analyze_bytes(recv_buffer, &result, NUM_ANALYSIS) != SUCCESS)
       {
-        LOG_ITEM(item, LOG_ID_ERROR, "Analyze bytes failure");
+        CREATE_ITEM_STRING(item, LOG_ID_ERROR, "Analyze bytes failure");
+        LOG_ITEM(item);
         return FAILURE;
       }
 
+#ifdef BINARY_LOGGER
       // Convert alpha, num, punc, and mis values to report over log
-      my_itoa(itoa_buffer, result.alpha, BASE_10);
-      LOG_ITEM(item, LOG_ID_DATA_ALPHA_COUNT, itoa_buffer);
-      my_itoa(itoa_buffer, result.num, BASE_10);
-      LOG_ITEM(item, LOG_ID_DATA_NUMERIC_COUNT, itoa_buffer);
-      my_itoa(itoa_buffer, result.punc, BASE_10);
-      LOG_ITEM(item, LOG_ID_DATA_PUNCTUATION_COUNT, itoa_buffer);
-      my_itoa(itoa_buffer, result.misc, BASE_10);
-      LOG_ITEM(item, LOG_ID_DATA_MISC_COUNT, itoa_buffer);
+      CREATE_ITEM_DATA(item, LOG_ID_DATA_ALPHA_COUNT, &result.alpha, sizeof(result.alpha));
+      LOG_ITEM(item);
 
+      CREATE_ITEM_DATA(item, LOG_ID_DATA_NUMERIC_COUNT, &result.num, sizeof(result.num));
+      LOG_ITEM(item);
+
+      CREATE_ITEM_DATA(item, LOG_ID_DATA_PUNCTUATION_COUNT, &result.punc, sizeof(result.punc));
+      LOG_ITEM(item);
+
+      CREATE_ITEM_DATA(item, LOG_ID_DATA_MISC_COUNT, &result.misc, sizeof(result.misc));
+      LOG_ITEM(item);
+#else // BINARY_LOGGER
+      // Convert alpha, num, punc, and mis values to report over log
+      int8_t itoa_buffer[ITOA_SIZE] = {0};
+      my_itoa(itoa_buffer, result.alpha, BASE_10);
+      CREATE_ITEM_STRING(item, LOG_ID_DATA_ALPHA_COUNT, itoa_buffer);
+      LOG_ITEM(item);
+
+      my_itoa(itoa_buffer, result.num, BASE_10);
+      CREATE_ITEM_STRING(item, LOG_ID_DATA_NUMERIC_COUNT, itoa_buffer);
+      LOG_ITEM(item);
+
+      my_itoa(itoa_buffer, result.punc, BASE_10);
+      CREATE_ITEM_STRING(item, LOG_ID_DATA_PUNCTUATION_COUNT, itoa_buffer);
+      LOG_ITEM(item);
+
+      my_itoa(itoa_buffer, result.misc, BASE_10);
+      CREATE_ITEM_STRING(item, LOG_ID_DATA_MISC_COUNT, itoa_buffer);
+      LOG_ITEM(item);
+#endif // BINARY_LOGGER
       // Indicate analysis is complete
-      LOG_ITEM(item, LOG_ID_DATA_ANALYSIS_COMPLETED, NULL);
+      CREATE_ITEM_DATA(item, LOG_ID_DATA_ANALYSIS_COMPLETED, NULL, 0);
+      LOG_ITEM(item);
     }
   }
-
+#else // UART_INTERRUPTS
+#ifdef FRDM
+  for (uint8_t i = 0; i < NUM_ANALYSIS; i++)
+  {
+    int8_t byte = uart_receive_byte();
+    uart_send_byte(byte);
+  }
+#endif // FRDM
+#endif // UART_INTERRUPTS
   // System Halted
-  LOG_ITEM(item, LOG_ID_SYSTEM_HALTED, NULL);
+  CREATE_ITEM_DATA(item, LOG_ID_SYSTEM_HALTED, NULL, 0);
+  LOG_ITEM(item);
 
   // Destroy logs
   log_destroy();

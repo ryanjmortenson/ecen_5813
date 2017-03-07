@@ -49,7 +49,7 @@ typedef struct log_item_struct
  * \return: success/fail
  *
  */
-uint8_t create_log_item(log_item_t ** item, log_id_t log_id, uint8_t * payload);
+uint8_t create_log_item(log_item_t ** item, log_id_t log_id, uint8_t * payload, int16_t length);
 
 /*
  * \brief destroy_log_item: creates a log item

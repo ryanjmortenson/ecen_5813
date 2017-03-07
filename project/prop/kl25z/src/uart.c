@@ -90,13 +90,21 @@ void uart_configure(uint32_t baud)
   // Enable the transmitter and receiver and their interrupts
   UART0_C2 = UARTLP_C2_RE_MASK | UARTLP_C2_TE_MASK | UART_C2_RIE_MASK;
 
+#ifdef UART_INTERRUPTS
+  // Add receive interrupt
+  UART0_C2 |= UART_C2_RIE_MASK;
+
   // Enable the UART0 IRQ
   NVIC_EnableIRQ(UART0_IRQn);
+#endif // UART_INTERRUPTS
 
 } // uart_configure()
 
 void uart_send_byte(uint8_t byte)
 {
+#ifndef UART_INTERRUPTS
+  while(!(UART0_S1 & UART0_S1_TDRE_MASK));
+#endif
   UART0_D = byte;
 } // uart_send_byte()
 
@@ -115,5 +123,8 @@ int8_t uart_send_byte_n(uint8_t * bytes, uint32_t length)
 
 uint8_t uart_receive_byte()
 {
+#ifndef UART_INTERRUPTS
+  while (!(UART0_S1 & UART_S1_RDRF_MASK));
+#endif
   return UART0_D;
 } // uart_receive_byte()
