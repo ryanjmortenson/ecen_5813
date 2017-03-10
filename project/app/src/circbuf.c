@@ -104,6 +104,7 @@ cb_enum_t circbuf_remove_item(circbuf_t * buf, uint8_t * payload)
   // Check for null pointer
   CB_CHECK_NULL(buf);
   CB_CHECK_NULL(buf->buffer);
+  CB_CHECK_NULL(payload);
 
   // Make sure there is an item to read
   if (buf->count == 0)
