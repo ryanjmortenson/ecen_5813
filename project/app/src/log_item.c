@@ -40,7 +40,7 @@ uint8_t create_log_item(log_item_t ** item, log_id_t log_id, uint8_t * payload, 
 
   // Check to make sure length isn't less than -1 which indicates calculate
   // the length of a c string
-  if (length < -1)
+  if (length < LOG_ITEM_STRING)
   {
     return FAILURE;
   }
