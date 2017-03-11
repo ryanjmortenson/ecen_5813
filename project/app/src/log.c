@@ -1,8 +1,6 @@
 #include <stdint.h>
 #include "circbuf.h"
-#include "data.h"
 #include "log.h"
-#include "log_item.h"
 #include "project_defs.h"
 
 #ifdef FRDM
@@ -105,42 +103,6 @@ void log_flush()
 #endif // CIRCBUF
 } // log_flush()
 
-uint8_t log_item(log_item_t * item)
-{
-  if (item == NULL)
-  {
-    LOG_RAW_STRING("\nLog Item is null");
-    return FAILURE;
-  }
-
-#ifdef BINARY_LOGGER
-  LOG_RAW_DATA(&item->log_length, sizeof(item->log_length));
-  LOG_RAW_DATA(&item->log_id, sizeof(item->log_id));
-  LOG_RAW_DATA(item->payload, item->log_length);
-#else
-#ifdef VERBOSE
-  int8_t itoa_buffer[10];
-#endif // VERBOSE
-  // Place the length on the line
-  LOG_RAW_STRING("\nLog Payload Length: ");
-  LOG_RAW_STRING(my_itoa(itoa_buffer, item->log_length, 10));
-  LOG_RAW_STRING("\nLog ID: ");
-  LOG_RAW_STRING(log_id_str[item->log_id]);
-  LOG_RAW_STRING("\nLog Payload: ");
-  LOG_RAW_DATA(item->payload, item->log_length);
-  LOG_RAW_STRING("\n");
-#endif // BINARY_LOGGER
-
-  // Start tranmission and wait for the circular buffer to empty
-#ifdef FRDM
-#ifdef UART_INTERRUPTS
-  TRANSMIT_READY;
-#endif // UART_INTERRUPTS
-#endif // FRDM
-  LOG_RAW_FLUSH();
-
-  return SUCCESS;
-} // log_item()
 
 uint8_t log_init()
 {

@@ -1,9 +1,10 @@
-
 #ifndef __LOG_ITEM_H__
 #define __LOG_ITEM_H__
 
 #include <stdint.h>
 #include "log.h"
+
+#define LOG_ITEM_STRING (-1)
 
 // Enum of log ids used in log item structure
 typedef enum log_id
@@ -58,5 +59,13 @@ uint8_t create_log_item(log_item_t ** item, log_id_t log_id, uint8_t * payload, 
  *
  */
 uint8_t destroy_log_item(log_item_t * _item);
+
+/*
+ * \brief log_item: creates a log item
+ * \param log_item: double pointer to log item structure to be destroyed
+ * \return: success/fail
+ *
+ */
+uint8_t log_item(log_item_t * item);
 
 #endif // __LOG_ITEM_H__
