@@ -94,7 +94,7 @@ MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
 
 # Set define of project 2 as default
 ifeq ($(PROJECT),)
-	PROJECT=2
+	PROJECT=3
 else
 	PROJECT=$(PROJECT)
 endif

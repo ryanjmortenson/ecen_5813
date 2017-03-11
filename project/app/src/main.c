@@ -6,6 +6,10 @@
 #include "project2.h"
 #endif
 
+#ifdef FRDM
+#include "spi.h"
+#endif // FRDM
+
 int main()
 {
 
@@ -21,5 +25,11 @@ int main()
   // Execute the required functions for project2
   project_2_data_analysis();
 #endif // PROJECT2
+
+#ifdef PROJECT3
+#ifdef FRDM
+  spi_configure();
+#endif // FRDM
+#endif // PROJECT3
   return 0;
 }
