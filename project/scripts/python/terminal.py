@@ -5,8 +5,12 @@ import multiprocessing
 import sys
 import traceback
 
-def process_char(char):
-    #return '0x{} '.format(char.encode('hex'))
+process_char = None
+
+def to_hex(char):
+    return '0x{} '.format(char.encode('hex'))
+
+def normal(char):
     return char
 
 def recv_process(ser):
@@ -27,9 +31,17 @@ if __name__ == "__main__":
                         help="COM port for Linux usually /dev/ttyUSB* Windows usually COM*")
     parser.add_argument("baud_rate", type=int,
                         help="Baud rate to use for communication")
+    parser.add_argument("--hex", "-H", action="store_true",
+                        help="Display data received in hex")
 
     # Parse args
     args = parser.parse_args()
+
+    if args.hex == True:
+        process_char = to_hex
+    else:
+        process_char = normal
+
 
     # Instantiate serial object
     ser = serial.Serial(
