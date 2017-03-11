@@ -12,6 +12,9 @@
 // Use oversampling of 8 + 1
 #define OVER_SAMPLE (0x08)
 
+// Shift for high byte of bdrm
+#define BRMD_HIGH_SHIFT (8)
+
 // Used to put the transmit/receive into GPIO
 #define ALT_2 (2)
 
@@ -84,7 +87,7 @@ void uart_configure(uint32_t baud)
   UART0_C5 = UART0_C5_BOTHEDGE_MASK;
 
   // Set the baud rate modulo divisor to the calculated value
-  UART0_BDH = (brmd >> 8) & UARTLP_BDH_SBR_MASK;
+  UART0_BDH = (brmd >> BRMD_HIGH_SHIFT) & UARTLP_BDH_SBR_MASK;
   UART0_BDL = (brmd & UARTLP_BDL_SBR_MASK);
 
   // Enable the transmitter and receiver and their interrupts
