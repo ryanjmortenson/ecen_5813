@@ -7,10 +7,10 @@
 struct circbuf
 {
   uint8_t * buffer;
-  uint8_t * head;
-  uint8_t * tail;
+  volatile uint8_t * head;
+  volatile uint8_t * tail;
+  volatile uint8_t count;
   uint16_t length;
-  uint8_t count;
 };
 
 cb_enum_t circbuf_init(circbuf_t ** buf, uint16_t length)
@@ -42,6 +42,7 @@ cb_enum_t circbuf_init(circbuf_t ** buf, uint16_t length)
   (*buf)->length   = length;
   (*buf)->count    = 0;
 
+  // Make buffer all zeros
   my_memzero((*buf)->buffer, length);
 
   // Return success
@@ -141,6 +142,7 @@ cb_enum_t circbuf_peek(circbuf_t * buf, uint32_t index, uint8_t * payload)
   // Check for null pointer
   CB_CHECK_NULL(buf);
   CB_CHECK_NULL(buf->buffer);
+  CB_CHECK_NULL(payload);
 
   // Make sure there are enough items to have the index item
   if (index > buf->count)
