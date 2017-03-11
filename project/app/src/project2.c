@@ -9,7 +9,7 @@
 
 #ifdef FRDM
 #include "uart.h"
-#else
+#else // FRDM
 #include "memory.h"
 #endif // FRDM
 
