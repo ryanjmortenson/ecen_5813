@@ -27,8 +27,6 @@ extern void UART0_IRQHandler()
   // Critical section don't allow an interrupt in an interrupt
   NVIC_DisableIRQ(UART0_IRQn);
 
-  uint8_t tx_byte = 0;
-
   // Take a byte out of the circular buffer and send it
   if (UART0_S1 & UART_S1_RDRF_MASK)
   {
@@ -43,6 +41,7 @@ extern void UART0_IRQHandler()
   {
     if (circbuf_empty(transmit) != CB_ENUM_EMPTY)
     {
+      uint8_t tx_byte = 0;
       circbuf_remove_item(transmit, &tx_byte);
       uart_send_byte(tx_byte);
     }
