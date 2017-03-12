@@ -30,6 +30,10 @@ void spi_configure()
   PORTD_PCR2 = PORT_PCR_MUX(ALT_2);
   PORTD_PCR3 = PORT_PCR_MUX(ALT_2);
 
+  // Setup the baud rate for the slowest data transmission
+  SPI0_BR |= SPI_BR_SPR(7);
+  SPI0_BR |= SPI_BR_SPPR(8);
+
   // Set device to master
   SPI0_C1 |= SPI_C1_MSTR_MASK | SPI_C1_SPE_MASK;
 
@@ -37,6 +41,11 @@ void spi_configure()
 
 void spi_send_byte(uint8_t byte)
 {
+  for (uint8_t test = 0; test < 255; test++)
+  {
+    while(!(SPI0_S & SPI_S_SPTEF_MASK));
+    SPI0_D = test;
+  }
 } // spi_send_byte()
 
 int8_t spi_send_byte_n(uint8_t * bytes, uint32_t length)

@@ -24,8 +24,6 @@ int main()
 #endif // PROJECT1
 
 #ifdef PROJECT2
-  // Execute the required functions for project3
-  project_3_spi();
   // Execute the required functions for project2
   project_2_data_analysis();
 #endif // PROJECT2
@@ -33,7 +31,6 @@ int main()
 #ifdef PROJECT3
   // Execute the required functions for project3
   project_3_spi();
-  // Execute the required functions for project2
 #endif // PROJECT3
 
   return 0;
