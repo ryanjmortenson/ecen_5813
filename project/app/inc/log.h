@@ -4,9 +4,6 @@
 #include <stdint.h>
 #include "log_item.h"
 
-#define INT_STRING "Integer: "
-#define DATA_STRING "Data: "
-
 #ifdef VERBOSE
 #define LOG_RAW_DATA(bytes, length) log_data((uint8_t *)bytes, length)
 #define LOG_RAW_STRING(str) log_string((int8_t *)str)

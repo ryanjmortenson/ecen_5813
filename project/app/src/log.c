@@ -26,14 +26,17 @@ int8_t log_data(uint8_t * bytes, uint8_t length)
   for (uint8_t i = 0; i < length; i++)
   {
 #ifdef CIRCBUF
+    // Put characters in circular buffer
     if (circbuf_add_item(transmit, *(bytes + i)) != CB_ENUM_NO_ERROR)
     {
       return FAILURE;
     }
 #else // CIRCBUF
 #ifdef FRDM
+    // Send byte over uart for FRDM platform
     uart_send_byte(*(bytes + i));
 #else // FRDM
+    // Print character to terminal for non-FRDM platforms
     printf("%c", *(bytes + i));
 #endif // FRDM
 #endif // CIRCBUF
@@ -51,14 +54,17 @@ int8_t log_string(int8_t * str)
   while(*str)
   {
 #ifdef CIRCBUF
+    // Put characters in circular buffer
     if (circbuf_add_item(transmit, (*str++)) != CB_ENUM_NO_ERROR)
     {
       return FAILURE;
     }
 #else // CIRCBUF
 #ifdef FRDM
+    // Send byte over uart for FRDM platform
     uart_send_byte(*str++);
 #else  // FRDM
+    // Print character to terminal for non-FRDM platforms
     printf("%c", *str++);
 #endif // FRDM
 #endif // CIRCBUF
@@ -83,6 +89,8 @@ void log_flush()
   while (circbuf_empty(transmit) != CB_ENUM_EMPTY)
   {
 #ifndef UART_INTERRUPTS
+    // If uart interrupts aren't being used pull items from buffer and
+    // send them using uart
     uint8_t byte = 0;
     circbuf_remove_item(transmit, &byte);
     uart_send_byte(byte);
@@ -92,7 +100,7 @@ void log_flush()
   }
 
 #else // FRDM
-  // Loop until the buffer is empty placing items in circbuf
+  // Loop until the buffer is empty printing characters to the terminal
   while (circbuf_empty(transmit) != CB_ENUM_EMPTY)
   {
     uint8_t byte = 0;
