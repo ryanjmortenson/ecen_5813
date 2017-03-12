@@ -125,8 +125,8 @@ ifeq ($(PLATFORM),frdm)
 	CFLAGS+=$(KL25Z_CFLAGS) \
             -I$(KL25Z_PROP_INC_DIR) \
             -D FRDM
-	OBJS=$(25Z_OBJS) \
-         $(KL25Z_PROP_OBJS)
+	OBJS=$(KL25Z_PROP_OBJS) \
+	       $(25Z_OBJS)
 	TEST_OBJS=$(25Z_TEST_OBJS)
 	OUT_DIR=$(25Z_APP_OUT)
 else ifeq ($(PLATFORM),bbb)
@@ -165,7 +165,7 @@ endif
 
 # If release isn't specfied build with debug symbols
 ifneq ($(TYPE),release)
-	CFLAGS+=-g3 -O0
+	CFLAGS+=-g3 -Og
 else
 	CFLAGS+=-O3
 endif
@@ -354,8 +354,8 @@ $(X86_OUT): $(X86_OBJS)
 
 # Build the 25z binary and places it in out/kl25z/main
 $(25Z_OUT): CFLAGS+=$(MAP_FLAG)
-$(25Z_OUT): $(25Z_OBJS) $(KL25Z_PROP_OBJS)
+$(25Z_OUT): $(KL25Z_PROP_OBJS) $(25Z_OBJS)
 	$(BUILD_TARGET)
 	$(shell $(MK_DIR) $(25Z_OUT_DIR))
-	$(CC) $(CFLAGS) -o "$@" $(25Z_OBJS) $(KL25Z_PROP_OBJS)
+	$(CC) $(CFLAGS) -o "$@" $(KL25Z_PROP_OBJS) $(25Z_OBJS)
 	$(SIZE) $@

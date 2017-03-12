@@ -4,11 +4,13 @@
 
 #ifdef PROJECT2
 #include "project2.h"
+#include "project3.h"
 #endif
 
-#ifdef FRDM
-#include "spi.h"
-#endif // FRDM
+#ifdef PROJECT3
+#include "project2.h"
+#include "project3.h"
+#endif
 
 int main()
 {
@@ -22,14 +24,17 @@ int main()
 #endif // PROJECT1
 
 #ifdef PROJECT2
+  // Execute the required functions for project3
+  project_3_spi();
   // Execute the required functions for project2
   project_2_data_analysis();
 #endif // PROJECT2
 
 #ifdef PROJECT3
-#ifdef FRDM
-  spi_configure();
-#endif // FRDM
+  // Execute the required functions for project3
+  project_3_spi();
+  // Execute the required functions for project2
 #endif // PROJECT3
+
   return 0;
 }

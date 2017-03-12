@@ -7,7 +7,13 @@ KL25Z_CFLAGS=-specs=nosys.specs \
              -mcpu=cortex-m0plus \
              -mthumb \
              -T "MKL25Z128xxx4_flash.ld" \
-             -Xlinker --gc-sections -L"./prop/kl25z/linker"
+             -L"./prop/kl25z/linker"
+
+# If release is specified remove unused code
+ifeq ($(TYPE),release)
+	KL25Z_CFLAGS+=-Xlinker --gc-sections \
+                     -Xlinker --print-gc-sections
+endif
 
 # Set up rules for proprietary kl25z targets
 $(KL25Z_PROP_OUT)/%.o: CFLAGS+=-MD -MP

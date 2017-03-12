@@ -8,10 +8,12 @@
 // Used to put the transmit/receive into GPIO
 #define ALT_2 (2)
 
-void spi_configure()
+extern void SPI0_IRQHandler()
 {
 
-  uint8_t res = 200;
+}
+void spi_configure()
+{
 
   // Set the SIM_SCGC5 register PORTD bit to 1 which allows
   // the clock to go to port d
@@ -23,7 +25,7 @@ void spi_configure()
   SIM_SCGC4 |= SIM_SCGC4_SPI0_MASK;
 
   // Select ALT_2 usage to enable SPI0 on pins
-  PORTD_PCR0 = PORT_PCR_MUX(res);
+  PORTD_PCR0 = PORT_PCR_MUX(ALT_2);
   PORTD_PCR1 = PORT_PCR_MUX(ALT_2);
   PORTD_PCR2 = PORT_PCR_MUX(ALT_2);
   PORTD_PCR3 = PORT_PCR_MUX(ALT_2);

@@ -17,6 +17,7 @@ NON_MAIN_SRC+= \
 	$(APP_SRC_DIR)/log_item.c \
 	$(APP_SRC_DIR)/project1.c \
 	$(APP_SRC_DIR)/project2.c \
+	$(APP_SRC_DIR)/project3.c \
 	$(APP_SRC_DIR)/log.c
 
 APP_SRC+= \
