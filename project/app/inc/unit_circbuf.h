@@ -40,11 +40,18 @@ void test_circbuf_add_full(void **state);
 void test_circbuf_remove_empty(void **state);
 
 /*
- * \brief test_circbuf_wrap_add_remove: test that the circular buffer wraps
- *                                      correctly
+ * \brief test_circbuf_wrap_add: test that the circular buffer wraps correctly
  *
  */
-void test_circbuf_wrap_add_remove(void **state);
+void test_circbuf_wrap_add(void **state);
+
+
+/*
+ * \brief test_circbuf_wrap_remove: test that the circular buffer wraps
+ *                                  correctly
+ *
+ */
+void test_circbuf_wrap_remove(void **state);
 
 /*
  * \brief test_circbuf_check_full: test circbuf_full function works

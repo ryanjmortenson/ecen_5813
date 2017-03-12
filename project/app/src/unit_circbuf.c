@@ -119,7 +119,41 @@ void test_circbuf_remove_empty(void **state)
   assert_int_equal(circbuf_destroy(buf), CB_ENUM_NO_ERROR);
 } // test_circbuf_add_remove_full()
 
-void test_circbuf_wrap_add_remove(void **state)
+void test_circbuf_wrap_add(void **state)
+{
+  uint8_t value = 0;
+
+  // Create circbuf and check there were no errors
+  assert_int_equal(circbuf_init(&buf, BUF_SIZE), CB_ENUM_NO_ERROR);
+
+  // Loop over half of buf size adding values and checking for no error
+  // This will place the head in the middle of the circular buffer
+  for (uint32_t i = 0; i < HALF_BUF_SIZE; i++)
+  {
+    assert_int_equal(circbuf_add_item(buf, i), CB_ENUM_NO_ERROR);
+  }
+
+  // Loop over half of buf size removing values checking for no error and
+  // values are correct.
+  // This will place the tail in the middle of the circular buffer
+  for (uint32_t i = 0; i < HALF_BUF_SIZE; i++)
+  {
+    assert_int_equal(circbuf_remove_item(buf, &value), CB_ENUM_NO_ERROR);
+    assert_int_equal(value, i);
+  }
+
+  // Loop over buf size adding values checking for no errors
+  // This wraps the head back to the beginning
+  for (uint32_t i = 0; i < BUF_SIZE; i++)
+  {
+    assert_int_equal(circbuf_add_item(buf, i), CB_ENUM_NO_ERROR);
+  }
+
+  // Destroy circbuf and check there were no errors
+  assert_int_equal(circbuf_destroy(buf), CB_ENUM_NO_ERROR);
+} // test_circbuf_wrap_add()
+
+void test_circbuf_wrap_remove(void **state)
 {
   uint8_t value = 0;
 
@@ -159,7 +193,7 @@ void test_circbuf_wrap_add_remove(void **state)
 
   // Destroy circbuf and check there were no errors
   assert_int_equal(circbuf_destroy(buf), CB_ENUM_NO_ERROR);
-} // test_circbuf_wrap_add()
+} // test_circbuf_wrap_remove()
 
 void test_circbuf_check_full(void **state)
 {

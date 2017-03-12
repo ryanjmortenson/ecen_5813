@@ -19,7 +19,7 @@ typedef enum cb_enum
   CB_ENUM_BAD_INDEX
 } cb_enum_t;
 
-// Keep struct members private
+// Keep struct members "private"
 typedef struct circbuf circbuf_t;
 
 /*
