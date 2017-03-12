@@ -61,11 +61,6 @@ export $(ARM)
 export $(MK_DIR)
 export $(CFLAGS)
 
-# Project output file names
-PROJECT_FILE=project2
-PROJECT_OUT_FILE=$(PROJECT_FILE).out
-LIB_OUT_FILE=lib$(PROJECT_FILE).a
-
 # Unit test output filename
 UNIT_TEST_OUT=test.out
 
@@ -97,10 +92,23 @@ MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
 # Call this when building for kl25z
 -include prop/kl25z/subdir.mk
 
+# Set define of project 2 as default
+ifeq ($(PROJECT),)
+	PROJECT=2
+else
+	PROJECT=$(PROJECT)
+endif
+
+# Project output file names
+PROJECT_FILE=project
+PROJECT_OUT_FILE=$(PROJECT_FILE)$(PROJECT).out
+LIB_OUT_FILE=lib$(PROJECT_FILE)$(PROJECT).a
+
 # Set CFLAGS used by every build type
 CFLAGS=-I$(APP_INC_DIR) \
        -Wall \
        -Werror \
+       -D PROJECT$(PROJECT) \
        -std=c99
 
 # Set a map flag to be added CFLAGS for certain targets
@@ -159,7 +167,7 @@ endif
 ifneq ($(TYPE),release)
 	CFLAGS+=-g3 -O0
 else
-	CFLAGS+=-03
+	CFLAGS+=-O3
 endif
 
 # If VERBOSE is no turn of verbose flag
@@ -180,13 +188,6 @@ else ifeq ($(LOGGER),TEXT)
           -D UART_INTERRUPTS
 else ifeq ($(LOGGER),CIRCBUF)
 	CFLAGS+=-D CIRCBUF
-endif
-
-# Set define of project 2 as default
-ifneq ($(FLAG),)
-	CFLAGS+=-D $(FLAG)
-else
-	CFLAGS+=-D PROJECT2
 endif
 
 # Setup some build strings
