@@ -36,33 +36,38 @@ uint32_t little_to_big[] = {
 // Buffer for bytswapping
 uint32_t byte_swap_buffer[BYTE_SWAP_LEN];
 
-// Result used in most tests
-uint32_t data_res = 0;
-
 void test_big_to_little32(void **state)
 {
+  // Move data into buffer for byte swapping
   my_memmove((uint8_t *)big_to_little, (uint8_t *)byte_swap_buffer, BYTE_SWAP_LEN);
-  data_res = big_to_little32(byte_swap_buffer, BYTE_SWAP_LEN);
-  assert_int_equal(data_res, SUCCESS);
+
+  // Do the byte swapping and ensure success
+  assert_int_equal(big_to_little32(byte_swap_buffer, BYTE_SWAP_LEN), SUCCESS);
+
+  // Make sure byte swapped buffer is correct
   assert_memory_equal(byte_swap_buffer, little_to_big, BYTE_SWAP_LEN);
 } // test_big_to_little32()
 
 void test_big_to_little32_null_ptr(void **state)
 {
-  data_res = big_to_little32((uint32_t *)NULL, BYTE_SWAP_LEN);
-  assert_int_equal(data_res, NULL_POINTER);
+  // Pass a null pointer into src and ensure null pointer failure
+  assert_int_equal(big_to_little32((uint32_t *)NULL, BYTE_SWAP_LEN), NULL_POINTER);
 } // test_big_to_little32_null_ptr()
 
 void test_little_to_big32(void **state)
 {
+  // Move data into buffer for byte swapping
   my_memmove((uint8_t *)little_to_big, (uint8_t *)byte_swap_buffer, BYTE_SWAP_LEN);
-  data_res = little_to_big32(byte_swap_buffer, BYTE_SWAP_LEN);
-  assert_int_equal(data_res, SUCCESS);
+
+  // Do the byte swapping and ensure success
+  assert_int_equal(little_to_big32(byte_swap_buffer, BYTE_SWAP_LEN), SUCCESS);
+
+  // Make sure byte swapped buffer is correct
   assert_memory_equal(byte_swap_buffer, big_to_little, BYTE_SWAP_LEN);
 } // test_little_to_big32()
 
 void test_little_to_big32_null_ptr(void **state)
 {
-  data_res = big_to_little32((uint32_t *)NULL, BYTE_SWAP_LEN);
-  assert_int_equal(data_res, NULL_POINTER);
-} // test_little_to_big32_null_prt()
+  // Pass a null pointer into src and ensure null pointer failure
+  assert_int_equal(big_to_little32((uint32_t *)NULL, BYTE_SWAP_LEN), NULL_POINTER);
+} // test_little_to_big32_null_ptr()

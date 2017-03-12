@@ -4,25 +4,28 @@
 #include <stdint.h>
 #include "log_item.h"
 
-#define MAX_INT_LEN (12)
-#define INT_STRING "Integer: "
-#define DATA_STRING "Data: "
-#define SPACE " "
-#define HEX_START "0x"
-
 #ifdef VERBOSE
 #define LOG_RAW_DATA(bytes, length) log_data((uint8_t *)bytes, length)
 #define LOG_RAW_STRING(str) log_string((int8_t *)str)
 #define LOG_RAW_INT(integer) log_integer(integer)
 #define LOG_RAW_FLUSH() log_flush()
-#define LOG_ITEM(item, id, buf) create_log_item(&item, id, (uint8_t *)buf); \
-                                log_item(item)
-#else
+#define LOG_ITEM(item) log_item(item)
+#define CREATE_ITEM_STRING(item, log_id, buf) create_log_item(&item, \
+                                                              log_id, \
+                                                              (uint8_t *)buf, \
+                                                              LOG_ITEM_STRING)
+#define CREATE_ITEM_DATA(item, log_id, buf, len) create_log_item(&item, \
+                                                                 log_id, \
+                                                                 (uint8_t *)buf, \
+                                                                 len)
+#else // VERBOSE
 #define LOG_RAW_DATA(bytes, length)
 #define LOG_RAW_STRING(str)
 #define LOG_RAW_INT(integer)
 #define LOG_RAW_FLUSH()
-#define LOG_ITEM(item, log_id, buffer)
+#define LOG_ITEM(item)
+#define CREATE_ITEM_STRING(item, log_id, buf)
+#define CREATE_ITEM_DATA(item, log_id, buf, len)
 #endif // VERBOSE
 
 
@@ -60,14 +63,6 @@ int8_t log_integer(int32_t integer);
  *
  */
 void log_flush();
-
-/*
- * \brief log_item: creates a log item
- * \param log_item: double pointer to log item structure to be destroyed
- * \return: success/fail
- *
- */
-uint8_t log_item(log_item_t * item);
 
 /*
  * \brief log_item: initialize logging system

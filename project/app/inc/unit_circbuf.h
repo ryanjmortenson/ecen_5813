@@ -8,10 +8,16 @@
 void test_circbuf_init_destroy(void **state);
 
 /*
- * \brief test_circbuf_ops_null_ptr: test circbuf operations handle null pointer
+ * \brief test_circbuf_ops_null_ptr: test circbuf operations handle circbuf_t null pointer
  *
  */
 void test_circbuf_ops_null_ptr(void **state);
+
+/*
+ * \brief test_circbuf_null_buffer: test circbuf operations handle buffer null pointer
+ *
+ */
+void test_circbuf_null_buffer(void **state);
 
 /*
  * \brief test_circbuf_add_remove_full: test adding then removing return the
@@ -34,11 +40,18 @@ void test_circbuf_add_full(void **state);
 void test_circbuf_remove_empty(void **state);
 
 /*
- * \brief test_circbuf_wrap_add_remove: test that the circular buffer wraps
- *                                      correctly
+ * \brief test_circbuf_wrap_add: test that the circular buffer wraps correctly
  *
  */
-void test_circbuf_wrap_add_remove(void **state);
+void test_circbuf_wrap_add(void **state);
+
+
+/*
+ * \brief test_circbuf_wrap_remove: test that the circular buffer wraps
+ *                                  correctly
+ *
+ */
+void test_circbuf_wrap_remove(void **state);
 
 /*
  * \brief test_circbuf_check_full: test circbuf_full function works
@@ -46,9 +59,11 @@ void test_circbuf_wrap_add_remove(void **state);
  */
 void test_circbuf_check_full(void **state);
 
+#ifdef UNITTEST
 /*
  * \brief test_circbuf_check_empty: test circbuf_empty function works
  *
  */
 void test_circbuf_check_empty(void **state);
-#endif
+#endif // UNITTEST
+#endif // __UNIT_CIRCBUF_H__

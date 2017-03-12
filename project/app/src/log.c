@@ -1,8 +1,6 @@
 #include <stdint.h>
 #include "circbuf.h"
-#include "data.h"
 #include "log.h"
-#include "log_item.h"
 #include "project_defs.h"
 
 #ifdef FRDM
@@ -27,10 +25,21 @@ int8_t log_data(uint8_t * bytes, uint8_t length)
   // Loop over string sending bytes
   for (uint8_t i = 0; i < length; i++)
   {
+#ifdef CIRCBUF
+    // Put characters in circular buffer
     if (circbuf_add_item(transmit, *(bytes + i)) != CB_ENUM_NO_ERROR)
     {
       return FAILURE;
     }
+#else // CIRCBUF
+#ifdef FRDM
+    // Send byte over uart for FRDM platform
+    uart_send_byte(*(bytes + i));
+#else // FRDM
+    // Print character to terminal for non-FRDM platforms
+    printf("%c", *(bytes + i));
+#endif // FRDM
+#endif // CIRCBUF
   }
 
   return SUCCESS;
@@ -44,10 +53,21 @@ int8_t log_string(int8_t * str)
   // Loop over string sending bytes
   while(*str)
   {
+#ifdef CIRCBUF
+    // Put characters in circular buffer
     if (circbuf_add_item(transmit, (*str++)) != CB_ENUM_NO_ERROR)
     {
       return FAILURE;
     }
+#else // CIRCBUF
+#ifdef FRDM
+    // Send byte over uart for FRDM platform
+    uart_send_byte(*str++);
+#else  // FRDM
+    // Print character to terminal for non-FRDM platforms
+    printf("%c", *str++);
+#endif // FRDM
+#endif // CIRCBUF
   }
 
   return SUCCESS;
@@ -55,60 +75,42 @@ int8_t log_string(int8_t * str)
 
 int8_t log_integer(int32_t integer)
 {
-  // Createa a buffer to hold the integer
-  int8_t buffer[MAX_INT_LEN];
-
-  // Convert integer to string in base 10
-  if(!(my_itoa(buffer, integer, BASE_10)))
-  {
-    return FAILURE;
-  }
-
   // Log the integer string
-  return log_string((int8_t *)buffer);
+  return log_data((uint8_t *)&integer, 4);
 
 } // log_integer()
 
 void log_flush()
 {
-  // Loop until the buffer is empty
+
+#ifdef CIRCBUF
 #ifdef FRDM
-  while (circbuf_empty(transmit) != CB_ENUM_NO_ERROR);
-#else
-  while (circbuf_empty(transmit) != CB_ENUM_NO_ERROR)
+  // Loop until the buffer is empty
+  while (circbuf_empty(transmit) != CB_ENUM_EMPTY)
+  {
+#ifndef UART_INTERRUPTS
+    // If uart interrupts aren't being used pull items from buffer and
+    // send them using uart
+    uint8_t byte = 0;
+    circbuf_remove_item(transmit, &byte);
+    uart_send_byte(byte);
+#else // UART_INTERRUPTS
+    ;
+#endif // UART_INTERRUPTS
+  }
+
+#else // FRDM
+  // Loop until the buffer is empty printing characters to the terminal
+  while (circbuf_empty(transmit) != CB_ENUM_EMPTY)
   {
     uint8_t byte = 0;
     circbuf_remove_item(transmit, &byte);
     printf("%c", byte);
   }
 #endif // FRDM
+#endif // CIRCBUF
 } // log_flush()
 
-uint8_t log_item(log_item_t * item)
-{
-  if (item == NULL)
-  {
-    LOG_RAW_STRING("\nLog Item is null");
-    return FAILURE;
-  }
-
-  // Place the length on the line
-  LOG_RAW_STRING("\nLog Payload Length: ");
-  LOG_RAW_INT(item->log_length);
-  LOG_RAW_STRING("\nLog ID: ");
-  LOG_RAW_STRING(log_id_str[item->log_id]);
-  LOG_RAW_STRING("\nLog Payload: ");
-  LOG_RAW_DATA(item->payload, item->log_length);
-  LOG_RAW_STRING("\n");
-
-  // Start tranmission and wait for the circular buffer to empty
-#ifdef FRDM
-  TRANSMIT_READY;
-#endif // FRDM
-  LOG_RAW_FLUSH();
-
-  return SUCCESS;
-} // log_item()
 
 uint8_t log_init()
 {
@@ -118,6 +120,7 @@ uint8_t log_init()
   uart_configure(BAUD_RATE);
 #endif // FRDM
 
+#ifdef CIRCBUF
   // Try to initialize receive buffer
   if (circbuf_init(&receive, CIRC_BUF_SIZE) != CB_ENUM_NO_ERROR)
   {
@@ -129,14 +132,17 @@ uint8_t log_init()
   {
     return FAILURE;
   }
+#endif // CIRCBUF
 
   return SUCCESS;
 } // log_init()
 
 void log_destroy()
 {
+#ifdef CIRCBUF
   // Destroy the circular buffers, since these exist for all time
   // checking an error before shutdown is a waste
   circbuf_destroy(receive);
   circbuf_destroy(transmit);
+#endif // CIRCBUF
 } // log_destroy()

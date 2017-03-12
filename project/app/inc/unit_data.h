@@ -27,4 +27,4 @@ void test_little_to_big32(void **state);
  */
 void test_little_to_big32_null_ptr(void **state);
 
-#endif
+#endif // __UNIT_DATA_H__

@@ -27,11 +27,18 @@
 # * **make super-clean** - Clean all files for the project and the cmocka out
 #                          directory
 #
-# There are three types for the PLATFROM option:
+# There are three types for the PLATFORM option:
 #
 # * **host** - X86_64 Linux
 # * **frdm** - FRDM-KL25Z
 # * **bbb** - ARM Linux
+#
+# There are 3 different LOGGER options
+# * **INTERRUPTS** - Binary logger using interrupts and circular buffer
+# * **BINARY** - Binary logger using circular buffer
+# * **CIRCBUF** - Text logging with circular buffer
+# * **TEXT** - Text logging using interrupts and circular buffer
+#
 ##############################################################################
 
 # Some commands used for building
@@ -53,11 +60,6 @@ export $(X86)
 export $(ARM)
 export $(MK_DIR)
 export $(CFLAGS)
-
-# Project output file names
-PROJECT_FILE=project1
-PROJECT_OUT_FILE=$(PROJECT_FILE).out
-LIB_OUT_FILE=lib$(PROJECT_FILE).a
 
 # Unit test output filename
 UNIT_TEST_OUT=test.out
@@ -90,10 +92,23 @@ MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
 # Call this when building for kl25z
 -include prop/kl25z/subdir.mk
 
+# Set define of project 2 as default
+ifeq ($(PROJECT),)
+	PROJECT=2
+else
+	PROJECT=$(PROJECT)
+endif
+
+# Project output file names
+PROJECT_FILE=project
+PROJECT_OUT_FILE=$(PROJECT_FILE)$(PROJECT).out
+LIB_OUT_FILE=lib$(PROJECT_FILE)$(PROJECT).a
+
 # Set CFLAGS used by every build type
 CFLAGS=-I$(APP_INC_DIR) \
        -Wall \
        -Werror \
+       -D PROJECT$(PROJECT) \
        -std=c99
 
 # Set a map flag to be added CFLAGS for certain targets
@@ -151,22 +166,28 @@ endif
 # If release isn't specfied build with debug symbols
 ifneq ($(TYPE),release)
 	CFLAGS+=-g3 -O0
+else
+	CFLAGS+=-O3
 endif
 
 # If VERBOSE is no turn of verbose flag
-ifneq ($(VERBOSE),NO)
+ifneq ($(VERBOSE),no)
 	CFLAGS+=-D VERBOSE
 endif
 
-# Set a compile time flag if it is prvovided or set to current project
-ifneq ($(MAKECMDGOALS),test)
-	ifneq ($(FLAG),)
-		CFLAGS+=-D $(FLAG)
-	else
-		CFLAGS+=-D PROJECT2
-	endif
-else
-	CFLAGS+=-D UNITTEST
+# Setup logger options
+ifeq ($(LOGGER),INTERRUPTS)
+	CFLAGS+=-D BINARY_LOGGER \
+          -D UART_INTERRUPTS \
+          -D CIRCBUF
+else ifeq ($(LOGGER),BINARY)
+	CFLAGS+=-D BINARY_LOGGER \
+          -D CIRCBUF
+else ifeq ($(LOGGER),TEXT)
+	CFLAGS+=-D CIRCBUF \
+          -D UART_INTERRUPTS
+else ifeq ($(LOGGER),CIRCBUF)
+	CFLAGS+=-D CIRCBUF
 endif
 
 # Setup some build strings
@@ -176,18 +197,22 @@ BUILD_WITH=@echo "Building with $<"
 # Set PHONY for all targets that don't have outputs for tracking
 .PHONY: build compile-all debug allasm alli allobjdump clean super-clean test
 
-# Build will build project1
+# Build will build project
 build: $(OBJS)
 	$(MAKE) $(PROJECT_OUT_FILE)
 
 # PHONY target so you don't have to type .out
 test:
+	@echo $(MAKECMDGOALS)
+	@echo $(CFLAGS)
 	$(MAKE) $(UNIT_TEST_OUT)
 
-$(UNIT_TEST_OUT): CFLAGS+=-I$(CMOCKA_INC_OUT_DIR)
+# Build the unit test binary
+$(UNIT_TEST_OUT): CFLAGS+=-I$(CMOCKA_INC_OUT_DIR) -D UNITTEST
 $(UNIT_TEST_OUT): $(CMOCKA_LIB) $(TEST_OBJS)
 	$(CC) $(CFLAGS) -o "$@" $(TEST_OBJS) $(CMOCKA_LIB)
 
+# Build the cmocka library
 $(CMOCKA_LIB):
 	@echo "Installing and making CMOCKA static library"
 	$(MK_DIR) $(CMOCKA_BUILD_DIR)
@@ -200,7 +225,7 @@ $(CMOCKA_LIB):
 	../cmocka/ && \
 	$(MAKE_CMD) install
 
-# Build will build project1
+# Build will build project library
 build-lib: $(OBJS)
 	$(MAKE) $(LIB_OUT_FILE)
 
@@ -212,8 +237,8 @@ debug:
 	@echo $(OUT_DIR)
 	@echo $(TEST_OBJS)
 
-# Compiles the project into project1 binary which can be executed with ./project1.out
-$(PROJECT_OUT_FILE): CFLAGS+=$(MAP_FLAG)
+# Compiles the project into project binary which can be executed with ./project*.out
+$(PROJECT_OUT_FILE): CFLAGS+=$(MAP_FLAG) $(DEFINE) $(VERB)
 $(PROJECT_OUT_FILE): $(OBJS)
 	$(BUILD_TARGET)
 	$(CC) $(CFLAGS) -o "$@" $(OBJS)
@@ -274,7 +299,7 @@ allobjdump: $(OBJS) $(PROJECT_OUT_FILE)
 	$(OBJDUMP) -D "$<" > "$@"
 
 # Builds .o files from .c files
-$(OUT_DIR)/%.o: CFLAGS+=-MD -MP
+$(OUT_DIR)/%.o: CFLAGS+=-MD -MP $(DEFINE) $(VERB)
 $(OUT_DIR)/%.o: $(APP_SRC_DIR)/%.c
 	$(BUILD_TARGET)
 	$(BUILD_WITH)

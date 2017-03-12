@@ -7,10 +7,10 @@
 struct circbuf
 {
   uint8_t * buffer;
-  uint8_t * head;
-  uint8_t * tail;
+  volatile uint8_t * head;
+  volatile uint8_t * tail;
+  volatile uint8_t count;
   uint16_t length;
-  uint8_t count;
 };
 
 cb_enum_t circbuf_init(circbuf_t ** buf, uint16_t length)
@@ -42,6 +42,7 @@ cb_enum_t circbuf_init(circbuf_t ** buf, uint16_t length)
   (*buf)->length   = length;
   (*buf)->count    = 0;
 
+  // Make buffer all zeros
   my_memzero((*buf)->buffer, length);
 
   // Return success
@@ -97,13 +98,14 @@ cb_enum_t circbuf_add_item(circbuf_t * buf, uint8_t payload)
 
   // Return success
   return CB_ENUM_NO_ERROR;
-} // CircBufAddItem()
+} // circbuf_add_item()
 
 cb_enum_t circbuf_remove_item(circbuf_t * buf, uint8_t * payload)
 {
   // Check for null pointer
   CB_CHECK_NULL(buf);
   CB_CHECK_NULL(buf->buffer);
+  CB_CHECK_NULL(payload);
 
   // Make sure there is an item to read
   if (buf->count == 0)
@@ -130,9 +132,9 @@ cb_enum_t circbuf_remove_item(circbuf_t * buf, uint8_t * payload)
 
   // Return success
   return CB_ENUM_NO_ERROR;
-} // CircBufRemoveItem()
+} // circbuf_remove_item()
 
-cb_enum_t circbuf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload)
+cb_enum_t circbuf_peek(circbuf_t * buf, uint32_t index, uint8_t * payload)
 {
   // Make a variable for
   int32_t diff = 0;
@@ -140,6 +142,7 @@ cb_enum_t circbuf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload)
   // Check for null pointer
   CB_CHECK_NULL(buf);
   CB_CHECK_NULL(buf->buffer);
+  CB_CHECK_NULL(payload);
 
   // Make sure there are enough items to have the index item
   if (index > buf->count)
@@ -159,7 +162,7 @@ cb_enum_t circbuf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload)
   }
 
   return CB_ENUM_NO_ERROR;
-} // CircBufPeak()
+} // circbuf_peek()
 
 cb_enum_t circbuf_full(circbuf_t * buf)
 {
@@ -169,7 +172,7 @@ cb_enum_t circbuf_full(circbuf_t * buf)
   // Buffer is full return success
   if (buf->length == buf->count)
   {
-    return CB_ENUM_NO_ERROR;
+    return CB_ENUM_FULL;
   }
 
   // Buffer is not full return failure
@@ -184,9 +187,26 @@ cb_enum_t circbuf_empty(circbuf_t * buf)
   // Buffer is full return success
   if (buf->count == 0)
   {
-    return CB_ENUM_NO_ERROR;
+    return CB_ENUM_EMPTY;
   }
 
   // Buffer is not full return failure
   return CB_ENUM_FAILURE;
 } // CircBufEmpty()
+
+#ifdef UNITTEST
+// This is a test function used to set buffer to null
+cb_enum_t circbuf_null_buffer(circbuf_t * buf)
+{
+  // Check for null pointer
+  CB_CHECK_NULL(buf);
+
+  // Free the buffer
+  free(buf->buffer);
+
+  // Set internal buffer to null
+  buf->buffer = NULL;
+
+  return CB_ENUM_NO_ERROR;
+} // circbuf_null_buffer()
+#endif // UNITTEST

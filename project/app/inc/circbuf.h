@@ -19,7 +19,7 @@ typedef enum cb_enum
   CB_ENUM_BAD_INDEX
 } cb_enum_t;
 
-// Keep struct members private
+// Keep struct members "private"
 typedef struct circbuf circbuf_t;
 
 /*
@@ -83,7 +83,7 @@ cb_enum_t circbuf_full(circbuf_t * buf);
 cb_enum_t circbuf_empty(circbuf_t * buf);
 
 /*
- * \brief circbuf_peak: gets the index item from tail
+ * \brief circbuf_peek: gets the index item from tail
  *
  * \param buf: pointer to a pointer for the circular buffer structure
  * \param index: index from tail to get payload from
@@ -91,6 +91,14 @@ cb_enum_t circbuf_empty(circbuf_t * buf);
  * \return: success if empty or error if not empty
  *
  */
-cb_enum_t circbuf_peak(circbuf_t * buf, uint32_t index, uint8_t * payload);
+cb_enum_t circbuf_peek(circbuf_t * buf, uint32_t index, uint8_t * payload);
 
+/*
+ * \brief circbuf_null_buffer: nulls internal buffer
+ *
+ * \param buf: pointer to a pointer for the circular buffer structure
+ * \return: success/fail
+ *
+ */
+cb_enum_t circbuf_null_buffer(circbuf_t * buf);
 #endif // __CIRCBUF_H__
