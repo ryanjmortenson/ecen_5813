@@ -4,11 +4,9 @@
 
 #ifdef PROJECT2
 #include "project2.h"
-#include "project3.h"
 #endif
 
 #ifdef PROJECT3
-#include "project2.h"
 #include "project3.h"
 #endif
 
