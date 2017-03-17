@@ -45,8 +45,18 @@ the host machines compiler.
 * **make clean** - Clean all files for the project.
 * **make super-clean** - Clean all files for the project and the cmocka out directory.
 
-There are three types for the PLATFROM option:
+There are three types for the PLATFORM option:
 
 * **host** - X86_64 Linux
 * **frdm** - FRDM-KL25Z
 * **bbb** - ARM Linux
+
+To build different use PROJECT=*project_number* e.g. PROJECT=2:
+
+* **1** - Project demonstrating data/memory manipulation and build systems. 
+* **2** - Project using UART and stdio to implement logging with circular buffer.
+ There are 4 different LOGGER options to build them use LOGGER=*logger_type* e.g. LOGGER=TEXT:
+ * **INTERRUPTS** - Binary logger using interrupts and circular buffer
+ * **BINARY** - Binary logger using circular buffer
+ * **CIRCBUF** - Text logging with circular buffer
+ * **TEXT** - Text logging using interrupts and circular buffer
