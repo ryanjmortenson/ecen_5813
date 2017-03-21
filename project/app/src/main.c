@@ -28,7 +28,7 @@ int main()
 
 #ifdef PROJECT3
   // Execute the required functions for project3
-  project_3_spi();
+  project_3_profiler();
 #endif // PROJECT3
 
   return 0;
