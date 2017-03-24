@@ -11,6 +11,7 @@ KL25Z_PROP_SRCS+= \
 	$(KL25Z_PROP_SRC_DIR)/system_MKL25Z4.c \
 	$(KL25Z_PROP_SRC_DIR)/memory_dma.c \
 	$(KL25Z_PROP_SRC_DIR)/timer.c \
+	$(KL25Z_PROP_SRC_DIR)/rtc.c \
 	$(KL25Z_PROP_SRC_DIR)/uart.c
 
 # Build a list of objects and dependencies

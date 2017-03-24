@@ -25,7 +25,8 @@ typedef enum log_id
 	LOG_ID_DATA_ANALYSIS_COMPLETED,
 	LOG_ID_PROFILE_MEMMOVE_TIME,
 	LOG_ID_PROFILE_MEMMOVE_DMA_TIME,
-	LOG_ID_PROFILE_MY_MEMMOVE_TIME
+	LOG_ID_PROFILE_MY_MEMMOVE_TIME,
+	LOG_ID_HEARTBEAT
 } log_id_t;
 
 // Mapping from log id to string for pretty printing
