@@ -17,7 +17,7 @@
  * Function definitions see project3.h for documentation
  */
 
-#define BUFFER_SIZE (4096)
+#define BUFFER_SIZE (5000)
 
 uint8_t project_3_memmove_dma()
 {
@@ -50,7 +50,7 @@ uint8_t project_3_profiler()
 
   // Make some buffers to transfer
   uint8_t src[BUFFER_SIZE] = {0xff};
-  uint8_t dst[BUFFER_SIZE] = {0};
+  uint8_t dst[BUFFER_SIZE] = {0x00};
 
   // Memset the buffers to different values so you can see the memmcpy occured
   my_memset(src, BUFFER_SIZE, 0xff);
@@ -64,7 +64,7 @@ uint8_t project_3_profiler()
 
   // Profile normal memmove
   START_TIMER;
-  memmove(src, dst, sizeof(src));
+  memmove(dst, src, sizeof(src));
   STOP_TIMER;
   volatile uint32_t time = GET_TIME;
   RESET_TIMER;
@@ -80,7 +80,7 @@ uint8_t project_3_profiler()
 
   // Profile normal memmove_dma
   START_TIMER;
-  memmove_dma((uint8_t *)src, (uint8_t *)dst, BUFFER_SIZE, WORD);
+  memmove_dma((uint8_t *)src, (uint8_t *)dst, sizeof(src));
   STOP_TIMER;
   time = GET_TIME;
   RESET_TIMER;
@@ -110,6 +110,9 @@ uint8_t project_3_profiler()
 
   time = time;
 #endif // FRDM
+
+  memset_dma(src, BUFFER_SIZE, 2);
+  memzero_dma(src, BUFFER_SIZE);
 
   return SUCCESS;
 } // project_3_profiler()

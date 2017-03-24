@@ -5,15 +5,21 @@
 #include "memory_dma.h"
 #include "memory.h"
 
-#define DMA_START(size) DMA_DCR_SINC_MASK | \
-                        DMA_DCR_DINC_MASK | \
-                        DMA_DCR_SSIZE(size) | \
-                        DMA_DCR_DSIZE(size) | \
-                        DMA_DCR_START_MASK
+#define MEMMOVE_START(size) DMA_DCR_SINC_MASK | \
+                            DMA_DCR_DINC_MASK | \
+                            DMA_DCR_SSIZE(size) | \
+                            DMA_DCR_DSIZE(size) | \
+                            DMA_DCR_AA_MASK   | \
+                            DMA_DCR_START_MASK
 
+#define MEMSET_START(size) DMA_DCR_DINC_MASK | \
+                           DMA_DCR_SSIZE(BYTE) | \
+                           DMA_DCR_DSIZE(size) | \
+                           DMA_DCR_AA_MASK   | \
+                           DMA_DCR_START_MASK
 
 /*
- * Function definitions see memory.h for documentation
+ * Function definitions see memory_dma.h for documentation
  */
 
 void dma_init()
@@ -26,30 +32,11 @@ void dma_init()
 
 } // dma_init()
 
-uint8_t memmove_dma(uint8_t * src, uint8_t * dst, int32_t length, dma_width_t width)
+uint8_t memmove_dma(uint8_t * src, uint8_t * dst, int32_t length)
 {
   // Check for null pointers
   CHECK_NULL(src);
   CHECK_NULL(dst);
-  dma_width_setting_t setting;
-
-  // Check to make sure the width is is accetable
-  if (width == BYTE)
-  {
-    setting = BYTE_SETTING;
-  }
-  else if (width == HALF_WORD)
-  {
-    setting = HALF_WORD_SETTING;
-  }
-  else if (width == WORD)
-  {
-    setting = WORD_SETTING;
-  }
-  else
-  {
-    return INVALID_PARAM;
-  }
 
   // If src and dst are the same no need for copying
   if (src == dst)
@@ -57,38 +44,72 @@ uint8_t memmove_dma(uint8_t * src, uint8_t * dst, int32_t length, dma_width_t wi
     return SUCCESS;
   }
 
-  // Handle overlap when dst starts in source
+  // Handle overlap when dst starts in source by using normal memmove
   if (dst > src && dst < src + length)
   {
-    my_memmove(src, dst, length);
+    for (int32_t i = length - 1; i >= 0; i--)
+    {
+      *(dst + i) = *(src + i);
+    }
   }
   // Handle the case when dst ends in source or dst doesn't overlap
   else
   {
     // Find the number left over bytes to do complete 2 transfers one of
     // width transfers and one of BYTE transfers of the left over bytes
-    // volatile uint8_t num_left_over_bytes = length % width;
-    // volatile uint32_t num_transfers = length - num_left_over_bytes;
+    volatile uint8_t num_left_over_bytes = length % WORD;
+    volatile uint32_t num_transfers = length - num_left_over_bytes;
 
     // Set the source, destination, and number of bytes
-    DMA_DSR_BCR0 = length;
+    DMA_DSR_BCR0 = num_transfers;
     DMA_SAR0 = (uint32_t) src;
     DMA_DAR0 = (uint32_t) dst;
-    DMA_DCR0 = DMA_START((uint8_t) setting);
+    DMA_DCR0 = MEMMOVE_START(WORD);
 
     // Set the source, destination, and number of bytes
-#if 0
     DMA_DSR_BCR1 = num_left_over_bytes;
     DMA_SAR1 = (uint32_t) src + num_transfers;
     DMA_DAR1 = (uint32_t) dst + num_transfers;
-    DMA_DCR1 = DMA_START((uint8_t) BYTE);
-#endif
-
+    DMA_DCR1 = MEMMOVE_START(BYTE);
 
     // Block until complete
-    //while(!(DMA_DSR_BCR0 & DMA_DSR_BCR_DONE_MASK));
-    //while(!(DMA_DSR_BCR1 & DMA_DSR_BCR_DONE_MASK));
+    while(!(DMA_DSR_BCR0 & DMA_DSR_BCR_DONE_MASK));
+    while(!(DMA_DSR_BCR1 & DMA_DSR_BCR_DONE_MASK));
   }
 
   return SUCCESS;
 } // memmove_dma()
+
+uint8_t memset_dma(uint8_t * dst, int32_t length, uint8_t value)
+{
+  // Check for null pointers
+  CHECK_NULL(dst);
+
+  // Find the number left over bytes to do complete 2 transfers one of
+  // width transfers and one of BYTE transfers of the left over bytes
+  volatile uint8_t num_left_over_bytes = length % WORD;
+  volatile uint32_t num_transfers = length - num_left_over_bytes;
+
+  // Set the source, destination, and number of bytes
+  DMA_DSR_BCR0 = num_transfers;
+  DMA_SAR0 = (uint32_t) &value;
+  DMA_DAR0 = (uint32_t) dst;
+  DMA_DCR0 = MEMSET_START(WORD);
+
+  // Set the source, destination, and number of bytes
+  DMA_DSR_BCR1 = num_left_over_bytes;
+  DMA_SAR1 = (uint32_t) &value;
+  DMA_DAR1 = (uint32_t) dst + num_transfers;
+  DMA_DCR1 = MEMSET_START(BYTE);
+
+  // Block until complete
+  while(!(DMA_DSR_BCR0 & DMA_DSR_BCR_DONE_MASK));
+  while(!(DMA_DSR_BCR1 & DMA_DSR_BCR_DONE_MASK));
+
+  return SUCCESS;
+} // memset_dma()
+
+uint8_t memzero_dma(uint8_t * dst, int32_t length)
+{
+  return memset_dma(dst, length, 0);
+} // memzero_dma()

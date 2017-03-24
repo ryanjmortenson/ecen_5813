@@ -11,13 +11,6 @@ typedef enum
   WORD = 4
 } dma_width_t;
 
-typedef enum
-{
-  WORD_SETTING = 0,
-  BYTE_SETTING = 1,
-  HALF_WORD_SETTING = 2
-} dma_width_setting_t;
-
 /*
  * \brief dma_init: initialize dma subsystem
  *
@@ -35,6 +28,29 @@ void dma_init();
  * \return: success or failure
  *
  */
-uint8_t memmove_dma(uint8_t * src, uint8_t * dst, int32_t length, dma_width_t width);
+uint8_t memmove_dma(uint8_t * src, uint8_t * dst, int32_t length);
+
+/*
+ * \brief memset_dma: moves memory with dma system
+ *
+ * \param dst: pointer to destination
+ * \param length: length in bytes
+ * \param value: value used to set
+ *
+ * \return: success or failure
+ *
+ */
+uint8_t memset_dma(uint8_t * dst, int32_t length, uint8_t value);
+
+/*
+ * \brief memmove_dma: moves memory with dma system
+ *
+ * \param dst: pointer to destination
+ * \param length: length in bytes
+ *
+ * \return: success or failure
+ *
+ */
+uint8_t memzero_dma(uint8_t * dst, int32_t length);
 
 #endif // __MEMORY_DMA_H__
