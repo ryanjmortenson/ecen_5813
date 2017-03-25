@@ -42,6 +42,7 @@ extern char * log_id_str[];
 typedef struct log_item_struct
 {
   log_id_t log_id;
+  uint32_t timestamp;
   uint8_t log_length;
   uint8_t * payload;
 } log_item_t;

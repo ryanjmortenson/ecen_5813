@@ -10,13 +10,19 @@
 #ifdef VERBOSE
   // No need for a log item if not verbose
   log_item_t * item;
+  char * heart_beat_strings[] =
+  {
+    "Owner of a lonely heart",
+    "Much better than the",
+    "Owner of a broken heart"
+  };
 #endif // VERBOSE
 
 extern void RTC_Seconds_IRQHandler()
 {
-  CREATE_ITEM_STRING(item, LOG_ID_HEARTBEAT, "Owner of a lonely heart");
+  uint8_t modulo = RTC_TSR % 3;
+  CREATE_ITEM_STRING(item, LOG_ID_HEARTBEAT, heart_beat_strings[modulo]);
   LOG_ITEM(item);
-
 }
 
 void rtc_init()
@@ -32,29 +38,21 @@ void rtc_init()
   // Turn on access and interrupts
   SIM_SCGC6 |= SIM_SCGC6_RTC_MASK;
 
+  // Do a software reset to clear registers
   RTC_CR |= RTC_CR_SWR_MASK;
   RTC_CR &= ~RTC_CR_SWR_MASK;
 
-  if (RTC_SR & RTC_SR_TIF_MASK)
-  {
-     RTC_TSR = 0x00000000;
-  }
+  // Set the seconds register to the timestamp
+  RTC_TSR = TIMESTAMP;
 
-  RTC_TAR = 0xFFFFFFFF;
-
-  // Turn on the RTC oscillator
-  // RTC_CR |= RTC_CR_OSCE_MASK | RTC_CR_UM_MASK;
-
-  // Set the clock
+  // Enable the IRQ for the RTC seconds
   NVIC_EnableIRQ(RTC_Seconds_IRQn);
 
-  // Set the interrupt
+  // Clear all interrupts then set the timer seconds interrupt
   RTC_IER = 0;
   RTC_IER |= RTC_IER_TSIE_MASK;
 
   // Start the RTC
   RTC_SR |= RTC_SR_TCE_MASK;
-
-  RTC_TSR = 1;
 
 } // rtc_init()

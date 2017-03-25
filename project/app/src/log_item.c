@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "data.h"
 #include "memory.h"
+#include "MKL25Z4.h"
 #include "log.h"
 #include "log_item.h"
 #include "project_defs.h"
@@ -79,6 +80,7 @@ uint8_t create_log_item(log_item_t ** item, log_id_t log_id, uint8_t * payload, 
   // Fill our structure
   (*item)->log_length = length;
   (*item)->log_id     = log_id;
+  (*item)->timestamp  = RTC_TSR;
   my_memmove(payload, (*item)->payload, length);
 
   return SUCCESS;
@@ -112,6 +114,7 @@ uint8_t log_item(log_item_t * item)
 
 #ifdef BINARY_LOGGER
   LOG_RAW_DATA(&item->log_length, sizeof(item->log_length));
+  LOG_RAW_DATA(&item->timestamp, sizeof(item->timestamp));
   LOG_RAW_DATA(&item->log_id, sizeof(item->log_id));
   LOG_RAW_DATA(item->payload, item->log_length);
 #else
@@ -122,6 +125,8 @@ uint8_t log_item(log_item_t * item)
   // Place the length on the line
   LOG_RAW_STRING("\nLog Payload Length: ");
   LOG_RAW_STRING(my_itoa(itoa_buffer, item->log_length, 10));
+  LOG_RAW_STRING("\nLog Timestamp: ");
+  LOG_RAW_STRING(my_itoa(itoa_buffer, item->timestamp, 10));
   LOG_RAW_STRING("\nLog ID: ");
   LOG_RAW_STRING(log_id_str[item->log_id]);
   LOG_RAW_STRING("\nLog Payload: ");

@@ -9,7 +9,7 @@
 #define LOG_RAW_STRING(str) log_string((int8_t *)str)
 #define LOG_RAW_INT(integer) log_integer(integer)
 #define LOG_RAW_FLUSH() log_flush()
-#define LOG_ITEM(item) log_item(item)
+#define LOG_ITEM(item) log_item(item); destroy_log_item(item);
 #define CREATE_ITEM_STRING(item, log_id, buf) create_log_item(&item, \
                                                               log_id, \
                                                               (uint8_t *)buf, \

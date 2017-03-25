@@ -128,7 +128,8 @@ ifeq ($(PLATFORM),frdm)
 	CC=$(25Z_CC)
 	CFLAGS+=$(KL25Z_CFLAGS) \
             -I$(KL25Z_PROP_INC_DIR) \
-            -D FRDM
+            -D FRDM \
+						-D TIMESTAMP=$(shell date +%s)
 	OBJS=$(KL25Z_PROP_OBJS) \
 	       $(25Z_OBJS)
 	TEST_OBJS=$(25Z_TEST_OBJS)
