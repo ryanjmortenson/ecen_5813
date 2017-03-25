@@ -9,25 +9,18 @@
 
 #ifdef VERBOSE
   // No need for a log item if not verbose
-  log_item_t * item;
-  char * heart_beat_strings[] =
-  {
-    "Owner of a lonely heart",
-    "Much better than the",
-    "Owner of a broken heart"
-  };
+  static log_item_t * item;
 #endif // VERBOSE
 
 extern void RTC_Seconds_IRQHandler()
 {
-  uint8_t modulo = RTC_TSR % 3;
-  CREATE_ITEM_STRING(item, LOG_ID_HEARTBEAT, heart_beat_strings[modulo]);
+  CREATE_ITEM_STRING(item, LOG_ID_HEARTBEAT, "HEARTBEAT");
   LOG_ITEM(item);
 }
 
 void rtc_init()
 {
-
+  // Turn on internal reference clock
   MCG_C1 |= MCG_C1_IRCLKEN_MASK;
   MCG_C2 &= ~(MCG_C2_IRCS_MASK);
   SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK;
@@ -47,6 +40,7 @@ void rtc_init()
 
   // Enable the IRQ for the RTC seconds
   NVIC_EnableIRQ(RTC_Seconds_IRQn);
+  NVIC_SetPriority(RTC_Seconds_IRQn, 10);
 
   // Clear all interrupts then set the timer seconds interrupt
   RTC_IER = 0;

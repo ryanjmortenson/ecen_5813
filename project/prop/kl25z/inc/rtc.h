@@ -5,9 +5,10 @@
 #include "MKL25Z4.h"
 
 /*
- * \brief dma_init: initialize dma subsystem
+ * \brief rtc_init: initialize dma subsystem
  *
  */
+
 void rtc_init();
 
 #endif // __RTC_H__
