@@ -11,12 +11,8 @@
 #endif
 
 #ifdef FRDM
-#include "rtc.h"
-#include "uart.h"
-#include "log.h"
 #endif
 
-extern volatile uint8_t flag;
 
 int main()
 {
@@ -36,11 +32,8 @@ int main()
 
 #ifdef PROJECT3
   // Execute the required functions for project3
-  log_init();
-  rtc_init();
-  while(1)
-  {
-  }
+  project_3_profiler();
+  project_3_tick();
 
 #endif // PROJECT3
 

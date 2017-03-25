@@ -11,13 +11,29 @@
 #include "spi.h"
 #include "memory_dma.h"
 #include "timer.h"
+#include "rtc.h"
+#include "uart.h"
+#include "log.h"
 #endif // FRDM
 
 /*
  * Function definitions see project3.h for documentation
  */
 
+extern void DefaultISR()
+{
+  volatile uint8_t test = 0;
+  test++;
+  test = 10;
+  test -= 3;
+}
+
 #define BUFFER_SIZE (5000)
+
+#ifdef VERBOSE
+  // No need for a log item if not verbose
+  static log_item_t * item;
+#endif // VERBOSE
 
 uint8_t project_3_memmove_dma()
 {
@@ -31,10 +47,9 @@ uint8_t project_3_profiler()
 
 #ifdef FRDM
 
-#ifdef VERBOSE
-  // No need for a log item if not verbose
-  log_item_t * item;
-#endif // VERBOSE
+  // Initialize RTC to heartbeat can be placed in logs
+  // TODO: Add failure return move to project_3_setup?
+  rtc_init();
 
   // Init log and bail out if a failure occurs
   if (log_init())
@@ -107,8 +122,6 @@ uint8_t project_3_profiler()
   CREATE_ITEM_STRING(item, LOG_ID_PROFILE_MY_MEMMOVE_TIME, itoa_buffer);
 #endif // BINARY_LOGGER
   LOG_ITEM(item);
-
-  time = time;
 #endif // FRDM
 
   memset_dma(src, BUFFER_SIZE, 2);
@@ -122,3 +135,14 @@ uint8_t project_3_spi()
 {
   return SUCCESS;
 } // project_3_spi()
+
+uint8_t project_3_tick()
+{
+
+  while(1)
+  {
+    CREATE_ITEM_STRING(item, LOG_ID_INFO, "Testing Crazy");
+    LOG_ITEM(item);
+  }
+  return SUCCESS;
+} // project_3_tick()
