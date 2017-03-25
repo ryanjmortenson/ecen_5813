@@ -9,6 +9,7 @@
 
 #ifdef FRDM
 #include "uart.h"
+#include "rtc.h"
 #else // FRDM
 #include "memory.h"
 #endif // FRDM
@@ -17,14 +18,15 @@
 extern circbuf_t * receive;
 extern circbuf_t * transmit;
 
+#ifdef VERBOSE
+  // No need for a log item if not verbose
+  static log_item_t * item;
+#endif // VERBOSE
+
 uint8_t project_2_data_analysis()
 {
 
-#ifdef VERBOSE
-  // No need for a log item if not verbose
-  log_item_t * item;
-#endif // VERBOSE
-
+  rtc_init();
   // Init log and bail out if a failure occurs
   if (log_init())
   {
