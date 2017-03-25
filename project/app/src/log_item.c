@@ -100,7 +100,7 @@ uint8_t destroy_log_item(log_item_t * item)
   free(item);
 
   // Return success
-  return FAILURE;
+  return SUCCESS;
 } // destroy_log_item()
 
 // TODO: Remove all ifdef for loggin because it is really messy
@@ -112,6 +112,7 @@ uint8_t log_item(log_item_t * item)
     return FAILURE;
   }
 
+  NVIC_DisableIRQ(RTC_Seconds_IRQn);
 #ifdef BINARY_LOGGER
   LOG_RAW_DATA(&item->log_length, sizeof(item->log_length));
   LOG_RAW_DATA(&item->timestamp, sizeof(item->timestamp));
@@ -141,6 +142,6 @@ uint8_t log_item(log_item_t * item)
 #endif // UART_INTERRUPTS
 #endif // FRDM
   LOG_RAW_FLUSH();
-
+  NVIC_EnableIRQ(RTC_Seconds_IRQn);
   return SUCCESS;
 } // log_item()
