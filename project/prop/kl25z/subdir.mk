@@ -4,6 +4,7 @@
 
 # Set kl25z flags
 KL25Z_CFLAGS=-specs=nosys.specs \
+             -specs=nano.specs \
              -mcpu=cortex-m0plus \
              -mthumb \
              -T "MKL25Z128xxx4_flash.ld" \
