@@ -133,6 +133,38 @@ uint8_t project_3_profiler()
 
 uint8_t project_3_spi()
 {
+  spi_configure();
+  uint8_t count = 0;
+  while(count < 1000)
+  {
+    count++;
+    GPIOD_PDOR &= ~0b1;
+    spi_send_byte(32);
+    volatile uint8_t byte = spi_receive_byte();
+    spi_send_byte(7);
+    byte = spi_receive_byte();
+    GPIOD_PDOR |= 0b1;
+    GPIOD_PDOR &= ~0b1;
+    spi_send_byte(6);
+    byte = spi_receive_byte();
+    spi_send_byte(255);
+    byte = spi_receive_byte();
+    spi_send_byte(255);
+    byte = spi_receive_byte();
+    byte = byte;
+    GPIOD_PDOR |= 0b1;
+    GPIOD_PDOR &= ~0b1;
+    spi_send_byte(0);
+    byte = spi_receive_byte();
+    spi_send_byte(255);
+    byte = spi_receive_byte();
+    spi_send_byte(255);
+    byte = spi_receive_byte();
+    byte = byte;
+    GPIOD_PDOR |= 0b1;
+    count++;
+  }
+  count = count;
   return SUCCESS;
 } // project_3_spi()
 
