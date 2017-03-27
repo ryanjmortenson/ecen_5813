@@ -6,6 +6,7 @@
 #include "string.h"
 #include "log.h"
 #include "log_item.h"
+#include "nordic.h"
 
 #ifdef FRDM
 #include "spi.h"
@@ -14,6 +15,7 @@
 #include "rtc.h"
 #include "uart.h"
 #include "log.h"
+#include "gpio.h"
 #endif // FRDM
 
 /*
@@ -133,38 +135,16 @@ uint8_t project_3_profiler()
 
 uint8_t project_3_spi()
 {
-  spi_configure();
+  spi_init();
+  gpio_nrf_init();
   uint8_t count = 0;
   while(count < 1000)
   {
-    count++;
-    GPIOD_PDOR &= ~0b1;
-    spi_send_byte(32);
-    volatile uint8_t byte = spi_receive_byte();
-    spi_send_byte(7);
-    byte = spi_receive_byte();
-    GPIOD_PDOR |= 0b1;
-    GPIOD_PDOR &= ~0b1;
-    spi_send_byte(6);
-    byte = spi_receive_byte();
-    spi_send_byte(255);
-    byte = spi_receive_byte();
-    spi_send_byte(255);
-    byte = spi_receive_byte();
-    byte = byte;
-    GPIOD_PDOR |= 0b1;
-    GPIOD_PDOR &= ~0b1;
-    spi_send_byte(0);
-    byte = spi_receive_byte();
-    spi_send_byte(255);
-    byte = spi_receive_byte();
-    spi_send_byte(255);
-    byte = spi_receive_byte();
-    byte = byte;
-    GPIOD_PDOR |= 0b1;
-    count++;
+    nrf_write_register(0, 1);
+    nrf_read_register(0);
+    nrf_write_register(0, 4);
+    nrf_read_register(0);
   }
-  count = count;
   return SUCCESS;
 } // project_3_spi()
 

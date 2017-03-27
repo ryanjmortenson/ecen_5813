@@ -12,10 +12,10 @@
 extern void SPI0_IRQHandler()
 {
 
-}
-void spi_configure()
-{
+} // SPI0_IRQHandler()
 
+void spi_init()
+{
   // Set the SIM_SCGC5 register PORTD bit to 1 which allows
   // the clock to go to port d
   SIM_SCGC5 |= SIM_SCGC5_PORTD_MASK;
@@ -23,13 +23,6 @@ void spi_configure()
   // Set the system gating clock control register SPI0 bit to 1
   // allowing clock to spi subsystem
   SIM_SCGC4 |= SIM_SCGC4_SPI0_MASK;
-
-  // Setup ports for CSN and CE on nordic module
-  PORTD_PCR0 = PORT_PCR_MUX(ALT_1);
-  PORTD_PCR5 = PORT_PCR_MUX(ALT_1);
-  GPIOD_PDDR |= 0b000001;
-  GPIOD_PDOR |= 0b000001;
-
 
   // Select ALT_2 usage to enable SPI0 on pins
   PORTD_PCR1 = PORT_PCR_MUX(ALT_2);
@@ -43,7 +36,6 @@ void spi_configure()
   // Set device to master
   SPI0_C1 |= SPI_C1_MSTR_MASK | SPI_C1_SPE_MASK;
   SPI0_C1 &= ~SPI_C1_CPHA_MASK;
-
 } // spi_configure()
 
 void spi_send_byte(uint8_t byte)

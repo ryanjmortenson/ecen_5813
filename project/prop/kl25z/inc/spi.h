@@ -10,7 +10,7 @@
  * \param baud baud rate for spi communications
  *
  */
-void spi_configure();
+void spi_init();
 
 /*
  * \brief spi_send_byte: sends one byte through spi communication
