@@ -1,7 +1,6 @@
 #include "MKL25Z4.h"
 
-// Used to put the transmit/receive into GPIO
-#define ALT_2 (2)
+// Used to set pins to GPIO setting
 #define ALT_1 (1)
 
 void gpio_nrf_init()

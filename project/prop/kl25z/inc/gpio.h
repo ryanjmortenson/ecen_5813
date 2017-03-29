@@ -10,9 +10,8 @@
 #define GPIO_NRF_CE_DISABLE (GPIOD_PDOR |= 0x20)
 
 /*
- * \brief uart_configure: configures uart for baud rate
- *
- * \param baud baud rate for uart communications
+ * \brief gpio_nrf_init: initializes pins on port d to be csn and ce
+ *                       for the nordic module
  *
  */
 void gpio_nrf_init();
