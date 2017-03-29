@@ -7,7 +7,6 @@
 
 // Used to put the transmit/receive into GPIO
 #define ALT_2 (2)
-#define ALT_1 (1)
 
 extern void SPI0_IRQHandler()
 {
@@ -44,9 +43,14 @@ void spi_send_byte(uint8_t byte)
   SPI0_D = byte;
 } // spi_send_byte()
 
-int8_t spi_send_byte_n(uint8_t * bytes, uint32_t length)
+void spi_send_byte_n(uint8_t * bytes, uint32_t length)
 {
-  return 0;
+  // Loop over bytes to send
+  for (uint32_t i = 0; i < length; i++)
+  {
+    while(!(SPI0_S & SPI_S_SPTEF_MASK));
+    SPI0_D = bytes[i];
+  }
 } // spi_send_byte_n()
 
 uint8_t spi_receive_byte()
