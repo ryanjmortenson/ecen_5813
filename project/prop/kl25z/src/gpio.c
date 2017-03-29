@@ -12,6 +12,8 @@ void gpio_nrf_init()
   // Setup ports for CSN and CE on nordic module
   PORTD_PCR0 = PORT_PCR_MUX(ALT_1);
   PORTD_PCR5 = PORT_PCR_MUX(ALT_1);
-  GPIOD_PDDR |= 0b000001;
-  GPIOD_PDOR |= 0b000001;
+
+  // Set initial state to CSN = 1, CE = 0
+  GPIOD_PDDR |= 1;
+  GPIOD_PDOR |= 1;
 }
