@@ -138,12 +138,16 @@ uint8_t project_3_spi()
   spi_init();
   gpio_nrf_init();
   uint8_t count = 0;
+  uint8_t tx_addr[5] = {0};
+
   while(count < 1000)
   {
     nrf_write_register(0, 1);
     nrf_read_register(0);
     nrf_write_register(0, 4);
     nrf_read_register(0);
+    nrf_write_tx_addr(tx_addr);
+    nrf_read_tx_addr(tx_addr);
   }
   return SUCCESS;
 } // project_3_spi()
