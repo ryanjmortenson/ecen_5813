@@ -3,15 +3,6 @@
 #include "memory.h"
 #include "circbuf.h"
 
-// Circular buffer structure
-struct circbuf
-{
-  uint8_t * buffer;
-  volatile uint8_t * head;
-  volatile uint8_t * tail;
-  volatile uint8_t count;
-  uint16_t length;
-};
 
 cb_enum_t circbuf_init(circbuf_t ** buf, uint16_t length)
 {
@@ -164,35 +155,6 @@ cb_enum_t circbuf_peek(circbuf_t * buf, uint32_t index, uint8_t * payload)
   return CB_ENUM_NO_ERROR;
 } // circbuf_peek()
 
-cb_enum_t circbuf_full(circbuf_t * buf)
-{
-  // Check null pointer
-  CB_CHECK_NULL(buf);
-
-  // Buffer is full return success
-  if (buf->length == buf->count)
-  {
-    return CB_ENUM_FULL;
-  }
-
-  // Buffer is not full return failure
-  return CB_ENUM_FAILURE;
-} // CircBufFull()
-
-cb_enum_t circbuf_empty(circbuf_t * buf)
-{
-  // Check null pointer
-  CB_CHECK_NULL(buf);
-
-  // Buffer is full return success
-  if (buf->count == 0)
-  {
-    return CB_ENUM_EMPTY;
-  }
-
-  // Buffer is not full return failure
-  return CB_ENUM_FAILURE;
-} // CircBufEmpty()
 
 #ifdef UNITTEST
 // This is a test function used to set buffer to null
