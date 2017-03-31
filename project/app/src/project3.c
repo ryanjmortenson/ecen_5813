@@ -24,10 +24,7 @@
 
 extern void DefaultISR()
 {
-  volatile uint8_t test = 0;
-  test++;
-  test = 10;
-  test -= 3;
+  for(volatile uint8_t i = 0; i < 255; i++);
 }
 
 #define BUFFER_SIZE (5000)
@@ -154,7 +151,8 @@ uint8_t project_3_spi()
 
 uint8_t project_3_tick()
 {
-
+  rtc_init();
+  log_init();
   while(1)
   {
     CREATE_ITEM_STRING(item, LOG_ID_INFO, "Testing Crazy");

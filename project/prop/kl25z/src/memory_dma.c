@@ -10,6 +10,7 @@
                             DMA_DCR_SSIZE(size) | \
                             DMA_DCR_DSIZE(size) | \
                             DMA_DCR_AA_MASK   | \
+                            DMA_DCR_EINT_MASK | \
                             DMA_DCR_START_MASK
 
 #define MEMSET_START(size) DMA_DCR_DINC_MASK | \
@@ -21,6 +22,12 @@
 /*
  * Function definitions see memory_dma.h for documentation
  */
+
+extern void DMA0_IRQHandler()
+{
+  for(volatile uint8_t i = 0; i < 255; i++);
+  NVIC_DisableIRQ(DMA0_IRQn);
+}
 
 void dma_init()
 {
@@ -64,6 +71,7 @@ uint8_t memmove_dma(uint8_t * src, uint8_t * dst, int32_t length)
     DMA_DSR_BCR0 = num_transfers;
     DMA_SAR0 = (uint32_t) src;
     DMA_DAR0 = (uint32_t) dst;
+    NVIC_EnableIRQ(DMA0_IRQn);
     DMA_DCR0 = MEMMOVE_START(WORD);
 
     // Set the source, destination, and number of bytes
@@ -94,6 +102,7 @@ uint8_t memset_dma(uint8_t * dst, int32_t length, uint8_t value)
   DMA_DSR_BCR0 = num_transfers;
   DMA_SAR0 = (uint32_t) &value;
   DMA_DAR0 = (uint32_t) dst;
+  NVIC_EnableIRQ(DMA0_IRQn);
   DMA_DCR0 = MEMSET_START(WORD);
 
   // Set the source, destination, and number of bytes
