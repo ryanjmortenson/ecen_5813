@@ -18,10 +18,26 @@
 #define RTC_CLKIN (2)
 #define MCGIRCLK (4)
 
+// Add some fun messages for the heartbeat
+const static uint8_t * messages[] = {
+  (uint8_t *)"Owner of a lonely heart",
+  (uint8_t *)"Much better than the",
+  (uint8_t *)"Owner of a broken heart"
+};
+
+// Count used to modulo 3 and print fun messages
+static volatile uint32_t count = 0;
+
+// Heart for IRQ
 extern void RTC_Seconds_IRQHandler()
 {
-  CREATE_ITEM_STRING(item, LOG_ID_HEARTBEAT, "HEARTBEAT");
+#ifdef BINARY_LOGGER
+  CREATE_ITEM_DATA(item, LOG_ID_HEARTBEAT, NULL, 0);
+#else
+  CREATE_ITEM_STRING(item, LOG_ID_HEARTBEAT, messages[count % 3]);
+#endif // BINARY_LOGGER
   LOG_ITEM(item);
+  count++;
 }
 
 void rtc_init()
