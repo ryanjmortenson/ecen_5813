@@ -1,3 +1,4 @@
+#ifdef FRDM
 #include "spi.h"
 #include "gpio.h"
 #include "nordic.h"
@@ -180,3 +181,4 @@ void nrf_flush_rx_fifo()
   // Disable chip select
   GPIO_NRF_CSN_DISABLE;
 }
+#endif

@@ -10,10 +10,6 @@
 #include "project3.h"
 #endif
 
-#ifdef FRDM
-#endif
-
-
 int main()
 {
 
@@ -32,9 +28,10 @@ int main()
 
 #ifdef PROJECT3
   // Execute the required functions for project3
-  //project_3_profiler();
+  project_3_setup();
+  project_3_profiler();
   //project_3_tick();
-  project_3_spi();
+  //project_3_spi();
 
 #endif // PROJECT3
 

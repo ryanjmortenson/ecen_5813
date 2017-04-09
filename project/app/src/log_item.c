@@ -2,13 +2,16 @@
 #include <stdlib.h>
 #include "data.h"
 #include "memory.h"
-#include "MKL25Z4.h"
 #include "log.h"
 #include "log_item.h"
 #include "project_defs.h"
 
 #ifdef FRDM
 #include "uart.h"
+#include "MKL25Z4.h"
+#include "rtc.h"
+#else
+#include "timer_linux.h"
 #endif // FRDM
 
 #ifdef VERBOSE
@@ -80,7 +83,7 @@ uint8_t create_log_item(log_item_t ** item, log_id_t log_id, uint8_t * payload, 
   // Fill our structure
   (*item)->log_length = length;
   (*item)->log_id     = log_id;
-  (*item)->timestamp  = RTC_TSR;
+  (*item)->timestamp  = GET_TIME_STAMP;
   my_memmove(payload, (*item)->payload, length);
 
   return SUCCESS;
@@ -112,7 +115,9 @@ uint8_t log_item(log_item_t * item)
     return FAILURE;
   }
 
+#ifdef FRDM
   NVIC_DisableIRQ(RTC_Seconds_IRQn);
+#endif // FRDM
 #ifdef BINARY_LOGGER
   LOG_RAW_DATA(&item->log_length, sizeof(item->log_length));
   LOG_RAW_DATA(&item->timestamp, sizeof(item->timestamp));
@@ -142,6 +147,8 @@ uint8_t log_item(log_item_t * item)
 #endif // UART_INTERRUPTS
 #endif // FRDM
   LOG_RAW_FLUSH();
+#ifdef FRDM
   NVIC_EnableIRQ(RTC_Seconds_IRQn);
+#endif // FRDM
   return SUCCESS;
 } // log_item()

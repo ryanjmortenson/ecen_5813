@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "MKL25Z4.h"
 
+#define GET_TIME_STAMP RTC_TSR
+
 /*
  * \brief rtc_init: initialize dma subsystem
  *

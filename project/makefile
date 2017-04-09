@@ -136,11 +136,13 @@ ifeq ($(PLATFORM),frdm)
 	OUT_DIR=$(25Z_APP_OUT)
 else ifeq ($(PLATFORM),bbb)
 	CC=$(ARM_CC)
+	CFLAGS+=-lrt
 	OBJS=$(ARM_OBJS)
 	TEST_OBJS=$(ARM_TEST_OBJS)
 	OUT_DIR=$(ARM_APP_OUT)
 else ifneq ($(findstring arm,$(shell uname -a)),)
 	CC=gcc
+	CFLAGS+=-lrt
 	OBJS=$(ARM_OBJS)
 	TEST_OBJS=$(ARM_TEST_OBJS)
 	OUT_DIR=$(ARM_APP_OUT)

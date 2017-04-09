@@ -1,14 +1,14 @@
 #include "project_defs.h"
 #include "data.h"
-#include "MKL25Z4.h"
 #include "project3.h"
 #include "memory.h"
-#include "string.h"
 #include "log.h"
+#include "string.h"
 #include "log_item.h"
 #include "nordic.h"
 
 #ifdef FRDM
+#include "MKL25Z4.h"
 #include "spi.h"
 #include "memory_dma.h"
 #include "timer.h"
@@ -16,16 +16,20 @@
 #include "uart.h"
 #include "log.h"
 #include "gpio.h"
+#else
+#include "timer_linux.h"
 #endif // FRDM
 
 /*
  * Function definitions see project3.h for documentation
  */
 
+#ifdef FRDM
 extern void DefaultISR()
 {
   for(volatile uint8_t i = 0; i < 255; i++);
 }
+#endif
 
 #define BUFFER_SIZE (5000)
 
@@ -34,28 +38,38 @@ extern void DefaultISR()
   static log_item_t * item;
 #endif // VERBOSE
 
-uint8_t project_3_memmove_dma()
+uint8_t project_3_setup()
 {
 #ifdef FRDM
-  return SUCCESS;
-#endif // FRDM
-} // project_3_memmove_dma()
-
-uint8_t project_3_profiler()
-{
-
-#ifdef FRDM
-
-  // Initialize RTC to heartbeat can be placed in logs
-  // TODO: Add failure return move to project_3_setup?
+  // Setup the rtc for logging timestamps
   rtc_init();
+
+  // Setup dma
+  dma_init();
+
+  // Setup profiler for kl25z
+  profiler_init();
+
+  // Setup the spi for kl25z
+  spi_init();
+
+  // Setup the nrf gpio pins for executing chip select
+  gpio_nrf_init();
+#else
+  // Setup timer for BBB and linux workstation
+  profiler_init_linux();
+#endif
 
   // Init log and bail out if a failure occurs
   if (log_init())
   {
     return FAILURE;
   }
+  return SUCCESS;
+}
 
+uint8_t project_3_profiler()
+{
   // Send log system initialized
   CREATE_ITEM_DATA(item, LOG_ID_LOGGER_INITIALIZED, NULL, 0);
   LOG_ITEM(item);
@@ -70,15 +84,9 @@ uint8_t project_3_profiler()
   my_memset(src, BUFFER_SIZE, 0xff);
   my_memset(dst, BUFFER_SIZE, 0x0);
 
-  // Init the dma subsystem
-  dma_init();
-
-  // Init the profiler
-  profiler_init();
-
   // Profile normal memmove
   START_TIMER;
-  memmove(dst, src, sizeof(src));
+  memmove(dst, src, BUFFER_SIZE);
   STOP_TIMER;
   volatile uint32_t time = GET_TIME;
   RESET_TIMER;
@@ -92,6 +100,7 @@ uint8_t project_3_profiler()
 #endif // BINARY_LOGGER
   LOG_ITEM(item);
 
+#ifdef FRDM
   // Profile normal memmove_dma
   START_TIMER;
   memmove_dma((uint8_t *)src, (uint8_t *)dst, sizeof(src));
@@ -106,6 +115,7 @@ uint8_t project_3_profiler()
   CREATE_ITEM_STRING(item, LOG_ID_PROFILE_MEMMOVE_DMA_TIME, itoa_buffer);
 #endif // BINARY_LOGGER
   LOG_ITEM(item);
+#endif // FRDM
 
   // Profile normal memmove_dma
   START_TIMER;
@@ -121,19 +131,13 @@ uint8_t project_3_profiler()
   CREATE_ITEM_STRING(item, LOG_ID_PROFILE_MY_MEMMOVE_TIME, itoa_buffer);
 #endif // BINARY_LOGGER
   LOG_ITEM(item);
-#endif // FRDM
-
-  memset_dma(src, BUFFER_SIZE, 2);
-  memzero_dma(src, BUFFER_SIZE);
 
   return SUCCESS;
 } // project_3_profiler()
 
-
 uint8_t project_3_spi()
 {
-  spi_init();
-  gpio_nrf_init();
+#ifdef FRDM
   uint8_t count = 0;
   uint8_t tx_addr[5] = {0};
 
@@ -146,13 +150,12 @@ uint8_t project_3_spi()
     nrf_write_tx_addr(tx_addr);
     nrf_read_tx_addr(tx_addr);
   }
+#endif
   return SUCCESS;
 } // project_3_spi()
 
 uint8_t project_3_tick()
 {
-  rtc_init();
-  log_init();
   while(1)
   {
     CREATE_ITEM_STRING(item, LOG_ID_INFO, "Testing Crazy");

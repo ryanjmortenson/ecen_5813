@@ -26,7 +26,9 @@ extern circbuf_t * transmit;
 uint8_t project_2_data_analysis()
 {
 
+#ifdef FRDM
   rtc_init();
+#endif
   // Init log and bail out if a failure occurs
   if (log_init())
   {
