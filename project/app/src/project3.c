@@ -31,6 +31,7 @@ extern void DefaultISR()
 }
 #endif
 
+// Size of buffer for memory copies
 #define BUFFER_SIZE (5000)
 
 #ifdef VERBOSE
@@ -58,21 +59,35 @@ uint8_t project_3_setup()
 #else
   // Setup timer for BBB and linux workstation
   profiler_init_linux();
-#endif
+#endif // FRDM
 
   // Init log and bail out if a failure occurs
   if (log_init())
   {
     return FAILURE;
   }
+  // Indicate logger initialized
+  CREATE_ITEM_DATA(item, LOG_ID_LOGGER_INITIALIZED, NULL, 0);
+  LOG_ITEM(item);
+
   return SUCCESS;
+}
+
+static inline void log_time(log_id_t id, uint32_t time)
+{
+#ifdef BINARY_LOGGER
+  CREATE_ITEM_DATA(item, id, &time, sizeof(time));
+#else
+  int8_t itoa_buffer[16] = {0};
+  my_itoa(itoa_buffer, time, BASE_10);
+  CREATE_ITEM_STRING(item, id, itoa_buffer);
+#endif // BINARY_LOGGER
+  LOG_ITEM(item);
 }
 
 uint8_t project_3_profiler()
 {
   // Send log system initialized
-  CREATE_ITEM_DATA(item, LOG_ID_LOGGER_INITIALIZED, NULL, 0);
-  LOG_ITEM(item);
   CREATE_ITEM_DATA(item, LOG_ID_SYSTEM_INITIALIZED, NULL, 0);
   LOG_ITEM(item);
 
@@ -90,15 +105,7 @@ uint8_t project_3_profiler()
   STOP_TIMER;
   volatile uint32_t time = GET_TIME;
   RESET_TIMER;
-
-#ifdef BINARY_LOGGER
-  CREATE_ITEM_DATA(item, LOG_ID_PROFILE_MEMMOVE_TIME, &time, sizeof(time));
-#else
-  int8_t itoa_buffer[16] = {0};
-  my_itoa(itoa_buffer, time, BASE_10);
-  CREATE_ITEM_STRING(item, LOG_ID_PROFILE_MEMMOVE_TIME, itoa_buffer);
-#endif // BINARY_LOGGER
-  LOG_ITEM(item);
+  log_time(LOG_ID_PROFILE_MEMMOVE_TIME, time);
 
 #ifdef FRDM
   // Profile normal memmove_dma
@@ -107,14 +114,7 @@ uint8_t project_3_profiler()
   STOP_TIMER;
   time = GET_TIME;
   RESET_TIMER;
-
-#ifdef BINARY_LOGGER
-  CREATE_ITEM_DATA(item, LOG_ID_PROFILE_MEMMOVE_DMA_TIME, &time, sizeof(time));
-#else
-  my_itoa(itoa_buffer, time, BASE_10);
-  CREATE_ITEM_STRING(item, LOG_ID_PROFILE_MEMMOVE_DMA_TIME, itoa_buffer);
-#endif // BINARY_LOGGER
-  LOG_ITEM(item);
+  log_time(LOG_ID_PROFILE_MEMMOVE_DMA_TIME, time);
 #endif // FRDM
 
   // Profile normal memmove_dma
@@ -123,14 +123,7 @@ uint8_t project_3_profiler()
   STOP_TIMER;
   time = GET_TIME;
   RESET_TIMER;
-
-#ifdef BINARY_LOGGER
-  CREATE_ITEM_DATA(item, LOG_ID_PROFILE_MY_MEMMOVE_TIME, &time, sizeof(time));
-#else
-  my_itoa(itoa_buffer, time, BASE_10);
-  CREATE_ITEM_STRING(item, LOG_ID_PROFILE_MY_MEMMOVE_TIME, itoa_buffer);
-#endif // BINARY_LOGGER
-  LOG_ITEM(item);
+  log_time(LOG_ID_PROFILE_MY_MEMMOVE_TIME, time);
 
   return SUCCESS;
 } // project_3_profiler()
@@ -153,13 +146,3 @@ uint8_t project_3_spi()
 #endif
   return SUCCESS;
 } // project_3_spi()
-
-uint8_t project_3_tick()
-{
-  while(1)
-  {
-    CREATE_ITEM_STRING(item, LOG_ID_INFO, "Testing Crazy");
-    LOG_ITEM(item);
-  }
-  return SUCCESS;
-} // project_3_tick()

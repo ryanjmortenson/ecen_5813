@@ -12,7 +12,6 @@
 
 int main()
 {
-
 #ifdef PROJECT1
   // Execute the required functions for project1
   project_1_report();
@@ -30,9 +29,7 @@ int main()
   // Execute the required functions for project3
   project_3_setup();
   project_3_profiler();
-  //project_3_tick();
-  //project_3_spi();
-
+  project_3_spi();
 #endif // PROJECT3
 
   return 0;
