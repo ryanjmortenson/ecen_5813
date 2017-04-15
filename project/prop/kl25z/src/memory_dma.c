@@ -5,19 +5,35 @@
 #include "memory_dma.h"
 #include "memory.h"
 
+// Starts the memmove with the following parameters
 #define MEMMOVE_START(size) DMA_DCR_SINC_MASK | \
                             DMA_DCR_DINC_MASK | \
                             DMA_DCR_SSIZE(size) | \
                             DMA_DCR_DSIZE(size) | \
                             DMA_DCR_AA_MASK   | \
                             DMA_DCR_EINT_MASK | \
-                            DMA_DCR_START_MASK
+                            DMA_DCR_START_MASK;
 
+// Starts the memset with the following parameters
 #define MEMSET_START(size) DMA_DCR_DINC_MASK | \
                            DMA_DCR_SSIZE(BYTE) | \
                            DMA_DCR_DSIZE(size) | \
-                           DMA_DCR_AA_MASK   | \
-                           DMA_DCR_START_MASK
+                           DMA_DCR_EINT_MASK | \
+                           DMA_DCR_START_MASK;
+
+// Set DMA_SIZE
+#ifndef DMA_SIZE
+#define DMA_SIZE 4
+#endif
+
+// Validate the DMA_SIZE for transfer, couldn't seem to get || or != to
+// work correctly in 1 statement
+#if DMA_SIZE == 4
+#elif DMA_SIZE == 2
+#elif DMA_SIZE == 1
+#else
+#error Incorrect DMA_SIZE must be 1, 2, or 4
+#endif
 
 /*
  * Function definitions see memory_dma.h for documentation
@@ -25,7 +41,6 @@
 
 extern void DMA0_IRQHandler()
 {
-  for(volatile uint8_t i = 0; i < 255; i++);
   NVIC_DisableIRQ(DMA0_IRQn);
 }
 
@@ -62,27 +77,15 @@ uint8_t memmove_dma(uint8_t * src, uint8_t * dst, int32_t length)
   // Handle the case when dst ends in source or dst doesn't overlap
   else
   {
-    // Find the number left over bytes to do complete 2 transfers one of
-    // width transfers and one of BYTE transfers of the left over bytes
-    volatile uint8_t num_left_over_bytes = length % WORD;
-    volatile uint32_t num_transfers = length - num_left_over_bytes;
-
     // Set the source, destination, and number of bytes
-    DMA_DSR_BCR0 = num_transfers;
+    DMA_DSR_BCR0 = length;
     DMA_SAR0 = (uint32_t) src;
     DMA_DAR0 = (uint32_t) dst;
     NVIC_EnableIRQ(DMA0_IRQn);
-    DMA_DCR0 = MEMMOVE_START(WORD);
-
-    // Set the source, destination, and number of bytes
-    DMA_DSR_BCR1 = num_left_over_bytes;
-    DMA_SAR1 = (uint32_t) src + num_transfers;
-    DMA_DAR1 = (uint32_t) dst + num_transfers;
-    DMA_DCR1 = MEMMOVE_START(BYTE);
+    DMA_DCR0 = MEMMOVE_START(DMA_SIZE);
 
     // Block until complete
     while(!(DMA_DSR_BCR0 & DMA_DSR_BCR_DONE_MASK));
-    while(!(DMA_DSR_BCR1 & DMA_DSR_BCR_DONE_MASK));
   }
 
   return SUCCESS;
@@ -93,27 +96,15 @@ uint8_t memset_dma(uint8_t * dst, int32_t length, uint8_t value)
   // Check for null pointers
   CHECK_NULL(dst);
 
-  // Find the number left over bytes to do complete 2 transfers one of
-  // width transfers and one of BYTE transfers of the left over bytes
-  volatile uint8_t num_left_over_bytes = length % WORD;
-  volatile uint32_t num_transfers = length - num_left_over_bytes;
-
   // Set the source, destination, and number of bytes
-  DMA_DSR_BCR0 = num_transfers;
+  DMA_DSR_BCR0 = length;
   DMA_SAR0 = (uint32_t) &value;
   DMA_DAR0 = (uint32_t) dst;
   NVIC_EnableIRQ(DMA0_IRQn);
-  DMA_DCR0 = MEMSET_START(WORD);
-
-  // Set the source, destination, and number of bytes
-  DMA_DSR_BCR1 = num_left_over_bytes;
-  DMA_SAR1 = (uint32_t) &value;
-  DMA_DAR1 = (uint32_t) dst + num_transfers;
-  DMA_DCR1 = MEMSET_START(BYTE);
+  DMA_DCR0 = MEMSET_START(DMA_SIZE);
 
   // Block until complete
   while(!(DMA_DSR_BCR0 & DMA_DSR_BCR_DONE_MASK));
-  while(!(DMA_DSR_BCR1 & DMA_DSR_BCR_DONE_MASK));
 
   return SUCCESS;
 } // memset_dma()

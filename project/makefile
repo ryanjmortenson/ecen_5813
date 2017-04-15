@@ -158,6 +158,11 @@ else
 	OUT_DIR=$(X86_APP_OUT)
 endif
 
+# Check for DMA size setting for DMA transfers
+ifneq ($(DMASIZE),)
+	CFLAGS+=-D DMA_SIZE=$(DMASIZE)
+endif
+
 # On BBB the size binary isn't called arm-linux-gnueabihf-size so set it
 # to size
 ifneq (,$(findstring arm,$(shell uname -a)))

@@ -67,7 +67,7 @@ uint8_t project_3_setup()
     return FAILURE;
   }
   // Indicate logger initialized
-  CREATE_ITEM_DATA(item, LOG_ID_LOGGER_INITIALIZED, NULL, 0);
+  CREATE_ITEM_STRING(item, LOG_ID_LOGGER_INITIALIZED, "");
   LOG_ITEM(item);
 
   return SUCCESS;
@@ -88,8 +88,8 @@ static inline void log_time(log_id_t id, uint32_t time)
 uint8_t project_3_profiler()
 {
   // Send log system initialized
-  CREATE_ITEM_DATA(item, LOG_ID_SYSTEM_INITIALIZED, NULL, 0);
-  LOG_ITEM(item);
+  // CREATE_ITEM_STRING(item, LOG_ID_SYSTEM_INITIALIZED, "");
+  // LOG_ITEM(item);
 
   // Make some buffers to transfer
   uint8_t src[BUFFER_SIZE] = {0xff};
@@ -110,7 +110,7 @@ uint8_t project_3_profiler()
 #ifdef FRDM
   // Profile normal memmove_dma
   START_TIMER;
-  memmove_dma((uint8_t *)src, (uint8_t *)dst, sizeof(src));
+  memmove_dma(src, dst, BUFFER_SIZE);
   STOP_TIMER;
   time = GET_TIME;
   RESET_TIMER;
@@ -119,11 +119,38 @@ uint8_t project_3_profiler()
 
   // Profile normal memmove_dma
   START_TIMER;
-  my_memmove(src, dst, sizeof(src));
+  my_memmove(src, dst, BUFFER_SIZE);
   STOP_TIMER;
   time = GET_TIME;
   RESET_TIMER;
   log_time(LOG_ID_PROFILE_MY_MEMMOVE_TIME, time);
+
+  // Profile normal memmove
+  START_TIMER;
+  memset(dst, 0xaa, BUFFER_SIZE);
+  STOP_TIMER;
+  time = GET_TIME;
+  RESET_TIMER;
+  log_time(LOG_ID_PROFILE_MEMSET_TIME, time);
+
+#ifdef FRDM
+  // Profile normal memmove_dma
+  START_TIMER;
+  memset_dma(dst, BUFFER_SIZE, 0x55);
+  STOP_TIMER;
+  time = GET_TIME;
+  RESET_TIMER;
+  log_time(LOG_ID_PROFILE_MEMSET_DMA_TIME, time);
+#endif // FRDM
+
+  // Profile normal memmove_dma
+  START_TIMER;
+  my_memset(src, BUFFER_SIZE, 0xaa);
+  STOP_TIMER;
+  time = GET_TIME;
+  RESET_TIMER;
+  log_time(LOG_ID_PROFILE_MY_MEMSET_TIME, time);
+
 
   return SUCCESS;
 } // project_3_profiler()
@@ -140,7 +167,6 @@ uint8_t project_3_spi()
     nrf_read_register(0);
     nrf_write_register(0, 4);
     nrf_read_register(0);
-    nrf_write_tx_addr(tx_addr);
     nrf_read_tx_addr(tx_addr);
   }
 #endif

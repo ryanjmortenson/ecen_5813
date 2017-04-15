@@ -60,7 +60,8 @@ uint8_t project_2_data_analysis()
     // circular buffer
     if (circbuf_peek(receive, NUM_ANALYSIS, &byte) == CB_ENUM_BAD_INDEX)
     {
-      scanf("%s", input);
+      uint8_t res = scanf("%s", input);
+      res = res;
       for (uint8_t i = 0; i < SCANF_SIZE; i++)
       {
         // Break out of a null terminator is reached before scanf size
