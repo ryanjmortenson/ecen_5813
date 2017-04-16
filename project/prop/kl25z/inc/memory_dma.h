@@ -17,14 +17,19 @@ typedef enum
  */
 void dma_init();
 
+/*
+ * \brief dma_uart_init: initialize dma subsystem to use 512 byte circular
+ *                       buffer for uart tx
+ *
+ */
 void dma_uart_init();
+
 /*
  * \brief memmove_dma: moves memory with dma system
  *
  * \param src: pointer to source
  * \param dst: pointer to destination
  * \param length: length in bytes
- * \param width: width of an individual unit of transfer can be 1, 2, or 4 bytes
  *
  * \return: success or failure
  *
@@ -48,6 +53,7 @@ uint8_t memset_dma(uint8_t * dst, int32_t length, uint8_t value);
  *
  * \param dst: pointer to destination
  * \param length: length in bytes
+ * \param value: value to set in dst
  *
  * \return: success or failure
  *

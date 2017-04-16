@@ -30,8 +30,10 @@ int main()
   project_3_setup();
   project_3_profiler();
   project_3_spi();
-  project_3_uart_dma();
 #endif // PROJECT3
+
+  // Loop forever to show heartbeat
+  for(volatile uint8_t i = 0; i < 256; i++);
 
   return 0;
 }

@@ -37,11 +37,16 @@
 #
 # * **1** - Project demonstrating data/memory manipulation and build systems.
 # * **2** - Project using UART and stdio to implement logging with circular buffer.
-#  There are 4 different LOGGER options to build them use LOGGER=*logger_type* e.g. LOGGER=TEXT:
+# * **3** - Project using SPI to communicate with a nordic module, DMA for UART and
+#           fast memory transfers, and profiling with timer.h (BBB) and TPM module
+#           (frdm).
+#  There are 5 different LOGGER options to build them use LOGGER=*logger_type*
+#  e.g. LOGGER=TEXT:
 #  * **INTERRUPTS** - Binary logger using interrupts and circular buffer
 #  * **BINARY** - Binary logger using circular buffer
 #  * **CIRCBUF** - Text logging with circular buffer
 #  * **TEXT** - Text logging using interrupts and circular buffer
+#  * **TEXTDMA** - Text logging using dma circular buffer
 #
 ##############################################################################
 
@@ -129,7 +134,7 @@ ifeq ($(PLATFORM),frdm)
 	CFLAGS+=$(KL25Z_CFLAGS) \
             -I$(KL25Z_PROP_INC_DIR) \
             -D FRDM \
-						-D TIMESTAMP=$(shell date +%s)
+            -D TIMESTAMP=$(shell date +%s)
 	OBJS=$(KL25Z_PROP_OBJS) \
 	       $(25Z_OBJS)
 	TEST_OBJS=$(25Z_TEST_OBJS)
@@ -199,8 +204,7 @@ else ifeq ($(LOGGER),TEXT)
 	CFLAGS+=-D CIRCBUF \
           -D UART_INTERRUPTS
 else ifeq ($(LOGGER),TEXTDMA)
-	CFLAGS+=-D CIRCBUF_DMA \
-          -D UART_DMA
+	CFLAGS+=-D CIRCBUF_DMA
 else ifeq ($(LOGGER),CIRCBUF)
 	CFLAGS+=-D CIRCBUF
 endif

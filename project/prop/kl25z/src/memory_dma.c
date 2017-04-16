@@ -6,6 +6,10 @@
 #include "memory_dma.h"
 #include "memory.h"
 
+// Use 512 as circular buffer modulo
+#define DMOD_512 0x06
+#define DMA_MUX_SOURCE_UART_TX 3
+
 // Starts the memmove with the following parameters
 #define MEMMOVE_START(size) DMA_DCR_SINC_MASK | \
                             DMA_DCR_DINC_MASK | \
@@ -22,6 +26,15 @@
                            DMA_DCR_EINT_MASK | \
                            DMA_DCR_START_MASK;
 
+// Settings for the DMA/UART setup
+#define DMA_UART_SETUP DMA_DCR_SINC_MASK | \
+                       DMA_DCR_SSIZE(BYTE) | \
+                       DMA_DCR_DSIZE(BYTE) | \
+                       DMA_DCR_EINT_MASK | \
+                       DMA_DCR_CS_MASK | \
+                       DMA_DCR_EADREQ_MASK | \
+                       DMA_DCR_SMOD(DMOD_512) | \
+                       DMA_DCR_ERQ_MASK;
 // Set DMA_SIZE
 #ifndef DMA_SIZE
 #define DMA_SIZE 4
@@ -36,7 +49,10 @@
 #error Incorrect DMA_SIZE must be 1, 2, or 4
 #endif
 
+// Start of the 512 byte buffer on a 512 byte boundary
 extern uint32_t __TX_BUFFER_START;
+
+// Use to reset circular buffer tracking variables when dma request ends
 extern circbuf_t * transmit;
 
 /*
@@ -45,13 +61,20 @@ extern circbuf_t * transmit;
 
 extern void DMA0_IRQHandler()
 {
+  // Turn off DMA0 IRQ until needed again
   NVIC_DisableIRQ(DMA0_IRQn);
 }
 
 extern void DMA2_IRQHandler()
 {
+  // Turn of the dma requests from uart because circular buffer is empty
   UART0_C5 &= ~UART0_C5_TDMAE_MASK;
+
+  // Clear the done bit
   DMA_DSR_BCR2 |= DMA_DSR_BCR_DONE_MASK;
+
+  // The dma request finished so reset all buffer tracking variables
+  // because dma won't adjust tail or count
   transmit->tail = (uint8_t *) (DMA_SAR2);
   transmit->head = (uint8_t *) (DMA_SAR2);
   transmit->count = 0;
@@ -64,7 +87,6 @@ void dma_init()
 
   // Setup the clock to go to the DMAMUX module
   SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK;
-
 } // dma_init()
 
 void dma_uart_init()
@@ -75,29 +97,23 @@ void dma_uart_init()
   // Setup the clock to go to the DMAMUX module
   SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK;
 
-  // Setup the UART0_D register as the src
+  // Setup TX_BUFFER as the source.  This buffer is provided by the linker
+  // script.  DMA requires buffers be on a MOD boundary to use its
+  // circular buffer functionality.  The linker script sets up a TX and RX
+  // buffer on 512 byte bounder because we are using MOD 512.
   DMA_SAR2 = (uint32_t) &__TX_BUFFER_START;
 
-  // Setup the receive buffer as the dst
+  // Setup the UART0_D register as the destination
   DMA_DAR2 = (uint32_t) &UART0_D;
 
-  // Set the dma mux chanel for UART
-  DMAMUX0_CHCFG3 |= DMAMUX_CHCFG_ENBL_MASK | 2;
+  // Set the dma mux channel for UART transmit
+  DMAMUX0_CHCFG2 |= DMAMUX_CHCFG_ENBL_MASK | DMA_MUX_SOURCE_UART_TX;
 
-  // Set the dma mux chanel for UART
-  DMAMUX0_CHCFG2 |= DMAMUX_CHCFG_ENBL_MASK | 3;
+  // Setup DMA channel for UART TX
+  DMA_DCR2 = DMA_UART_SETUP;
 
   // Enable IRQ for the 2 dma channels
   NVIC_EnableIRQ(DMA2_IRQn);
-
-  // Finish setting up the dma channel
-  DMA_DCR2 |= (DMA_DCR_SSIZE(1) | DMA_DCR_DSIZE(1)
-               | DMA_DCR_SINC_MASK
-               | DMA_DCR_EINT_MASK
-               | DMA_DCR_CS_MASK
-               | DMA_DCR_EADREQ_MASK
-               | DMA_DCR_SMOD(0b0110)
-               | DMA_DCR_ERQ_MASK);
 } // dma_uart_init()
 
 uint8_t memmove_dma(uint8_t * src, uint8_t * dst, int32_t length)
@@ -130,6 +146,12 @@ uint8_t memmove_dma(uint8_t * src, uint8_t * dst, int32_t length)
     NVIC_EnableIRQ(DMA0_IRQn);
     DMA_DCR0 = MEMMOVE_START(DMA_SIZE);
 
+    // If a config error occurs return failure
+    if(DMA_DSR_BCR0 & DMA_DSR_BCR_CE_MASK)
+    {
+      return FAILURE;
+    }
+
     // Block until complete
     while(!(DMA_DSR_BCR0 & DMA_DSR_BCR_DONE_MASK));
   }
@@ -148,6 +170,12 @@ uint8_t memset_dma(uint8_t * dst, int32_t length, uint8_t value)
   DMA_DAR0 = (uint32_t) dst;
   NVIC_EnableIRQ(DMA0_IRQn);
   DMA_DCR0 = MEMSET_START(DMA_SIZE);
+
+  // If a config error occurs return failure
+  if(DMA_DSR_BCR0 & DMA_DSR_BCR_CE_MASK)
+  {
+    return FAILURE;
+  }
 
   // Block until complete
   while(!(DMA_DSR_BCR0 & DMA_DSR_BCR_DONE_MASK));

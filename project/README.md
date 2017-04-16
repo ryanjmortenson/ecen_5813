@@ -55,9 +55,11 @@ To build different use PROJECT=*project_number* e.g. PROJECT=2:
 
 * **1** - Project demonstrating data/memory manipulation and build systems. 
 * **2** - Project using UART and stdio to implement logging with circular buffer.
+* **3** - Project using SPI to communicate with a nordic module, DMA for UART and fast memory transfers, and profiling with timer.h (BBB) and TPM module (frdm).
 
   There are 4 different LOGGER options to build them use LOGGER=*logger_type* e.g. LOGGER=TEXT:
   * **INTERRUPTS** - Binary logger using interrupts and circular buffer
   * **BINARY** - Binary logger using circular buffer
   * **CIRCBUF** - Text logging with circular buffer
   * **TEXT** - Text logging using interrupts and circular buffer
+  * **TEXTDMA** - Text logging DMA circular buffer

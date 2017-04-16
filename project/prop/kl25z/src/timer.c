@@ -10,11 +10,15 @@
  * Function definitions see timer.h for documentation
  */
 
+// Used to keep track of timer overflows register is only a uint16_t
 volatile uint8_t overflows = 0;
 
 extern void TPM0_IRQHandler()
 {
+  // Keep track of overflows
   overflows++;
+
+  // Clear timer overflow flag
   TPM0_SC |= TPM_SC_TOF_MASK;
 }
 
@@ -39,5 +43,3 @@ void profiler_init()
 
   NVIC_EnableIRQ(TPM0_IRQn);
 } // timer_init()
-
-

@@ -119,7 +119,7 @@ uint8_t destroy_log_item(log_item_t * item)
   return SUCCESS;
 } // destroy_log_item()
 
-// TODO: Remove all ifdef for loggin because it is really messy
+// TODO: Remove all ifdef for logging because it is really messy
 uint8_t log_item(log_item_t * item)
 {
   if (item == NULL)
@@ -129,6 +129,8 @@ uint8_t log_item(log_item_t * item)
   }
 
 #ifdef FRDM
+  // This currently shuts off the rtc seconds interrupt because it is the
+  // only place where log item can be interrupted
   START_CRITICAL;
 #endif // FRDM
 #ifdef BINARY_LOGGER
@@ -153,17 +155,20 @@ uint8_t log_item(log_item_t * item)
   LOG_RAW_STRING("\n");
 #endif // BINARY_LOGGER
 
-  // Start tranmission and wait for the circular buffer to empty
 #ifdef FRDM
 #ifdef UART_INTERRUPTS
+  // Start UART_INTERRUPTS transmission by turning on TIE
   TRANSMIT_READY;
 #endif // UART_INTERRUPTS
-#ifdef UART_DMA
+#ifdef CIRCBUF_DMA
+  // Start CIRCBUF_DMA transmission by turning on TDMAE
   TRANSMIT_DMA(transmit->count);
-#endif // UART_DMA
+#endif // CIRCBUF_DMA
 #endif // FRDM
+  // Wait for the circular buffer to empty
   LOG_RAW_FLUSH();
 #ifdef FRDM
+  // Turn on interrupts for rtc seconds
   END_CRITICAL;
 #endif // FRDM
 

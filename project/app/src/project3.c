@@ -39,6 +39,44 @@ extern void DefaultISR()
   static log_item_t * item;
 #endif // VERBOSE
 
+/*
+ * \brief log_time: helper for logging profile times
+ *
+ * \param id: log id for log message
+ * \param time: time to log
+ *
+ */
+static inline void log_time(log_id_t id, uint32_t time)
+{
+#ifdef BINARY_LOGGER
+  CREATE_ITEM_DATA(item, id, &time, sizeof(time));
+#else
+  int8_t itoa_buffer[16] = {0};
+  my_itoa(itoa_buffer, time, BASE_10);
+  CREATE_ITEM_STRING(item, id, itoa_buffer);
+#endif // BINARY_LOGGER
+  LOG_ITEM(item);
+}
+
+/*
+ * \brief log_reg: helper for logging register values
+ *
+ * \param id: log id for log message
+ * \param reg: register to log
+ *
+ */
+static inline void log_reg(log_id_t id, uint8_t reg)
+{
+#ifdef BINARY_LOGGER
+  CREATE_ITEM_DATA(item, id, &reg, sizeof(reg));
+#else
+  int8_t itoa_buffer[16] = {0};
+  my_itoa(itoa_buffer, reg, 2);
+  CREATE_ITEM_STRING(item, id, itoa_buffer);
+#endif // BINARY_LOGGER
+  LOG_ITEM(item);
+}
+
 uint8_t project_3_setup()
 {
 #ifdef FRDM
@@ -57,10 +95,10 @@ uint8_t project_3_setup()
   // Setup the nrf gpio pins for executing chip select
   gpio_nrf_init();
 
-#ifdef UART_DMA
+#ifdef CIRCBUF_DMA
   // Setup uart dma
   dma_uart_init();
-#endif // UART_DMA
+#endif // CIRCBUF_DMA
 
 #else
   // Setup timer for BBB and linux workstation
@@ -84,19 +122,7 @@ uint8_t project_3_setup()
   return SUCCESS;
 }
 
-static inline void log_time(log_id_t id, uint32_t time)
-{
-#ifdef BINARY_LOGGER
-  CREATE_ITEM_DATA(item, id, &time, sizeof(time));
-#else
-  int8_t itoa_buffer[16] = {0};
-  my_itoa(itoa_buffer, time, BASE_10);
-  CREATE_ITEM_STRING(item, id, itoa_buffer);
-#endif // BINARY_LOGGER
-  LOG_ITEM(item);
-}
-
-uint8_t project_3_profiler()
+void project_3_profiler()
 {
   // Make some buffers to transfer
   uint8_t src[BUFFER_SIZE] = {0xff};
@@ -157,23 +183,9 @@ uint8_t project_3_profiler()
   time = GET_TIME;
   RESET_TIMER;
   log_time(LOG_ID_PROFILE_MY_MEMSET_TIME, time);
-
-  return SUCCESS;
 } // project_3_profiler()
 
-static inline void log_reg(log_id_t id, uint8_t reg)
-{
-#ifdef BINARY_LOGGER
-  CREATE_ITEM_DATA(item, id, &reg, sizeof(reg));
-#else
-  int8_t itoa_buffer[16] = {0};
-  my_itoa(itoa_buffer, reg, 2);
-  CREATE_ITEM_STRING(item, id, itoa_buffer);
-#endif // BINARY_LOGGER
-  LOG_ITEM(item);
-}
-
-uint8_t project_3_spi()
+void project_3_spi()
 {
 #ifdef FRDM
   status_reg status;
@@ -231,10 +243,4 @@ uint8_t project_3_spi()
   fifo_status = fifo_status;
   log_reg(LOG_ID_NRF_READ_FIFO_STATUS, fifo_status.reg);
 #endif
-  return SUCCESS;
 } // project_3_spi()
-
-void project_3_uart_dma()
-{
-  for(volatile uint8_t i = 0; i < 1000; i++);
-}
