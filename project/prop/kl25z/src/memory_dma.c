@@ -36,7 +36,7 @@
 #error Incorrect DMA_SIZE must be 1, 2, or 4
 #endif
 
-extern circbuf_t * receive;
+extern uint32_t __TX_BUFFER_START;
 extern circbuf_t * transmit;
 
 /*
@@ -50,18 +50,11 @@ extern void DMA0_IRQHandler()
 
 extern void DMA2_IRQHandler()
 {
-  NVIC_DisableIRQ(DMA2_IRQn);
   UART0_C5 &= ~UART0_C5_TDMAE_MASK;
   DMA_DSR_BCR2 |= DMA_DSR_BCR_DONE_MASK;
   transmit->tail = (uint8_t *) (DMA_SAR2);
   transmit->head = (uint8_t *) (DMA_SAR2);
   transmit->count = 0;
-  NVIC_EnableIRQ(DMA2_IRQn);
-}
-
-extern void DMA3_IRQHandler()
-{
-  for(volatile uint8_t i = 0; i < 256; i++);
 }
 
 void dma_init()
@@ -83,13 +76,7 @@ void dma_uart_init()
   SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK;
 
   // Setup the UART0_D register as the src
-  DMA_SAR3 = (uint32_t) &UART0_D;
-
-  // Setup the receive buffer as the dst
-  DMA_DAR3 = (uint32_t) receive->buffer;
-
-  // Setup the UART0_D register as the src
-  DMA_SAR2 = (uint32_t) transmit->buffer;
+  DMA_SAR2 = (uint32_t) &__TX_BUFFER_START;
 
   // Setup the receive buffer as the dst
   DMA_DAR2 = (uint32_t) &UART0_D;
@@ -102,28 +89,16 @@ void dma_uart_init()
 
   // Enable IRQ for the 2 dma channels
   NVIC_EnableIRQ(DMA2_IRQn);
-  NVIC_EnableIRQ(DMA3_IRQn);
 
   // Finish setting up the dma channel
-  DMA_DCR3 |= (DMA_DCR_SSIZE(1)
-               | DMA_DCR_DSIZE(1)
-               | DMA_DCR_DINC_MASK
-               | DMA_DCR_EINT_MASK
-               | DMA_DCR_EADREQ_MASK
-               | DMA_DCR_CS_MASK
-               | DMA_DCR_DMOD(0b0110)
-               | DMA_DCR_ERQ_MASK);
-
-  // Finish setting up the dma channel
-  DMA_DCR2 |= (DMA_DCR_SSIZE(1)
-               | DMA_DCR_DSIZE(1)
+  DMA_DCR2 |= (DMA_DCR_SSIZE(1) | DMA_DCR_DSIZE(1)
                | DMA_DCR_SINC_MASK
                | DMA_DCR_EINT_MASK
                | DMA_DCR_CS_MASK
                | DMA_DCR_EADREQ_MASK
                | DMA_DCR_SMOD(0b0110)
                | DMA_DCR_ERQ_MASK);
-} // dma_init()
+} // dma_uart_init()
 
 uint8_t memmove_dma(uint8_t * src, uint8_t * dst, int32_t length)
 {

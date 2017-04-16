@@ -57,6 +57,11 @@ uint8_t project_3_setup()
   // Setup the nrf gpio pins for executing chip select
   gpio_nrf_init();
 
+#ifdef UART_DMA
+  // Setup uart dma
+  dma_uart_init();
+#endif // UART_DMA
+
 #else
   // Setup timer for BBB and linux workstation
   profiler_init_linux();
@@ -67,9 +72,6 @@ uint8_t project_3_setup()
   {
     return FAILURE;
   }
-
-  // Setup uart dma
-  dma_uart_init();
 
   // Send log system initialized
   CREATE_ITEM_DATA(item, LOG_ID_LOGGER_INITIALIZED, NULL, 0);
@@ -234,8 +236,5 @@ uint8_t project_3_spi()
 
 void project_3_uart_dma()
 {
-  for(volatile uint8_t i = 0; i < 1000; i++){
-    log_reg(LOG_ID_NRF_READ_FIFO_STATUS, i);
-  }
-
+  for(volatile uint8_t i = 0; i < 1000; i++);
 }

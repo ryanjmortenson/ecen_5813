@@ -198,6 +198,9 @@ else ifeq ($(LOGGER),BINARY)
 else ifeq ($(LOGGER),TEXT)
 	CFLAGS+=-D CIRCBUF \
           -D UART_INTERRUPTS
+else ifeq ($(LOGGER),TEXTDMA)
+	CFLAGS+=-D CIRCBUF_DMA \
+          -D UART_DMA
 else ifeq ($(LOGGER),CIRCBUF)
 	CFLAGS+=-D CIRCBUF
 endif

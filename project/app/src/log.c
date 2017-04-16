@@ -19,8 +19,6 @@ circbuf_t * receive;
 
 extern uint32_t __RX_BUFFER_START;
 extern uint32_t __TX_BUFFER_START;
-extern uint32_t RX_SIZE;
-extern uint32_t TX_SIZE;
 
 int8_t log_data(uint8_t * bytes, uint8_t length)
 {
@@ -30,7 +28,7 @@ int8_t log_data(uint8_t * bytes, uint8_t length)
   // Loop over string sending bytes
   for (uint8_t i = 0; i < length; i++)
   {
-#ifdef CIRCBUF
+#if defined(CIRCBUF) || defined(CIRCBUF_DMA)
     // Put characters in circular buffer
     if (circbuf_add_item(transmit, *(bytes + i)) != CB_ENUM_NO_ERROR)
     {
@@ -58,7 +56,8 @@ int8_t log_string(int8_t * str)
   // Loop over string sending bytes
   while(*str)
   {
-#ifdef CIRCBUF // Put characters in circular buffer
+#if defined(CIRCBUF) || defined(CIRCBUF_DMA)
+    // Put characters in circular buffer
     if (circbuf_add_item(transmit, (*str++)) != CB_ENUM_NO_ERROR)
     {
       return FAILURE;
@@ -87,7 +86,7 @@ int8_t log_integer(int32_t integer)
 void log_flush()
 {
 
-#ifdef CIRCBUF
+#if defined(CIRCBUF) || defined(CIRCBUF_DMA)
 #ifdef FRDM
   // Loop until the buffer is empty
   while (circbuf_empty(transmit) != CB_ENUM_EMPTY)
@@ -124,7 +123,7 @@ uint8_t log_init()
   uart_configure(BAUD_RATE);
 #endif // FRDM
 
-#ifdef CIRCBUF_BLAH
+#ifdef CIRCBUF
   // Try to initialize receive buffer
   if (circbuf_init(&receive, CIRC_BUF_SIZE) != CB_ENUM_NO_ERROR)
   {
@@ -138,7 +137,7 @@ uint8_t log_init()
   }
 #endif // CIRCBUF
 
-#ifdef CIRCBUF
+#ifdef CIRCBUF_DMA
   // Try to initialize receive buffer
   if (circbuf_init_dma(&receive, CIRC_BUF_SIZE, (uint8_t *)&__RX_BUFFER_START) != CB_ENUM_NO_ERROR)
   {

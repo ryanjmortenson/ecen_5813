@@ -156,9 +156,11 @@ uint8_t log_item(log_item_t * item)
   // Start tranmission and wait for the circular buffer to empty
 #ifdef FRDM
 #ifdef UART_INTERRUPTS
-  // TRANSMIT_READY;
-  TRANSMIT_DMA(transmit->count);
+  TRANSMIT_READY;
 #endif // UART_INTERRUPTS
+#ifdef UART_DMA
+  TRANSMIT_DMA(transmit->count);
+#endif // UART_DMA
 #endif // FRDM
   LOG_RAW_FLUSH();
 #ifdef FRDM
