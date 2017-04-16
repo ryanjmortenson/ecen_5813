@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include "circbuf.h"
 #include "data.h"
 #include "memory.h"
 #include "log.h"
@@ -13,6 +14,9 @@
 #else
 #include "timer_linux.h"
 #endif // FRDM
+
+extern circbuf_t * transmit;
+extern volatile uint8_t dma_transfer_complete;
 
 #ifdef VERBOSE
 char * log_id_str[] =
@@ -152,12 +156,14 @@ uint8_t log_item(log_item_t * item)
   // Start tranmission and wait for the circular buffer to empty
 #ifdef FRDM
 #ifdef UART_INTERRUPTS
-  TRANSMIT_READY;
+  // TRANSMIT_READY;
+  TRANSMIT_DMA(transmit->count);
 #endif // UART_INTERRUPTS
 #endif // FRDM
   LOG_RAW_FLUSH();
 #ifdef FRDM
   END_CRITICAL;
 #endif // FRDM
+
   return SUCCESS;
 } // log_item()

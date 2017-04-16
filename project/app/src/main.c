@@ -30,6 +30,7 @@ int main()
   project_3_setup();
   project_3_profiler();
   project_3_spi();
+  project_3_uart_dma();
 #endif // PROJECT3
 
   return 0;

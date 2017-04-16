@@ -34,7 +34,41 @@ cb_enum_t circbuf_init(circbuf_t ** buf, uint16_t length)
   (*buf)->count    = 0;
 
   // Make buffer all zeros
-  my_memzero((*buf)->buffer, length);
+  my_memset((*buf)->buffer, length, 0);
+
+  // Return success
+  return CB_ENUM_NO_ERROR;
+} // circbuf_init()
+
+cb_enum_t circbuf_init_dma(circbuf_t ** buf, uint16_t length, uint8_t * addr)
+{
+  // Check for null pointers
+  CB_CHECK_NULL(buf);
+  CB_CHECK_NULL(addr);
+
+  // Make sure size is valid
+  if (length <= 0)
+  {
+    return CB_ENUM_NO_LENGTH;
+  }
+
+  // Allocate the new circular buffer
+  if ((*buf = malloc(sizeof(circbuf_t))) == NULL)
+  {
+    return CB_ENUM_ALLOC_FAILURE;
+  }
+
+  // Use the specified address (must be on 512 byte boundary)
+  (*buf)->buffer = addr;
+
+  // Set the remaining elements of the circular buffer
+  (*buf)->head     = (*buf)->buffer;
+  (*buf)->tail     = (*buf)->buffer;
+  (*buf)->length   = length;
+  (*buf)->count    = 0;
+
+  // Make buffer all zeros
+  my_memset((*buf)->buffer, length, 0);
 
   // Return success
   return CB_ENUM_NO_ERROR;

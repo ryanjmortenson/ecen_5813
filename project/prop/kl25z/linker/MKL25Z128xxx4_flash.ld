@@ -50,7 +50,9 @@
 /* Entry Point */
 ENTRY(Reset_Handler)
 
-HEAP_SIZE  = DEFINED(__heap_size__)  ? __heap_size__  : 0x1400;
+HEAP_SIZE  = DEFINED(__heap_size__)  ? __heap_size__  : 0x1188;
+TX_SIZE  = DEFINED(__rx_size__)  ? __rx_size__  : 0x200;
+RX_SIZE  = DEFINED(__rx_size__)  ? __rx_size__  : 0x200;
 STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x1400;
 
 /* Specify the memory areas */
@@ -217,6 +219,22 @@ SECTIONS
     __HeapBase = .;
     . += HEAP_SIZE;
     __HeapLimit = .;
+  } > m_data
+
+  /* Buffer section placed after .bss*/
+  .tx_buffer :
+  {
+  . = ALIGN(4);
+  __TX_BUFFER_START = .;
+  . += TX_SIZE;
+  } > m_data
+
+  /* Buffer section placed after .bss*/
+  .rx_buffer :
+  {
+  . = ALIGN(4);
+  __RX_BUFFER_START = .;
+  . += RX_SIZE;
   } > m_data
 
   .stack :

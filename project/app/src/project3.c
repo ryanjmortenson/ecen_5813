@@ -32,7 +32,7 @@ extern void DefaultISR()
 #endif
 
 // Size of buffer for memory copies
-#define BUFFER_SIZE (5000)
+#define BUFFER_SIZE (10)
 
 #ifdef VERBOSE
   // No need for a log item if not verbose
@@ -57,9 +57,6 @@ uint8_t project_3_setup()
   // Setup the nrf gpio pins for executing chip select
   gpio_nrf_init();
 
-  // Setup uart dma
-  dma_uart_init();
-
 #else
   // Setup timer for BBB and linux workstation
   profiler_init_linux();
@@ -70,8 +67,16 @@ uint8_t project_3_setup()
   {
     return FAILURE;
   }
+
+  // Setup uart dma
+  dma_uart_init();
+
+  // Send log system initialized
+  CREATE_ITEM_DATA(item, LOG_ID_LOGGER_INITIALIZED, NULL, 0);
+  LOG_ITEM(item);
+
   // Indicate logger initialized
-  CREATE_ITEM_STRING(item, LOG_ID_LOGGER_INITIALIZED, "");
+  CREATE_ITEM_DATA(item, LOG_ID_SYSTEM_INITIALIZED, NULL, 0);
   LOG_ITEM(item);
 
   return SUCCESS;
@@ -226,3 +231,11 @@ uint8_t project_3_spi()
 #endif
   return SUCCESS;
 } // project_3_spi()
+
+void project_3_uart_dma()
+{
+  for(volatile uint8_t i = 0; i < 1000; i++){
+    log_reg(LOG_ID_NRF_READ_FIFO_STATUS, i);
+  }
+
+}
