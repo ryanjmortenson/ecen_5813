@@ -178,7 +178,7 @@ void project_3_profiler()
 
   // Profile my_memset
   START_TIMER;
-  my_memset(src, BUFFER_SIZE, 0xaa);
+  my_memset(src, BUFFER_SIZE, 0xa5);
   STOP_TIMER;
   time = GET_TIME;
   RESET_TIMER;

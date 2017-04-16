@@ -282,7 +282,7 @@ allasm :
 	@echo "Building all asm files"
 	$(MAKE) $(patsubst %.c,%.asm,$(SRC_LIST))
 
-# Build and i file
+# Build an i file
 %.i : $(APP_SRC_DIR)/%.c
 	$(BUILD_TARGET)
 	$(BUILD_WITH)

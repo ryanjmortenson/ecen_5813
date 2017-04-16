@@ -30,3 +30,14 @@ $(KL25Z_PROP_OUT)/%.o: $(KL25Z_PROP_SRC_DIR)/%.S
 	$(shell $(MK_DIR) $(KL25Z_PROP_OUT))
 	$(CC) $(CFLAGS) -c -o "$@" "$<"
 
+# Builds an asm file
+%.asm : $(KL25Z_PROP_SRC_DIR)/%.c
+	$(BUILD_TARGET)
+	$(BUILD_WITH)
+	$(CC) -S $(CFLAGS) -c -o "$@" "$<"
+
+# Build an i file
+%.i : $(KL25Z_PROP_SRC_DIR)/%.c
+	$(BUILD_TARGET)
+	$(BUILD_WITH)
+	$(CC) -E $(CFLAGS) -c -o "$@" "$<"

@@ -23,6 +23,7 @@
 #define MEMSET_START(size) DMA_DCR_DINC_MASK | \
                            DMA_DCR_SSIZE(BYTE) | \
                            DMA_DCR_DSIZE(size) | \
+                           DMA_DCR_AA_MASK   | \
                            DMA_DCR_EINT_MASK | \
                            DMA_DCR_START_MASK;
 
