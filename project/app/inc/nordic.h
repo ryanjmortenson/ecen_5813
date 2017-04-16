@@ -4,11 +4,11 @@
 #include <stdint.h>
 #include "log.h"
 
-#define NRF_STATUS_REG (0x00)
+#define NRF_STATUS_REG (0x07)
 #define NRF_FIFO_STATUS_REG (0x17)
 #define NRF_RF_CH_REG (0x05)
 #define NRF_RF_SETUP_REG (0x06)
-#define NRF_CONFIG_REG (0x07)
+#define NRF_CONFIG_REG (0x00)
 #define NRF_TX_ADDR_REG (0x10)
 #define NRF_TXADDR_LEN (5)
 #define NRF_POWER_UP (1)
@@ -18,6 +18,72 @@
 #define NRF_WRITE_MASK (0x20)
 #define NRF_FLUSH_RX (0xe1)
 #define NRF_FLUSH_TX (0xe2)
+
+// The following are bit fields for the following registers STATUS, CONFIG,
+// RF_SETUP, RF_CH, FIFO_STATUS
+
+// STATUS register bit field
+typedef union {
+  struct {
+    uint8_t tx_ful   : 1;
+    uint8_t rx_p_no  : 3;
+    uint8_t max_rt   : 1;
+    uint8_t tx_ds    : 1;
+    uint8_t rx_dr    : 1;
+    uint8_t reserved : 1;
+  } status;
+  uint8_t reg;
+} status_reg;
+
+// CONFIG register bit field
+typedef union {
+  struct {
+    uint8_t prim_rx     : 1;
+    uint8_t pwr_up      : 1;
+    uint8_t crco        : 1;
+    uint8_t en_crc      : 1;
+    uint8_t mask_max_rt : 1;
+    uint8_t mask_tx_ds  : 1;
+    uint8_t maxk_rx_dr  : 1;
+    uint8_t reserved    : 1;
+  } config;
+  uint8_t reg;
+} config_reg;
+
+// RF_SETUP register bit field
+typedef union {
+  struct {
+    uint8_t lna_hcurr   : 1;
+    uint8_t rf_pwr      : 2;
+    uint8_t rf_dr       : 1;
+    uint8_t pll_lock    : 1;
+    uint8_t reserved    : 3;
+  } rf_setup;
+  uint8_t reg;
+} rf_setup_reg;
+
+// RF_CH register bit field
+typedef union {
+  struct {
+    uint8_t rf_ch    : 7;
+    uint8_t reserved : 1;
+  } rf_ch;
+  uint8_t reg;
+} rf_ch_reg;
+
+// FIFO_STATUS register bit field
+typedef union {
+  struct {
+    uint8_t rx_empty  : 1;
+    uint8_t rx_full   : 1;
+    uint8_t reserved2 : 2;
+    uint8_t tx_empty  : 1;
+    uint8_t tx_full   : 1;
+    uint8_t tx_reuse  : 1;
+    uint8_t reserved  : 1;
+  } fifo_status;
+  uint8_t reg;
+} fifo_status_reg;
 
 /*
  * \brief nrf_read_register: reads a register from the nrf module using spi

@@ -7,7 +7,7 @@
 #include "uart.h"
 #endif // FRDM
 
-#define CIRC_BUF_SIZE (256)
+#define CIRC_BUF_SIZE (512)
 
 /*
  * Function definitions see log.h for documentation

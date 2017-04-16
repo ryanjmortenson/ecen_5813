@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "circbuf.h"
 #include "log.h"
 #include "MKL25Z4.h"
 #include "project_defs.h"
@@ -35,6 +36,8 @@
 #error Incorrect DMA_SIZE must be 1, 2, or 4
 #endif
 
+extern circbuf_t * receive;
+
 /*
  * Function definitions see memory_dma.h for documentation
  */
@@ -52,6 +55,34 @@ void dma_init()
   // Setup the clock to go to the DMAMUX module
   SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK;
 
+} // dma_init()
+
+void dma_uart_init()
+{
+  // Setup the clock to go to the DMA module
+  SIM_SCGC7 |= SIM_SCGC7_DMA_MASK;
+
+  // Setup the clock to go to the DMAMUX module
+  SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK;
+
+  // Setup the UART0_D register as the src
+  DMA_SAR3 = (uint32_t) &UART0_D;
+
+  // Setup the receive buffer as the dst
+  DMA_DAR3 = (uint32_t) receive;
+
+  // Set the dma mux chanel for UART
+  DMAMUX0_CHCFG0 |= DMAMUX_CHCFG_ENBL_MASK | 2;
+
+  // Finish setting up the dma channel
+  DMA_DCR3 |= (DMA_DCR_SSIZE(1)
+               | DMA_DCR_DSIZE(1)
+               | DMA_DCR_DINC_MASK
+               | DMA_DCR_DMOD(512)
+               | DMA_DCR_CS_MASK
+               | DMA_DCR_ERQ_MASK
+               | DMA_DCR_LINKCC(0x3)
+               | DMA_DCR_LCH1(0x02));
 } // dma_init()
 
 uint8_t memmove_dma(uint8_t * src, uint8_t * dst, int32_t length)

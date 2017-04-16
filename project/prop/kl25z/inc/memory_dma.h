@@ -17,6 +17,7 @@ typedef enum
  */
 void dma_init();
 
+void dma_uart_init();
 /*
  * \brief memmove_dma: moves memory with dma system
  *

@@ -52,7 +52,7 @@ void rtc_init()
   SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK;
 
   // Set pin C1 to alt 1 for gpio
-  PORTC_PCR1 |= (PORT_PCR_MUX(ALT_1));
+  PORTC_PCR1 |= PORT_PCR_MUX(ALT_1);
 
   // Select RTC clock in for 32kHz oscillator
   SIM_SOPT1 |= SIM_SOPT1_OSC32KSEL(RTC_CLKIN);
@@ -61,7 +61,7 @@ void rtc_init()
   SIM_SOPT2 |= SIM_SOPT2_CLKOUTSEL(MCGIRCLK);
 
   // Set pin C5 to clock out
-  PORTC_PCR3 |= (PORT_PCR_MUX(ALT_5));
+  PORTC_PCR3 |= PORT_PCR_MUX(ALT_5);
 
   // Turn on access and interrupts
   SIM_SCGC6 |= SIM_SCGC6_RTC_MASK;

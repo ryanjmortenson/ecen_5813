@@ -50,20 +50,14 @@ void nrf_write_register(uint8_t reg, uint8_t value)
 
 uint8_t nrf_read_status()
 {
-  // Send register to read
-  spi_send_byte(NRF_STATUS_REG);
-
-  // Send the no op command to shift out register contents
-  spi_send_byte(NRF_NO_OP);
-
-  // Return received byte
-  return spi_receive_byte();
+  // Return nrf status register
+  return nrf_read_register(NRF_STATUS_REG);
 } // nrf_read_status()
 
 uint8_t nrf_read_config()
 {
-  // Return nrf status register
-  return nrf_read_register(NRF_STATUS_REG);
+  // Return nrf config register
+  return nrf_read_register(NRF_CONFIG_REG);
 } // nrf_read_config()
 
 void nrf_write_config(uint8_t config)

@@ -37,6 +37,12 @@ char * log_id_str[] =
 	"LOG_ID_PROFILE_MEMSET_TIME",
 	"LOG_ID_PROFILE_MEMSET_DMA_TIME",
 	"LOG_ID_PROFILE_MY_MEMSET_TIME",
+	"LOG_ID_NRF_READ_CONFIG",
+	"LOG_ID_NRF_READ_STATUS",
+	"LOG_ID_NRF_READ_RF_CH",
+	"LOG_ID_NRF_READ_RF_SETUP",
+	"LOG_ID_NRF_READ_FIFO_STATUS",
+	"LOG_ID_NRF_READ_TX_ADDR",
 	"LOG_ID_HEARTBEAT"
 };
 #endif // VERBOSE
@@ -119,7 +125,7 @@ uint8_t log_item(log_item_t * item)
   }
 
 #ifdef FRDM
-  NVIC_DisableIRQ(RTC_Seconds_IRQn);
+  START_CRITICAL;
 #endif // FRDM
 #ifdef BINARY_LOGGER
   LOG_RAW_DATA(&item->log_length, sizeof(item->log_length));
@@ -151,7 +157,7 @@ uint8_t log_item(log_item_t * item)
 #endif // FRDM
   LOG_RAW_FLUSH();
 #ifdef FRDM
-  NVIC_EnableIRQ(RTC_Seconds_IRQn);
+  END_CRITICAL;
 #endif // FRDM
   return SUCCESS;
 } // log_item()
