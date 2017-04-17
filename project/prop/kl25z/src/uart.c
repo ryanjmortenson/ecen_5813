@@ -90,7 +90,7 @@ void uart_configure(uint32_t baud)
   UART0_BDL = (brmd & UARTLP_BDL_SBR_MASK);
 
   // Enable the transmitter and receiver and their interrupts
-  UART0_C2 = UARTLP_C2_RE_MASK | UARTLP_C2_TE_MASK | UART_C2_RIE_MASK;
+  UART0_C2 = UARTLP_C2_RE_MASK | UARTLP_C2_TE_MASK;
 
 #ifdef UART_INTERRUPTS
   // Add receive interrupt

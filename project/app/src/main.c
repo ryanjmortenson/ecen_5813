@@ -12,7 +12,6 @@
 
 int main()
 {
-
 #ifdef PROJECT1
   // Execute the required functions for project1
   project_1_report();
@@ -28,8 +27,13 @@ int main()
 
 #ifdef PROJECT3
   // Execute the required functions for project3
+  project_3_setup();
+  project_3_profiler();
   project_3_spi();
 #endif // PROJECT3
+
+  // Loop forever to show heartbeat
+  for(volatile uint8_t i = 0; i < 256; i++);
 
   return 0;
 }

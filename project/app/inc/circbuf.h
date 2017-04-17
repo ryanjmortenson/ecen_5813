@@ -2,6 +2,8 @@
 #define __CIRCBUF_H__
 
 #include <stdint.h>
+#include <stddef.h>
+#include "project_defs.h"
 
 // Check for null pointer
 #define CB_CHECK_NULL(x) if (x == NULL) {return CB_ENUM_NULL_POINTER;}
@@ -19,8 +21,15 @@ typedef enum cb_enum
   CB_ENUM_BAD_INDEX
 } cb_enum_t;
 
-// Keep struct members "private"
-typedef struct circbuf circbuf_t;
+// Circular buffer structure
+typedef struct circbuf
+{
+  uint8_t * buffer;
+  volatile uint8_t * head;
+  volatile uint8_t * tail;
+  volatile uint16_t count;
+  uint16_t length;
+} circbuf_t;
 
 /*
  * \brief circbuf_init: Initialize circular buffer with a length this will
@@ -33,6 +42,18 @@ typedef struct circbuf circbuf_t;
  *
  */
 cb_enum_t circbuf_init(circbuf_t ** buf, uint16_t length);
+
+/*
+ * \brief circbuf_init: Initialize circular buffer with a length this will
+ *                       call malloc to put the buffer and the structure
+ *                       on the heap
+ *
+ * \param buf: pointer to a pointer for the circular buffer structure
+ * \param length: length of the circular buffer
+ * \return: success or error
+ *
+ */
+cb_enum_t circbuf_init_dma(circbuf_t ** buf, uint16_t length, uint8_t * addr);
 
 /*
  * \brief circbuf_destroy: calls free on the buffer and the structure
@@ -71,7 +92,20 @@ cb_enum_t circbuf_remove_item(circbuf_t * buf, uint8_t * payload);
  * \return: success if full or error if not full
  *
  */
-cb_enum_t circbuf_full(circbuf_t * buf);
+__attribute__((always_inline))static inline cb_enum_t circbuf_full(circbuf_t * buf)
+{
+  // Check null pointer
+  CB_CHECK_NULL(buf);
+
+  // Buffer is full return success
+  if (buf->length == buf->count)
+  {
+    return CB_ENUM_FULL;
+  }
+
+  // Buffer is not full return failure
+  return CB_ENUM_FAILURE;
+} // circbuf_full()
 
 /*
  * \brief circbuf_empty: checks if buffer is empty
@@ -80,7 +114,20 @@ cb_enum_t circbuf_full(circbuf_t * buf);
  * \return: success if empty or error if not empty
  *
  */
-cb_enum_t circbuf_empty(circbuf_t * buf);
+__attribute__((always_inline))static inline cb_enum_t circbuf_empty(circbuf_t * buf)
+{
+  // Check null pointer
+  CB_CHECK_NULL(buf);
+
+  // Buffer is full return success
+  if (buf->count == 0)
+  {
+    return CB_ENUM_EMPTY;
+  }
+
+  // Buffer is not full return failure
+  return CB_ENUM_FAILURE;
+} // circbuf_empty()
 
 /*
  * \brief circbuf_peek: gets the index item from tail

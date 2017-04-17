@@ -7,7 +7,10 @@
 #define BAUD_RATE (230400)
 
 #define TRANSMIT_READY (UART0_C2 |= UART_C2_TIE_MASK)
+#define TRANSMIT_DMA(x) DMA_DSR_BCR2 += x; UART0_C5 |= UART0_C5_TDMAE_MASK;
 #define TRANSMIT_DONE (UART0_C2 &= ~UART_C2_TIE_MASK)
+#define START_CRITICAL NVIC_DisableIRQ(RTC_Seconds_IRQn);
+#define END_CRITICAL NVIC_EnableIRQ(RTC_Seconds_IRQn);
 
 /*
  * \brief uart_configure: configures uart for baud rate

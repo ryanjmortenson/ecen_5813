@@ -9,7 +9,7 @@
 // Enum of log ids used in log item structure
 typedef enum log_id
 {
-	LOG_ID_LOGGER_INITIALIZED,
+	LOG_ID_LOGGER_INITIALIZED = 0,
 	LOG_ID_GPIO_INITIALZED,
 	LOG_ID_SYSTEM_INITIALIZED,
 	LOG_ID_SYSTEM_HALTED,
@@ -22,7 +22,20 @@ typedef enum log_id
 	LOG_ID_DATA_NUMERIC_COUNT,
 	LOG_ID_DATA_PUNCTUATION_COUNT,
 	LOG_ID_DATA_MISC_COUNT,
-	LOG_ID_DATA_ANALYSIS_COMPLETED
+	LOG_ID_DATA_ANALYSIS_COMPLETED,
+	LOG_ID_PROFILE_MEMMOVE_TIME,
+	LOG_ID_PROFILE_MEMMOVE_DMA_TIME,
+	LOG_ID_PROFILE_MY_MEMMOVE_TIME,
+	LOG_ID_PROFILE_MEMSET_TIME,
+	LOG_ID_PROFILE_MEMSET_DMA_TIME,
+	LOG_ID_PROFILE_MY_MEMSET_TIME,
+	LOG_ID_NRF_READ_CONFIG,
+	LOG_ID_NRF_READ_STATUS,
+	LOG_ID_NRF_READ_RF_CH,
+	LOG_ID_NRF_READ_RF_SETUP,
+	LOG_ID_NRF_READ_FIFO_STATUS,
+	LOG_ID_NRF_READ_TX_ADDR,
+	LOG_ID_HEARTBEAT
 } log_id_t;
 
 // Mapping from log id to string for pretty printing
@@ -38,6 +51,7 @@ extern char * log_id_str[];
 typedef struct log_item_struct
 {
   log_id_t log_id;
+  uint32_t timestamp;
   uint8_t log_length;
   uint8_t * payload;
 } log_item_t;

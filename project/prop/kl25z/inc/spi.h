@@ -10,7 +10,7 @@
  * \param baud baud rate for spi communications
  *
  */
-void spi_configure();
+void spi_init();
 
 /*
  * \brief spi_send_byte: sends one byte through spi communication
@@ -25,10 +25,9 @@ void spi_send_byte(uint8_t byte);
  *
  * \param bytes array of bytes to send through spi communication
  * \param length length of bytes to send
- * \return success/fail
  *
  */
-int8_t spi_send_byte_n(uint8_t * bytes, uint32_t length);
+void spi_send_byte_n(uint8_t * bytes, uint32_t length);
 
 /*
  * \brief spi_receive_byte: blocking receive for one byte of data

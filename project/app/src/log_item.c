@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include "circbuf.h"
 #include "data.h"
 #include "memory.h"
 #include "log.h"
@@ -8,7 +9,14 @@
 
 #ifdef FRDM
 #include "uart.h"
+#include "MKL25Z4.h"
+#include "rtc.h"
+#else
+#include "timer_linux.h"
 #endif // FRDM
+
+extern circbuf_t * transmit;
+extern volatile uint8_t dma_transfer_complete;
 
 #ifdef VERBOSE
 char * log_id_str[] =
@@ -26,7 +34,20 @@ char * log_id_str[] =
 	"LOG_ID_DATA_NUMERIC_COUNT",
 	"LOG_ID_DATA_PUNCTUATION_COUNT",
 	"LOG_ID_DATA_MISC_COUNT",
-	"LOG_ID_DATA_ANALYSIS_COMPLETED"
+	"LOG_ID_DATA_ANALYSIS_COMPLETED",
+	"LOG_ID_PROFILE_MEMMOVE_TIME",
+	"LOG_ID_PROFILE_MEMMOVE_DMA_TIME",
+	"LOG_ID_PROFILE_MY_MEMMOVE_TIME",
+	"LOG_ID_PROFILE_MEMSET_TIME",
+	"LOG_ID_PROFILE_MEMSET_DMA_TIME",
+	"LOG_ID_PROFILE_MY_MEMSET_TIME",
+	"LOG_ID_NRF_READ_CONFIG",
+	"LOG_ID_NRF_READ_STATUS",
+	"LOG_ID_NRF_READ_RF_CH",
+	"LOG_ID_NRF_READ_RF_SETUP",
+	"LOG_ID_NRF_READ_FIFO_STATUS",
+	"LOG_ID_NRF_READ_TX_ADDR",
+	"LOG_ID_HEARTBEAT"
 };
 #endif // VERBOSE
 
@@ -75,6 +96,7 @@ uint8_t create_log_item(log_item_t ** item, log_id_t log_id, uint8_t * payload, 
   // Fill our structure
   (*item)->log_length = length;
   (*item)->log_id     = log_id;
+  (*item)->timestamp  = GET_TIME_STAMP;
   my_memmove(payload, (*item)->payload, length);
 
   return SUCCESS;
@@ -94,10 +116,10 @@ uint8_t destroy_log_item(log_item_t * item)
   free(item);
 
   // Return success
-  return FAILURE;
+  return SUCCESS;
 } // destroy_log_item()
 
-// TODO: Remove all ifdef for loggin because it is really messy
+// TODO: Remove all ifdef for logging because it is really messy
 uint8_t log_item(log_item_t * item)
 {
   if (item == NULL)
@@ -106,8 +128,14 @@ uint8_t log_item(log_item_t * item)
     return FAILURE;
   }
 
+#ifdef FRDM
+  // This currently shuts off the rtc seconds interrupt because it is the
+  // only place where log item can be interrupted
+  START_CRITICAL;
+#endif // FRDM
 #ifdef BINARY_LOGGER
   LOG_RAW_DATA(&item->log_length, sizeof(item->log_length));
+  LOG_RAW_DATA(&item->timestamp, sizeof(item->timestamp));
   LOG_RAW_DATA(&item->log_id, sizeof(item->log_id));
   LOG_RAW_DATA(item->payload, item->log_length);
 #else
@@ -118,6 +146,8 @@ uint8_t log_item(log_item_t * item)
   // Place the length on the line
   LOG_RAW_STRING("\nLog Payload Length: ");
   LOG_RAW_STRING(my_itoa(itoa_buffer, item->log_length, 10));
+  LOG_RAW_STRING("\nLog Timestamp: ");
+  LOG_RAW_STRING(my_itoa(itoa_buffer, item->timestamp, 10));
   LOG_RAW_STRING("\nLog ID: ");
   LOG_RAW_STRING(log_id_str[item->log_id]);
   LOG_RAW_STRING("\nLog Payload: ");
@@ -125,13 +155,22 @@ uint8_t log_item(log_item_t * item)
   LOG_RAW_STRING("\n");
 #endif // BINARY_LOGGER
 
-  // Start tranmission and wait for the circular buffer to empty
 #ifdef FRDM
 #ifdef UART_INTERRUPTS
+  // Start UART_INTERRUPTS transmission by turning on TIE
   TRANSMIT_READY;
 #endif // UART_INTERRUPTS
+#ifdef CIRCBUF_DMA
+  // Start CIRCBUF_DMA transmission by turning on TDMAE
+  TRANSMIT_DMA(transmit->count);
+#endif // CIRCBUF_DMA
 #endif // FRDM
+  // Wait for the circular buffer to empty
   LOG_RAW_FLUSH();
+#ifdef FRDM
+  // Turn on interrupts for rtc seconds
+  END_CRITICAL;
+#endif // FRDM
 
   return SUCCESS;
 } // log_item()

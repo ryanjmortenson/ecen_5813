@@ -9,6 +9,7 @@
 
 #ifdef FRDM
 #include "uart.h"
+#include "rtc.h"
 #else // FRDM
 #include "memory.h"
 #endif // FRDM
@@ -17,14 +18,17 @@
 extern circbuf_t * receive;
 extern circbuf_t * transmit;
 
+#ifdef VERBOSE
+  // No need for a log item if not verbose
+  static log_item_t * item;
+#endif // VERBOSE
+
 uint8_t project_2_data_analysis()
 {
 
-#ifdef VERBOSE
-  // No need for a log item if not verbose
-  log_item_t * item;
-#endif // VERBOSE
-
+#ifdef FRDM
+  rtc_init();
+#endif
   // Init log and bail out if a failure occurs
   if (log_init())
   {
@@ -56,7 +60,8 @@ uint8_t project_2_data_analysis()
     // circular buffer
     if (circbuf_peek(receive, NUM_ANALYSIS, &byte) == CB_ENUM_BAD_INDEX)
     {
-      scanf("%s", input);
+      uint8_t res = scanf("%s", input);
+      res = res;
       for (uint8_t i = 0; i < SCANF_SIZE; i++)
       {
         // Break out of a null terminator is reached before scanf size
