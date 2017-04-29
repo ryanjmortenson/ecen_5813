@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "circbuf.h"
+#include "control_lib.h"
 #include "log.h"
 #include "project_defs.h"
 
@@ -19,6 +20,20 @@ circbuf_t * receive;
 
 extern uint32_t __RX_BUFFER_START;
 extern uint32_t __TX_BUFFER_START;
+
+uint8_t log_timestamp(command_msg * cmd)
+{
+#ifdef VERBOSE
+  // No need for a log item if not verbose
+  log_item_t * item;
+#endif // VERBOSE
+
+  // Log an item without a payload because the timestamp is built in
+  CREATE_ITEM_DATA(item, LOG_ID_INFO, NULL, 0);
+  LOG_ITEM(item);
+
+  return SUCCESS;
+}
 
 int8_t log_data(uint8_t * bytes, uint8_t length)
 {
@@ -114,10 +129,8 @@ void log_flush()
 #endif // CIRCBUF
 } // log_flush()
 
-
 uint8_t log_init()
 {
-
 #ifdef FRDM
   // Initialize uart
   uart_configure(BAUD_RATE);
@@ -150,6 +163,18 @@ uint8_t log_init()
     return FAILURE;
   }
 #endif
+
+#ifdef PROJECT4
+  // Fill out a register struct for incoming commands
+  registered_cb reg = {
+    .id  = ID_LOGGER,
+    .cmd = CMD_GET_TIMESTAMP,
+    .cb  = log_timestamp
+  };
+
+  // Register callback
+  register_cb(&reg);
+#endif // PROJECT4
 
   return SUCCESS;
 } // log_init()

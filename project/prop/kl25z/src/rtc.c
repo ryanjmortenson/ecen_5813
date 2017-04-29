@@ -82,9 +82,11 @@ void rtc_init()
 
   // Clear all interrupts then set the timer seconds interrupt
   RTC_IER = 0;
+
+#ifndef PROJECT4
   RTC_IER |= RTC_IER_TSIE_MASK;
+#endif
 
   // Start the RTC
   RTC_SR |= RTC_SR_TCE_MASK;
-
 } // rtc_init()

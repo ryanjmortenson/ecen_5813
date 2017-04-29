@@ -10,6 +10,10 @@
 #include "project3.h"
 #endif
 
+#ifdef PROJECT4
+#include "project4.h"
+#endif
+
 int main()
 {
 #ifdef PROJECT1
@@ -31,6 +35,11 @@ int main()
   project_3_profiler();
   project_3_spi();
 #endif // PROJECT3
+
+#ifdef PROJECT4
+  // Execute the required functions for project4
+  project_4_setup();
+#endif // PROJECT4
 
   // Loop forever to show heartbeat
   for(volatile uint8_t i = 0; i < 256; i++);

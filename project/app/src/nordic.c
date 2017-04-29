@@ -161,6 +161,21 @@ void nrf_flush_tx_fifo()
   GPIO_NRF_CSN_DISABLE;
 }
 
+void nrf_write_tx_payload(uint8_t * payload, uint8_t count)
+{
+  // Enable the chip select
+  GPIO_NRF_CSN_ENABLE;
+
+  // Send the flush tx command
+  spi_send_byte(NRF_FLUSH_TX);
+
+  // Read the status
+  spi_receive_byte();
+
+  // Disable chip select
+  GPIO_NRF_CSN_DISABLE;
+}
+
 void nrf_flush_rx_fifo()
 {
   // Enable the chip select
