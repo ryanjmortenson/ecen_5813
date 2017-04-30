@@ -13,16 +13,15 @@ typedef enum {
   CMD_SET_SPEED,
   CMD_LED_CONFIG,
   CMD_SET_LPM,
-  CMD_GET_TIMESTAMP
+  CMD_GET_TIMESTAMP,
+  CMD_SYSTEM_RESET
 } command;
 
 // Indentifiers for modules that register with control lib
 typedef enum {
   ID_TEMP_CONTROLLER = 0x01,
-  ID_SPEED_CONTROLLER,
   ID_LED_CONTROLLER,
-  ID_LPM_CONTROLLER,
-  ID_RTC_CONTROLLER,
+  ID_SYSTEM_CONTROLLER,
   ID_LOGGER
 } indentifier;
 
@@ -45,9 +44,43 @@ typedef struct {
   COMMAND_CB cb;
 } registered_cb;
 
+/*
+ * \brief register_cb: registers a callback for system and based on a command
+ *
+ * \param reg: registration structure
+ *
+ * \return: success/failure
+ *
+ */
 uint8_t register_cb(registered_cb * reg);
+
+/*
+ * \brief unregister_cb: unregisters a callback for system and based on a
+ *                       command
+ *
+ * \param reg: unregistration structure
+ *
+ * \return: success/failure
+ *
+ */
 uint8_t unregister_cb(registered_cb * reg);
+
+/*
+ * \brief distribute_cmd: looks for callbacks registered for the current
+ *                        command and calls them
+ *
+ * \param cmd: command structure
+ *
+ * \return: success/failure
+ *
+ */
 uint8_t distribute_cmd(command_msg * cmd);
+
+
+/*
+ * \brief control_lib_main: main control lib loop waiting for inputs
+ *
+ */
 void control_lib_main();
 
 #endif // __CONTROL_LIB_H__

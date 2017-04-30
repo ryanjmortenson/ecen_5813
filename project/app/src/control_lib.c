@@ -24,7 +24,7 @@ uint8_t register_cb(registered_cb * reg_cb)
   }
 
   // Register functionality
-  regs[current_cbs] = *(reg_cb);
+  *(regs + current_cbs) = *(reg_cb);
   current_cbs++;
   return SUCCESS;
 }
@@ -39,11 +39,11 @@ uint8_t unregister_cb(registered_cb * reg_cb)
   // a match is found shift all registered cbs 1 index lower
   for (uint8_t i = 0; i < current_cbs; i++)
   {
-    if (reg_cb->id == regs[i].id && reg_cb->cmd == regs[i].cmd)
+    if (reg_cb->id == (regs + i)->id && reg_cb->cmd == (regs + i)->cmd)
     {
       for (uint8_t k = i; k < current_cbs; k++)
       {
-        regs[k] = regs[k+1];
+        *(regs + k) = *(regs + k + 1);
       }
       return SUCCESS;
     }
@@ -53,11 +53,14 @@ uint8_t unregister_cb(registered_cb * reg_cb)
 
 uint8_t distribute_cmd(command_msg * cmd)
 {
+  // Loop over registered callbacks looking for command ids that match.
+  // When a match occures call the callback.  A failure in a callback
+  // stops the search and returns a failure
   for (uint8_t i = 0; i < current_cbs; i++)
   {
-    if (regs[i].cmd == cmd->cmd)
+    if ((regs + i)->cmd == cmd->cmd)
     {
-      if (regs[i].cb(cmd) != SUCCESS)
+      if ((regs + i)->cb(cmd) != SUCCESS)
       {
         return FAILURE;
       }
@@ -70,8 +73,10 @@ void control_lib_main()
 {
   uint8_t byte = 0;
   command_msg cmd;
+  volatile uint16_t checksum = 0;
   for(;;)
   {
+    // Clear out cmd structure
     my_memset((uint8_t *)&cmd, sizeof(cmd), 0);
 
     // Receive 1 byte for the cmd enum
@@ -90,18 +95,31 @@ void control_lib_main()
       *(cmd.data + i) = byte;
     }
 
-    // Get the low byte and place in checksum
-    while(circbuf_remove_item(receive, (uint8_t *)&cmd.checksum));
-
     // Wait for all bytes to be received for the data, byte will have the
     // high byte
     while(circbuf_remove_item(receive, &byte) != CB_ENUM_NO_ERROR);
 
+    // Get the low byte and place in checksum
+    while(circbuf_remove_item(receive, (uint8_t *)&cmd.checksum));
+
     // Compute the full 16 bit value by shifting the high byte 1 and oring
     // with checksum
-    cmd.checksum |= (byte << 1);
+    cmd.checksum |= (byte << 8);
 
-    distribute_cmd(&cmd);
+    // Calculate super simple additive checksum
+    for (uint8_t i = 0; i < cmd.length; i++)
+    {
+      checksum += (*(cmd.data + i) & 0xffff);
+    }
+
+    // Only execute command if checksum is correct
+    if (checksum == cmd.checksum)
+    {
+      distribute_cmd(&cmd);
+    }
+
+    // Reset checksum
+    checksum = 0;
   }
 }
 

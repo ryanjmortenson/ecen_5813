@@ -16,4 +16,10 @@
  */
 void gpio_nrf_init();
 
+/*
+ * \brief gpio_led_pwm_init: initializes the led
+ *
+ */
+void gpio_led_pwm_init();
+
 #endif

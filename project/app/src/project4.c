@@ -6,40 +6,31 @@
 
 #ifdef FRDM
 #include "rtc.h"
+#include "gpio.h"
+#include "timer.h"
+#include "led_controller.h"
+#include "system_controller.h"
 #endif // FRDM
 
-
-
-
-
-
-// TODO: REMOVE ALL THIS!!!!!
-#include "data.h"
+extern circbuf_t * receive;
+extern circbuf_t * transmit;
 
 #ifdef VERBOSE
   // No need for a log item if not verbose
   static log_item_t * item;
 #endif // VERBOSE
 
-uint8_t test_cb (command_msg * cmd)
-{
-  // Send log system initialized
-  int8_t itoa_buffer[16] = {0};
-  my_itoa(itoa_buffer, cmd->cmd, BASE_10);
-  CREATE_ITEM_STRING(item, LOG_ID_INFO, itoa_buffer);
-  LOG_ITEM(item);
-
-  return SUCCESS;
-}
-
-extern circbuf_t * receive;
-extern circbuf_t * transmit;
-
 uint8_t project_4_setup()
 {
 #ifdef FRDM
   // Setup the rtc for logging timestamps
   rtc_init();
+
+  // Setup the LED controller
+  led_control_init();
+
+  // System controller init (reset)
+  system_control_init();
 #endif // FRDM
 
   // Init log and bail out if a failure occurs
@@ -56,35 +47,8 @@ uint8_t project_4_setup()
   CREATE_ITEM_STRING(item, LOG_ID_SYSTEM_INITIALIZED, "");
   LOG_ITEM(item);
 
-  registered_cb reg = {
-    .id = ID_LED_CONTROLLER,
-    .cmd = CMD_ALL,
-    .cb = test_cb
-  };
-  register_cb(&reg);
-
-  reg.id  = ID_TEMP_CONTROLLER,
-  reg.cmd = CMD_GET_TEMP,
-  reg.cb  = test_cb;
-  register_cb(&reg);
-
-  reg.id  = ID_SPEED_CONTROLLER,
-  reg.cmd = CMD_SET_SPEED,
-  reg.cb  = test_cb;
-  register_cb(&reg);
-
-  circbuf_add_item(receive, CMD_GET_TEMP);
-  circbuf_add_item(receive, 0);
-  circbuf_add_item(receive, 0);
-  circbuf_add_item(receive, 0);
-
-  circbuf_add_item(receive, CMD_GET_TIMESTAMP);
-  circbuf_add_item(receive, 0);
-  circbuf_add_item(receive, 0);
-  circbuf_add_item(receive, 0);
-
+  // Loop waiting for commands
   control_lib_main();
 
   return SUCCESS;
 }
-
