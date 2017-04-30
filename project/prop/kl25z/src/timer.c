@@ -61,9 +61,10 @@ void tpm_led_pwm_init()
   // Turn on debug mode so the timer will run while debugging
   TPM0_CONF = TPM2_CONF = TPM_CONF_DBGMODE(3);
 
-  // User the largest prescaler
+  // Use the selected prescaler
   TPM0_SC = TPM2_SC = TPM_SC_PS(PRESCALER_8);
 
+  // Turn on TPM module
   TPM2_SC |= TPM_SC_CMOD(1);
   TPM0_SC |= TPM_SC_CMOD(1);
 }

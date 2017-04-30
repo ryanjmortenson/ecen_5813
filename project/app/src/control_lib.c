@@ -45,6 +45,7 @@ uint8_t unregister_cb(registered_cb * reg_cb)
       {
         *(regs + k) = *(regs + k + 1);
       }
+      current_cbs--;
       return SUCCESS;
     }
   }
