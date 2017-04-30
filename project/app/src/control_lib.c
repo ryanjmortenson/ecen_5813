@@ -81,7 +81,7 @@ void control_lib_main()
     my_memset((uint8_t *)&cmd, sizeof(cmd), 0);
 
     // Receive 1 byte for the cmd enum
-    while(circbuf_remove_item(receive, &(cmd.cmd)) != CB_ENUM_NO_ERROR);
+    while(circbuf_remove_item(receive, (uint8_t *)&(cmd.cmd)) != CB_ENUM_NO_ERROR);
 
     // Receive 1 byte for the data length
     while(circbuf_remove_item(receive, &(cmd.length)) != CB_ENUM_NO_ERROR);

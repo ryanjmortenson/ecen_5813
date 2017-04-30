@@ -101,6 +101,9 @@ MAPS=$(25Z_OUT_DIR)/$(MAP_FILE) \
 # Call this when building for kl25z
 -include prop/kl25z/subdir.mk
 
+# Call this when building for bbb
+-include prop/bbb/subdir.mk
+
 # Set define of project 2 as default
 ifeq ($(PROJECT),)
 	PROJECT=4
@@ -136,19 +139,23 @@ ifeq ($(PLATFORM),frdm)
             -D FRDM \
             -D TIMESTAMP=$(shell date +%s)
 	OBJS=$(KL25Z_PROP_OBJS) \
-	       $(25Z_OBJS)
+	     $(25Z_OBJS)
 	TEST_OBJS=$(25Z_TEST_OBJS)
 	OUT_DIR=$(25Z_APP_OUT)
 else ifeq ($(PLATFORM),bbb)
 	CC=$(ARM_CC)
-	CFLAGS+=-lrt
-	OBJS=$(ARM_OBJS)
+	CFLAGS+=-lrt \
+          -I$(ARM_PROP_INC_DIR)
+	OBJS=$(ARM_PROP_OBJS) \
+       $(ARM_OBJS)
 	TEST_OBJS=$(ARM_TEST_OBJS)
 	OUT_DIR=$(ARM_APP_OUT)
 else ifneq ($(findstring arm,$(shell uname -a)),)
 	CC=gcc
-	CFLAGS+=-lrt
-	OBJS=$(ARM_OBJS)
+	CFLAGS+=-lrt \
+          -I$(ARM_PROP_INC_DIR)
+	OBJS=$(ARM_PROP_OBJS) \
+       $(ARM_OBJS)
 	TEST_OBJS=$(ARM_TEST_OBJS)
 	OUT_DIR=$(ARM_APP_OUT)
 else ifeq ($(PLATFORM),host)
@@ -251,8 +258,8 @@ build-lib: $(OBJS)
 # Debug target is just used for debugging the make file
 debug:
 	@echo "Debug output"
-	@echo $(KL25Z_PROP_OBJS)
-	@echo $(KL25Z_PROP_SRCS)
+	@echo $(ARM_PROP_OBJS)
+	@echo $(ARM_PROP_SRCS)
 	@echo $(OUT_DIR)
 	@echo $(TEST_OBJS)
 

@@ -18,6 +18,7 @@
 #include "gpio.h"
 #else
 #include "timer_linux.h"
+#include "spi.h"
 #endif // FRDM
 
 /*
@@ -89,9 +90,6 @@ uint8_t project_3_setup()
   // Setup profiler for kl25z
   profiler_init();
 
-  // Setup the spi for kl25z
-  spi_init();
-
   // Setup the nrf gpio pins for executing chip select
   gpio_nrf_init();
 
@@ -103,6 +101,9 @@ uint8_t project_3_setup()
 #else
   // Setup timer for BBB and linux workstation
   profiler_init_linux();
+
+  // Setup the spi for kl25z
+  spi_init();
 #endif // FRDM
 
   // Init log and bail out if a failure occurs

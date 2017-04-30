@@ -1,4 +1,3 @@
-
 # Set up some directories for later use
 KL25Z_PROP_INC_DIR=prop/kl25z/inc
 KL25Z_PROP_SRC_DIR=prop/kl25z/src
