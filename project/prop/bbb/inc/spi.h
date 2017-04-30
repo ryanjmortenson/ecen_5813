@@ -1,6 +1,9 @@
 #ifndef __SPI_H__
 #define __SPI_H__
 
+#define GPIO_NRF_CSN_DISABLE spi_csn_disable();
+#define GPIO_NRF_CSN_ENABLE spi_csn_enable();
+
 #include <stdint.h>
 
 /*
@@ -9,7 +12,7 @@
  * \param baud baud rate for spi communications
  *
  */
-void spi_init();
+int spi_init();
 
 /*
  * \brief spi_send_byte: sends one byte through spi communication
@@ -35,5 +38,23 @@ void spi_send_byte_n(uint8_t * bytes, uint32_t length);
  *
  */
 uint8_t spi_receive_byte();
+
+/*
+ * \brief spi_shutdown: clean up file decriptors for BBB
+ *
+ */
+void spi_shutdown();
+
+/*
+ * \brief spi_shutdown: set the csn pin low
+ *
+ */
+void spi_csn_enable();
+
+/*
+ * \brief spi_shutdown: set the csn pin high
+ *
+ */
+void spi_csn_disable();
 
 #endif

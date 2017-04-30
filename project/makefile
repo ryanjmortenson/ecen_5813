@@ -145,6 +145,7 @@ ifeq ($(PLATFORM),frdm)
 else ifeq ($(PLATFORM),bbb)
 	CC=$(ARM_CC)
 	CFLAGS+=-lrt \
+           -D BBB \
           -I$(ARM_PROP_INC_DIR)
 	OBJS=$(ARM_PROP_OBJS) \
        $(ARM_OBJS)
@@ -153,6 +154,7 @@ else ifeq ($(PLATFORM),bbb)
 else ifneq ($(findstring arm,$(shell uname -a)),)
 	CC=gcc
 	CFLAGS+=-lrt \
+          -D BBB \
           -I$(ARM_PROP_INC_DIR)
 	OBJS=$(ARM_PROP_OBJS) \
        $(ARM_OBJS)

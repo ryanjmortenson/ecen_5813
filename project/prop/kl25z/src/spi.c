@@ -13,7 +13,7 @@ extern void SPI0_IRQHandler()
 
 } // SPI0_IRQHandler()
 
-void spi_init()
+uint8_t spi_init()
 {
   // Set the SIM_SCGC5 register PORTD bit to 1 which allows
   // the clock to go to port d
@@ -35,6 +35,8 @@ void spi_init()
   // Set device to master
   SPI0_C1 |= SPI_C1_MSTR_MASK | SPI_C1_SPE_MASK;
   SPI0_C1 &= ~SPI_C1_CPHA_MASK;
+
+  return SUCCESS;
 } // spi_configure()
 
 void spi_send_byte(uint8_t byte)

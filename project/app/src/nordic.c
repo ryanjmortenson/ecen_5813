@@ -1,7 +1,10 @@
-#ifdef FRDM
+#if defined(BBB) || defined(FRDM)
 #include "spi.h"
-#include "gpio.h"
 #include "nordic.h"
+
+#ifdef FRDM
+#include "gpio.h"
+#endif
 
 uint8_t nrf_read_register(uint8_t reg)
 {
@@ -190,4 +193,4 @@ void nrf_flush_rx_fifo()
   // Disable chip select
   GPIO_NRF_CSN_DISABLE;
 }
-#endif
+#endif // BBB || FRDM

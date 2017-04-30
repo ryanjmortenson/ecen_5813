@@ -7,9 +7,12 @@
 #include "log_item.h"
 #include "nordic.h"
 
+#if defined(BBB) || defined(FRDM)
+#include "spi.h"
+#endif // FRDM || BBB
+
 #ifdef FRDM
 #include "MKL25Z4.h"
-#include "spi.h"
 #include "memory_dma.h"
 #include "timer.h"
 #include "rtc.h"
@@ -18,7 +21,6 @@
 #include "gpio.h"
 #else
 #include "timer_linux.h"
-#include "spi.h"
 #endif // FRDM
 
 /*
@@ -101,9 +103,6 @@ uint8_t project_3_setup()
 #else
   // Setup timer for BBB and linux workstation
   profiler_init_linux();
-
-  // Setup the spi for kl25z
-  spi_init();
 #endif // FRDM
 
   // Init log and bail out if a failure occurs
@@ -115,6 +114,17 @@ uint8_t project_3_setup()
   // Send log system initialized
   CREATE_ITEM_DATA(item, LOG_ID_LOGGER_INITIALIZED, NULL, 0);
   LOG_ITEM(item);
+
+#if defined(BBB) || defined(FRDM)
+  // Setup the spi for kl25z or BBB
+  if (spi_init())
+  {
+     // Send SPI failed
+     CREATE_ITEM_DATA(item, LOG_ID_ERROR, NULL, 0);
+     LOG_ITEM(item);
+     return FAILURE;
+  }
+#endif // BBB || FRDM
 
   // Indicate logger initialized
   CREATE_ITEM_DATA(item, LOG_ID_SYSTEM_INITIALIZED, NULL, 0);
@@ -188,7 +198,7 @@ void project_3_profiler()
 
 void project_3_spi()
 {
-#ifdef FRDM
+#if defined(BBB) || defined(FRDM)
   status_reg status;
   config_reg config;
   rf_setup_reg rf_setup;
@@ -243,5 +253,9 @@ void project_3_spi()
   fifo_status.reg = nrf_read_fifo_status();
   fifo_status = fifo_status;
   log_reg(LOG_ID_NRF_READ_FIFO_STATUS, fifo_status.reg);
-#endif
+
+#ifdef BBB
+  spi_shutdown();
+#endif // BBB
+#endif // FRDM || BBB
 } // project_3_spi()
