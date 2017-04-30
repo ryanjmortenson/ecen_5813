@@ -1,3 +1,5 @@
+#include "project_defs.h"
+
 #ifdef PROJECT1
 #include "project1.h"
 #endif
@@ -31,7 +33,10 @@ int main()
 
 #ifdef PROJECT3
   // Execute the required functions for project3
-  project_3_setup();
+  if(project_3_setup())
+  {
+    return FAILURE;
+  }
   project_3_profiler();
   project_3_spi();
 #endif // PROJECT3

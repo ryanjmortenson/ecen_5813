@@ -59,7 +59,7 @@ int spi_init()
   // Export GPIO 60 (pin 12 j 9)
   if((export = fopen(EXPORT_FILE, "w")) == 0)
   {
-    spi_shutdown();
+    close(fd);
     return FAILURE;
   }
   fseek(export, 0, SEEK_SET);
@@ -69,7 +69,8 @@ int spi_init()
   // Make the pin an output
   if((direction = fopen(GPIO_DIRECTION, "w")) == 0)
   {
-     spi_shutdown();
+     close(fd);
+     fclose(export);
      return FAILURE;
   }
   fseek(direction, 0, SEEK_SET);
@@ -79,7 +80,9 @@ int spi_init()
   // Set initial value to high
   if ((value = fopen(GPIO_VALUE, "w")) == 0)
   {
-     spi_shutdown();
+     close(fd);
+     fclose(export);
+     fclose(direction);
      return FAILURE;
   }
   fseek(value, 0, SEEK_SET);
