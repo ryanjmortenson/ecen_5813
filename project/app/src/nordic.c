@@ -111,7 +111,7 @@ void nrf_read_tx_addr(uint8_t * tx_addr)
     spi_send_byte(NRF_NO_OP);
 
     // Read the register value
-    tx_addr[i] = spi_receive_byte();
+    *(tx_addr + i) = spi_receive_byte();
   }
 
   // Disable chip select
@@ -133,7 +133,7 @@ void nrf_write_tx_addr(uint8_t * tx_addr)
   for(uint8_t i = 0; i < NRF_TXADDR_LEN; i++)
   {
     // Send the no op command to shift out register contents
-    spi_send_byte(tx_addr[i]);
+    spi_send_byte(*(tx_addr + i));
 
     // Read the register value
     spi_receive_byte();

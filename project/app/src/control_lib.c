@@ -18,7 +18,7 @@ uint8_t register_cb(registered_cb * reg_cb)
   CHECK_NULL(reg_cb);
 
   // Don't register another functionality if out of space
-  if (current_cbs >= MAX_REGS)
+  if (current_cbs >= MAX_REGS - 1)
   {
     return FAILURE;
   }
@@ -27,7 +27,7 @@ uint8_t register_cb(registered_cb * reg_cb)
   *(regs + current_cbs) = *(reg_cb);
   current_cbs++;
   return SUCCESS;
-}
+} // register_cb()
 
 uint8_t unregister_cb(registered_cb * reg_cb)
 {
@@ -50,12 +50,12 @@ uint8_t unregister_cb(registered_cb * reg_cb)
     }
   }
   return FAILURE;
-}
+} // unregister_cb()
 
 uint8_t distribute_cmd(command_msg * cmd)
 {
   // Loop over registered callbacks looking for command ids that match.
-  // When a match occures call the callback.  A failure in a callback
+  // When a match occurs call the callback.  A failure in a callback
   // stops the search and returns a failure
   for (uint8_t i = 0; i < current_cbs; i++)
   {
@@ -68,13 +68,14 @@ uint8_t distribute_cmd(command_msg * cmd)
     }
   }
   return SUCCESS;
-}
+} // distribute_cmd
 
 void control_lib_main()
 {
   uint8_t byte = 0;
   command_msg cmd;
-  volatile uint16_t checksum = 0;
+  uint16_t checksum = 0;
+
   for(;;)
   {
     // Clear out cmd structure
@@ -103,7 +104,7 @@ void control_lib_main()
     // Get the low byte and place in checksum
     while(circbuf_remove_item(receive, (uint8_t *)&cmd.checksum));
 
-    // Compute the full 16 bit value by shifting the high byte 1 and oring
+    // Compute the full 16 bit value by shifting the high byte 8 and oring
     // with checksum
     cmd.checksum |= (byte << 8);
 
@@ -122,6 +123,4 @@ void control_lib_main()
     // Reset checksum
     checksum = 0;
   }
-}
-
-
+}  // control_lib_main()

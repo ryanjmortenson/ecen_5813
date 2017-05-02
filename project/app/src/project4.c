@@ -51,4 +51,4 @@ uint8_t project_4_setup()
   control_lib_main();
 
   return SUCCESS;
-}
+} // project_4_setup()

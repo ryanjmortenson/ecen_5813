@@ -46,13 +46,13 @@ uint8_t spi_receive_byte();
 void spi_shutdown();
 
 /*
- * \brief spi_shutdown: set the csn pin low
+ * \brief spi_csn_enable: set the csn pin low
  *
  */
 void spi_csn_enable();
 
 /*
- * \brief spi_shutdown: set the csn pin high
+ * \brief spi_csn_disable: set the csn pin high
  *
  */
 void spi_csn_disable();
