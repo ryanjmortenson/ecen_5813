@@ -80,11 +80,15 @@ void rtc_init()
   // for printing the heartbeat
   NVIC_SetPriority(RTC_Seconds_IRQn, 10);
 
-  // Clear all interrupts then set the timer seconds interrupt
+  // Clear all interrupts then
   RTC_IER = 0;
+
+#ifndef PROJECT4
+  // Set the timer seconds interrupt if not project 4 which will set
+  // dynamically
   RTC_IER |= RTC_IER_TSIE_MASK;
+#endif
 
   // Start the RTC
   RTC_SR |= RTC_SR_TCE_MASK;
-
 } // rtc_init()

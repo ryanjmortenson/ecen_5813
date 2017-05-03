@@ -17,6 +17,7 @@ test
 .cproject
 cmocka-out
 *tag*
+.ycm_extra_conf.py*
 
 # Directories
 **/logs

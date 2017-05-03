@@ -16,7 +16,6 @@
 #endif // FRDM
 
 extern circbuf_t * transmit;
-extern volatile uint8_t dma_transfer_complete;
 
 #ifdef VERBOSE
 char * log_id_str[] =

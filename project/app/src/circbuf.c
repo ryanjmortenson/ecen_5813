@@ -74,7 +74,6 @@ cb_enum_t circbuf_init_dma(circbuf_t ** buf, uint16_t length, uint8_t * addr)
   return CB_ENUM_NO_ERROR;
 } // circbuf_init()
 
-
 cb_enum_t circbuf_destroy(circbuf_t * buf)
 {
 
@@ -188,7 +187,6 @@ cb_enum_t circbuf_peek(circbuf_t * buf, uint32_t index, uint8_t * payload)
 
   return CB_ENUM_NO_ERROR;
 } // circbuf_peek()
-
 
 #ifdef UNITTEST
 // This is a test function used to set buffer to null

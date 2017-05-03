@@ -1,7 +1,10 @@
-#ifdef FRDM
+#if defined(BBB) || defined(FRDM)
 #include "spi.h"
-#include "gpio.h"
 #include "nordic.h"
+
+#ifdef FRDM
+#include "gpio.h"
+#endif
 
 uint8_t nrf_read_register(uint8_t reg)
 {
@@ -108,7 +111,7 @@ void nrf_read_tx_addr(uint8_t * tx_addr)
     spi_send_byte(NRF_NO_OP);
 
     // Read the register value
-    tx_addr[i] = spi_receive_byte();
+    *(tx_addr + i) = spi_receive_byte();
   }
 
   // Disable chip select
@@ -130,7 +133,7 @@ void nrf_write_tx_addr(uint8_t * tx_addr)
   for(uint8_t i = 0; i < NRF_TXADDR_LEN; i++)
   {
     // Send the no op command to shift out register contents
-    spi_send_byte(tx_addr[i]);
+    spi_send_byte(*(tx_addr + i));
 
     // Read the register value
     spi_receive_byte();
@@ -161,6 +164,21 @@ void nrf_flush_tx_fifo()
   GPIO_NRF_CSN_DISABLE;
 }
 
+void nrf_write_tx_payload(uint8_t * payload, uint8_t count)
+{
+  // Enable the chip select
+  GPIO_NRF_CSN_ENABLE;
+
+  // Send the flush tx command
+  spi_send_byte(NRF_FLUSH_TX);
+
+  // Read the status
+  spi_receive_byte();
+
+  // Disable chip select
+  GPIO_NRF_CSN_DISABLE;
+}
+
 void nrf_flush_rx_fifo()
 {
   // Enable the chip select
@@ -175,4 +193,4 @@ void nrf_flush_rx_fifo()
   // Disable chip select
   GPIO_NRF_CSN_DISABLE;
 }
-#endif
+#endif // BBB || FRDM

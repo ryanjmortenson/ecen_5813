@@ -224,7 +224,7 @@ SECTIONS
   /* Buffer section placed after .bss*/
   .tx_buffer :
   {
-  . = ALIGN(4);
+  . = ALIGN(512);
   __TX_BUFFER_START = .;
   . += TX_SIZE;
   } > m_data
@@ -232,7 +232,7 @@ SECTIONS
   /* Buffer section placed after .bss*/
   .rx_buffer :
   {
-  . = ALIGN(4);
+  . = ALIGN(512);
   __RX_BUFFER_START = .;
   . += RX_SIZE;
   } > m_data

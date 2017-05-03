@@ -1,4 +1,3 @@
-
 # Include proprieatry kl25z sources
 -include prop/kl25z/sources.mk
 
