@@ -5,6 +5,7 @@
 #include "log_item.h"
 
 #ifdef FRDM
+#include "memory_dma.h"
 #include "rtc.h"
 #include "gpio.h"
 #include "timer.h"
@@ -32,6 +33,11 @@ uint8_t project_4_setup()
   // System controller init (reset)
   system_control_init();
 #endif // FRDM
+
+#ifdef CIRCBUF_DMA
+  // Setup uart dma
+  dma_uart_init();
+#endif // CIRCBUF_DMA
 
   // Init log and bail out if a failure occurs
   if (log_init())

@@ -7,8 +7,9 @@
 #include "memory.h"
 
 // Use 512 as circular buffer modulo
-#define DMOD_512 0x06
+#define MOD_512 0x06
 #define DMA_MUX_SOURCE_UART_TX 3
+#define DMA_MUX_SOURCE_UART_RX 2
 
 // Starts the memmove with the following parameters
 #define MEMMOVE_START(size) DMA_DCR_SINC_MASK | \
@@ -17,7 +18,7 @@
                             DMA_DCR_DSIZE(size) | \
                             DMA_DCR_AA_MASK   | \
                             DMA_DCR_EINT_MASK | \
-                            DMA_DCR_START_MASK;
+                            DMA_DCR_START_MASK
 
 // Starts the memset with the following parameters
 #define MEMSET_START(size) DMA_DCR_DINC_MASK | \
@@ -25,17 +26,15 @@
                            DMA_DCR_DSIZE(size) | \
                            DMA_DCR_AA_MASK   | \
                            DMA_DCR_EINT_MASK | \
-                           DMA_DCR_START_MASK;
+                           DMA_DCR_START_MASK
 
 // Settings for the DMA/UART setup
-#define DMA_UART_SETUP DMA_DCR_SINC_MASK | \
-                       DMA_DCR_SSIZE(BYTE) | \
+#define DMA_UART_SETUP DMA_DCR_SSIZE(BYTE) | \
                        DMA_DCR_DSIZE(BYTE) | \
                        DMA_DCR_EINT_MASK | \
                        DMA_DCR_CS_MASK | \
-                       DMA_DCR_EADREQ_MASK | \
-                       DMA_DCR_SMOD(DMOD_512) | \
-                       DMA_DCR_ERQ_MASK;
+                       DMA_DCR_ERQ_MASK
+
 // Set DMA_SIZE
 #ifndef DMA_SIZE
 #define DMA_SIZE 4
@@ -52,9 +51,11 @@
 
 // Start of the 512 byte buffer on a 512 byte boundary
 extern uint32_t __TX_BUFFER_START;
+extern uint32_t __RX_BUFFER_START;
 
-// Use to reset circular buffer tracking variables when dma request ends
+// Access to the receive/transmit circular buffers
 extern circbuf_t * transmit;
+extern circbuf_t * receive;
 
 /*
  * Function definitions see memory_dma.h for documentation
@@ -79,7 +80,20 @@ extern void DMA2_IRQHandler()
   transmit->tail = (uint8_t *) (DMA_SAR2);
   transmit->head = (uint8_t *) (DMA_SAR2);
   transmit->count = 0;
-}
+} // DMA2_IRQHandler()
+
+extern void DMA3_IRQHandler()
+{
+  DMA_DSR_BCR3 |= DMA_DSR_BCR_DONE_MASK;
+  DMA_DSR_BCR3 |= DMA_DSR_BCR_BCR(1);
+
+  // Move head and count
+  if (!(DMA_DSR_BCR3 & DMA_DSR_BCR_CE_MASK))
+  {
+    receive->head = (uint8_t *) (DMA_DAR3);
+    receive->count++;
+  }
+} // DMA3_IRQHandler()
 
 void dma_init()
 {
@@ -103,18 +117,24 @@ void dma_uart_init()
   // circular buffer functionality.  The linker script sets up a TX and RX
   // buffer on 512 byte bounder because we are using MOD 512.
   DMA_SAR2 = (uint32_t) &__TX_BUFFER_START;
+  DMA_SAR3 = (uint32_t) &UART0_D;
 
   // Setup the UART0_D register as the destination
   DMA_DAR2 = (uint32_t) &UART0_D;
+  DMA_DAR3 = (uint32_t) &__RX_BUFFER_START;
 
   // Set the dma mux channel for UART transmit
   DMAMUX0_CHCFG2 |= DMAMUX_CHCFG_ENBL_MASK | DMA_MUX_SOURCE_UART_TX;
+  DMAMUX0_CHCFG3 |= DMAMUX_CHCFG_ENBL_MASK | DMA_MUX_SOURCE_UART_RX;
 
   // Setup DMA channel for UART TX
-  DMA_DCR2 = DMA_UART_SETUP;
+  DMA_DCR2 = DMA_UART_SETUP | DMA_DCR_SINC_MASK | DMA_DCR_SMOD(MOD_512);
+  DMA_DCR3 = DMA_UART_SETUP | DMA_DCR_DINC_MASK | DMA_DCR_DMOD(MOD_512);
+  DMA_DSR_BCR3 |= DMA_DSR_BCR_BCR(1);
 
   // Enable IRQ for the 2 dma channels
   NVIC_EnableIRQ(DMA2_IRQn);
+  NVIC_EnableIRQ(DMA3_IRQn);
 } // dma_uart_init()
 
 uint8_t memmove_dma(uint8_t * src, uint8_t * dst, int32_t length)

@@ -92,6 +92,11 @@ void uart_configure(uint32_t baud)
   // Enable the transmitter and receiver and their interrupts
   UART0_C2 = UARTLP_C2_RE_MASK | UARTLP_C2_TE_MASK;
 
+#ifdef CIRCBUF_DMA
+  // Turn on the dma request for receive
+  UART0_C5 |= UART0_C5_RDMAE_MASK;
+#endif
+
 #ifdef UART_INTERRUPTS
   // Add receive interrupt
   UART0_C2 |= UART_C2_RIE_MASK;
