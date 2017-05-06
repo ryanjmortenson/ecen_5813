@@ -42,6 +42,9 @@ int main()
 #endif // PROJECT3
 
 #ifdef PROJECT4
+#if !defined(CIRCBUF_DMA) && !defined(UART_INTERRUPTS)
+#error Project 4 must use CIRCBUF_DMA or UART_INTERRUPTS
+#endif
   // Execute the required functions for project4
   project_4_setup();
 #endif // PROJECT4

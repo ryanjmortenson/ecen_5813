@@ -69,6 +69,7 @@ extern void DMA0_IRQHandler()
 
 extern void DMA2_IRQHandler()
 {
+  // This ISR is called after a UART transmit is complete
   // Turn of the dma requests from uart because circular buffer is empty
   UART0_C5 &= ~UART0_C5_TDMAE_MASK;
 
@@ -84,6 +85,8 @@ extern void DMA2_IRQHandler()
 
 extern void DMA3_IRQHandler()
 {
+  // This ISR is called after a UART byte is received
+  // Clear done mask and wait for another byte
   DMA_DSR_BCR3 |= DMA_DSR_BCR_DONE_MASK;
   DMA_DSR_BCR3 |= DMA_DSR_BCR_BCR(1);
 

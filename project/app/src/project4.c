@@ -13,9 +13,6 @@
 #include "system_controller.h"
 #endif // FRDM
 
-extern circbuf_t * receive;
-extern circbuf_t * transmit;
-
 #ifdef VERBOSE
   // No need for a log item if not verbose
   static log_item_t * item;

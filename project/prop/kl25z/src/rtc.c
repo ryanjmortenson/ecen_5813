@@ -18,12 +18,14 @@
 #define RTC_CLKIN (2)
 #define MCGIRCLK (4)
 
+#ifndef BINARY_LOGGER
 // Add some fun messages for the heartbeat
 const static uint8_t * messages[] = {
   (uint8_t *)"Owner of a lonely heart",
   (uint8_t *)"Much better than the",
   (uint8_t *)"Owner of a broken heart"
 };
+#endif
 
 // Count used to modulo 3 and print fun messages
 static volatile uint32_t count = 0;
