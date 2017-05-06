@@ -5,13 +5,6 @@
 #include "log_item.h"
 #include "timer.h"
 
-// Set the data direction to output for the led pins
-#define R_ON TPM2_C0SC |= EDGE_ALIGNED_PWM_ON;
-#define G_ON TPM2_C1SC |= EDGE_ALIGNED_PWM_ON;
-#define B_ON TPM0_C1SC |= EDGE_ALIGNED_PWM_ON;
-#define R_OFF TPM2_C0SC = 0;
-#define G_OFF TPM2_C1SC = 0;
-#define B_OFF TPM0_C1SC = 0;
 #define R_STATE(data) (((*(uint8_t *) data) & 0x4) >> 2)
 #define G_STATE(data) (((*(uint8_t *) data) & 0x2) >> 1)
 #define B_STATE(data) ((*(uint8_t *) data) & 0x1)
@@ -21,7 +14,13 @@
 #define R_CNT_REG (TPM2_C0V)
 #define G_CNT_REG (TPM2_C1V)
 #define B_CNT_REG (TPM0_C1V)
+#define R_TPM_REG (TPM2_C0SC)
+#define G_TPM_REG (TPM2_C1SC)
+#define B_TPM_REG (TPM0_C1SC)
 #define ON (1)
+
+// Array of states for LED on/off
+static const uint8_t state[] = {0, EDGE_ALIGNED_PWM_ON};
 
 /*
  * \brief led_control: callback registered for led control command
@@ -38,38 +37,13 @@ uint8_t led_control(command_msg * cmd)
   G_CNT_REG = G_CNT(cmd->data);
   B_CNT_REG = B_CNT(cmd->data);
 
-  // Turn RED portion of LED on/off
-  if (R_STATE(cmd->data) == ON)
-  {
-    R_ON;
-  }
-  else
-  {
-    R_OFF;
-  }
-
-  // Turn GREEN portion of LED on/off
-  if (G_STATE(cmd->data) == ON)
-  {
-    G_ON;
-  }
-  else
-  {
-    G_OFF;
-  }
-
-  // Turn BLUE portion of LED on/off
-  if (B_STATE(cmd->data) == ON)
-  {
-    B_ON;
-  }
-  else
-  {
-    B_OFF;
-  }
+  // Set the correct register state
+  R_TPM_REG = state[R_STATE(cmd->data)];
+  G_TPM_REG = state[G_STATE(cmd->data)];
+  B_TPM_REG = state[B_STATE(cmd->data)];
 
   return SUCCESS;
-}
+} // led_control()
 
 void led_control_init()
 {
@@ -87,4 +61,4 @@ void led_control_init()
     .cb = led_control
   };
   register_cb(&reg);
-}
+} // led_control_init()

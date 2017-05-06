@@ -90,7 +90,7 @@ int spi_init()
   fflush(value);
 
   return SUCCESS;
-}
+} // spi_init()
 
 void spi_send_byte(uint8_t byte)
 {
@@ -109,7 +109,7 @@ void spi_send_byte(uint8_t byte)
 
   // Make a spi ioctl call
   ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
-}
+} // spi_send_byte()
 
 void spi_send_bytes(uint8_t * bytes, uint32_t length)
 {
@@ -128,13 +128,13 @@ void spi_send_bytes(uint8_t * bytes, uint32_t length)
 
   // Make a spi ioctl call
   ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
-}
+} // spi_send_bytes()
 
 uint8_t spi_receive_byte()
 {
   // Return the rx_byte
   return rx_byte;
-}
+} // spi_receive_byte()
 
 void spi_shutdown()
 {
@@ -143,7 +143,7 @@ void spi_shutdown()
   fclose(export);
   fclose(direction);
   fclose(value);
-}
+} // spi_shutdown()
 
 void spi_csn_enable()
 {
@@ -152,7 +152,7 @@ void spi_csn_enable()
 
   // Flush value to file
   fflush(value);
-}
+} // spi_csn_enable()
 
 void spi_csn_disable()
 {
@@ -161,4 +161,4 @@ void spi_csn_disable()
 
   // Flush value to file
   fflush(value);
-}
+} // spi_csn_disable()

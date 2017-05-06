@@ -65,7 +65,7 @@ extern void DMA0_IRQHandler()
 {
   // Turn off DMA0 IRQ until needed again
   NVIC_DisableIRQ(DMA0_IRQn);
-}
+} // DMA0_IRQHandler
 
 extern void DMA2_IRQHandler()
 {

@@ -12,7 +12,7 @@ extern volatile uint8_t overflows;
 #define EDGE_ALIGNED_PWM_ON TPM_CnSC_ELSB(1) | \
                             TPM_CnSC_ELSB(0) | \
                             TPM_CnSC_MSB(1)  | \
-                            TPM_CnSC_MSA(0);
+                            TPM_CnSC_MSA(0)
 
 
 /*
