@@ -3,6 +3,8 @@
 
 #define GPIO_NRF_CSN_DISABLE spi_csn_disable();
 #define GPIO_NRF_CSN_ENABLE spi_csn_enable();
+#define GPIO_NRF_CE_DISABLE spi_ce_disable();
+#define GPIO_NRF_CE_ENABLE spi_ce_enable();
 
 #include <stdint.h>
 
@@ -56,5 +58,17 @@ void spi_csn_enable();
  *
  */
 void spi_csn_disable();
+
+/*
+ * \brief spi_ce_enable: set the ce pin low
+ *
+ */
+void spi_ce_enable();
+
+/*
+ * \brief spi_ce_disable: set the ce pin high
+ *
+ */
+void spi_ce_disable();
 
 #endif

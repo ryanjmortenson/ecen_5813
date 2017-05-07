@@ -16,8 +16,10 @@
 #define NRF_POWER_UP_MASK (0x02)
 #define NRF_NO_OP (0xff)
 #define NRF_WRITE_MASK (0x20)
-#define NRF_FLUSH_RX (0xe1)
-#define NRF_FLUSH_TX (0xe2)
+#define NRF_FLUSH_TX (0xe1)
+#define NRF_FLUSH_RX (0xe2)
+#define NRF_W_TX_PAYLOAD (0xA0)
+#define NRF_R_RX_PAYLOAD (0x61)
 
 // The following are bit fields for the following registers STATUS, CONFIG,
 // RF_SETUP, RF_CH, FIFO_STATUS
@@ -113,6 +115,14 @@ void nrf_write_register(uint8_t reg, uint8_t value);
 uint8_t nrf_read_status();
 
 /*
+ * \brief nrf_write_status: write the status register
+ *
+ * \param status: value to write to register
+ *
+ */
+void nrf_write_status(uint8_t status);
+
+/*
  * \brief nrf_write_config: writes the config register on the nrf module using spi
  *
  * \param config: config value to write to register
@@ -176,6 +186,17 @@ void nrf_write_tx_addr(uint8_t * tx_addr);
  */
 void nrf_read_tx_addr(uint8_t * tx_addr);
 
+/*
+ * \brief nrf_write_tx_payload: writes the tx payload on the nrf module using spi
+ *
+ * \param payload: a uint8_t array of elements for payload
+ * \param len: a len of payload
+ *
+ */
+void nrf_write_tx_payload(uint8_t * payload, uint8_t len);
+
+void nrf_write_rx_addr(uint8_t * rx_addr, uint8_t pipe);
+void nrf_read_rx_payload(uint8_t * rx_payload);
 /*
  * \brief nrf_read_fifo_status: reads the fifo_status register on the nrf module using spi
  *

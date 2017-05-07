@@ -16,7 +16,7 @@ void gpio_nrf_init()
   PORTD_PCR5 = PORT_PCR_MUX(ALT_1);
 
   // Set initial state to CSN = 1, CE = 0
-  GPIOD_PDDR |= 1;
+  GPIOD_PDDR |= 1 | 1 << 5;
   GPIOD_PDOR |= 1;
 }
 
