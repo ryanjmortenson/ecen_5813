@@ -195,7 +195,22 @@ void nrf_read_tx_addr(uint8_t * tx_addr);
  */
 void nrf_write_tx_payload(uint8_t * payload, uint8_t len);
 
+/*
+ * \brief nrf_write_rx_addr: the rx address for a certain pipe
+ *
+ * \param rx_addr: pointer to rx_addres
+ * \param pipe: data pipe you want to write the address to
+ *
+ */
 void nrf_write_rx_addr(uint8_t * rx_addr, uint8_t pipe);
+
+/*
+ * \brief nrf_read_rx_payload: reads an rx payload
+ *
+ * \param rx_payload: memory location to write payload to
+ *
+ */
+
 void nrf_read_rx_payload(uint8_t * rx_payload);
 /*
  * \brief nrf_read_fifo_status: reads the fifo_status register on the nrf module using spi

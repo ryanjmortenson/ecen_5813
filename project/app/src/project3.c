@@ -201,14 +201,15 @@ void project_3_spi()
 #if defined(BBB) || defined(FRDM)
   status_reg status;
   config_reg config;
+  rf_setup_reg rf_setup;
+  rf_ch_reg rf_ch;
   fifo_status_reg fifo_status;
+  uint8_t tx_addr[5] = {0};
 
   // Do some reading and writing of config register
   config.reg = nrf_read_config();
   log_reg(LOG_ID_NRF_READ_CONFIG, config.reg);
   config.config.pwr_up = 1;
-  config.config.prim_rx = 1;
-  // config.config.en_crc = 0;
   nrf_write_config(config.reg);
   config.reg = nrf_read_config();
   log_reg(LOG_ID_NRF_READ_CONFIG, config.reg);
@@ -217,32 +218,13 @@ void project_3_spi()
   status.reg = nrf_read_status();
   log_reg(LOG_ID_NRF_READ_STATUS, status.reg);
 
-  // Do some reading and writing of the rf_ch register
-  rf_ch_reg rf_ch;
-  rf_ch.reg = nrf_read_rf_ch();
-  log_reg(LOG_ID_NRF_READ_RF_CH, rf_ch.reg);
-  rf_ch.rf_ch.rf_ch = 0x9;
-  nrf_write_rf_ch(rf_ch.reg);
-  rf_ch.reg = nrf_read_rf_ch();
-  log_reg(LOG_ID_NRF_READ_RF_CH, rf_ch.reg);
-
-  // Do some reading and writing of the rf_setup register
-  rf_setup_reg rf_setup;
-  rf_setup.reg = nrf_read_rf_setup();
-  log_reg(LOG_ID_NRF_READ_RF_SETUP, rf_setup.reg);
-  rf_setup.rf_setup.rf_dr = 1;
-  rf_setup.rf_setup.rf_pwr = 0;
-  nrf_write_rf_setup(rf_setup.reg);
-  rf_setup.reg = nrf_read_rf_setup();
-  log_reg(LOG_ID_NRF_READ_RF_SETUP, rf_setup.reg);
-#if 0
   // Do some reading and writing of the tx_addr register
-  uint8_t tx_addr[5] = {0};
   nrf_read_tx_addr(tx_addr);
   for(uint8_t i = 0; i < 5; i++)
   {
     log_reg(LOG_ID_NRF_READ_TX_ADDR, tx_addr[i]);
   }
+
   my_memset(tx_addr, 5, 0xaa);
   nrf_write_tx_addr(tx_addr);
   my_memset(tx_addr, 5, 0);
@@ -252,94 +234,29 @@ void project_3_spi()
     log_reg(LOG_ID_NRF_READ_TX_ADDR, tx_addr[i]);
   }
 
-  // Do some reading of fifo_status register
-  nrf_write_register(2, 0x3f);
+  // Do some reading and writing of the rf_setup register
+  rf_setup.reg = nrf_read_rf_setup();
+  log_reg(LOG_ID_NRF_READ_RF_SETUP, rf_setup.reg);
+  rf_setup.rf_setup.rf_pwr = 0;
+  nrf_write_rf_setup(rf_setup.reg);
+  rf_setup.reg = nrf_read_rf_setup();
+  log_reg(LOG_ID_NRF_READ_RF_SETUP, rf_setup.reg);
+
+  // Do some reading and writing of the rf_ch register
+  rf_ch.reg = nrf_read_rf_ch();
+  log_reg(LOG_ID_NRF_READ_RF_CH, rf_ch.reg);
+  rf_ch.rf_ch.rf_ch = 0x7f;
+  nrf_write_rf_ch(rf_ch.reg);
+  rf_ch.reg = nrf_read_rf_ch();
+  log_reg(LOG_ID_NRF_READ_RF_CH, rf_ch.reg);
+
+  // Do some reading of fifo_statu register
   fifo_status.reg = nrf_read_fifo_status();
+  fifo_status = fifo_status;
   log_reg(LOG_ID_NRF_READ_FIFO_STATUS, fifo_status.reg);
-
-  uint8_t rx_addr[] = {0xc2, 0xc2, 0xc2, 0xc2, 0xc2};
-
-  nrf_write_rx_addr(rx_addr, 0x0b);
-#endif
-
-  //nrf_write_register(1, 0);
-  //nrf_write_register(4, 0);
-  nrf_write_register(0x10, 32);
-  nrf_write_register(0x11, 32);
-  nrf_write_register(0x12, 32);
-  nrf_write_register(0x13, 32);
-  nrf_write_register(0x14, 32);
-  nrf_write_register(0x15, 32);
-
-  // Start a transmission
-  GPIO_NRF_CE_ENABLE;
-
-  // Loop for a bit
-  while(!status.status.rx_dr)
-  {
-    status.reg = nrf_read_status();
-    log_reg(LOG_ID_NRF_READ_STATUS, status.reg);
-  }
-
-  // Turn off transmitter
-  GPIO_NRF_CE_DISABLE;
-
-  fifo_status.reg = nrf_read_fifo_status();
-  log_reg(LOG_ID_NRF_READ_FIFO_STATUS, fifo_status.reg);
-
-  uint8_t payload[32];
-  nrf_read_rx_payload(payload);
-
-  status.status.rx_dr = 1;
-  nrf_write_status(status.reg);
-
-  fifo_status.reg = nrf_read_fifo_status();
-  log_reg(LOG_ID_NRF_READ_FIFO_STATUS, fifo_status.reg);
-
 
 #ifdef BBB
-  uint8_t payload[] = {0x03, 0x07, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06};
-
-  const uint8_t len = 11;
-  for (volatile uint8_t i = 0; i < 255; i++)
-  {
-    nrf_flush_tx_fifo();
-    nrf_write_tx_payload(payload, len);
-
-    // Do some reading of fifo_status register
-    fifo_status.reg = nrf_read_fifo_status();
-    fifo_status = fifo_status;
-    log_reg(LOG_ID_NRF_READ_FIFO_STATUS, fifo_status.reg);
-
-    // Start a transmission
-    GPIO_NRF_CE_ENABLE;
-
-    // Loop for a bit
-    while(!(status.status.tx_ds))
-    {
-      status.reg = nrf_read_status();
-    }
-
-    // Turn off transmitter
-    GPIO_NRF_CE_DISABLE;
-
-    // Do some reading of fifo_status register
-    fifo_status.reg = nrf_read_fifo_status();
-    fifo_status = fifo_status;
-    log_reg(LOG_ID_NRF_READ_FIFO_STATUS, fifo_status.reg);
-
-    // Do some reading of status register
-    status.reg = nrf_read_status();
-    log_reg(LOG_ID_NRF_READ_STATUS, status.reg);
-
-    status.status.max_rt = 1;
-    nrf_write_status(status.reg);
-    log_reg(LOG_ID_NRF_READ_STATUS, payload_width);
-
-
-  }
   spi_shutdown();
 #endif // BBB
-
 #endif // FRDM || BBB
 } // project_3_spi()
