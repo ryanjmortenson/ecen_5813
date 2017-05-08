@@ -50,7 +50,7 @@ extern void PORTD_IRQHandler()
   PORTD_ISFR |= PORT_ISFR_ISF(1 << 4);
 
   // Read the payload
-  nrf_read_rx_payload(payload);
+  nrf_read_rx_payload(payload, PAYLOAD_LEN);
 
   // Add payload to circular buffer
   for(uint8_t i = 0; i < PAYLOAD_LEN; i++)
@@ -194,8 +194,8 @@ void project_5_wireless_comms()
   log_reg(LOG_ID_NRF_READ_RF_SETUP, rf_setup.reg);
 
   // Write payload length to receive payload length
-  nrf_write_register(NRF_RX_PW_P0, PAYLOAD_LEN);
-  nrf_write_register(NRF_RX_PW_P1, PAYLOAD_LEN);
+  nrf_write_rx_payload_len(NRF_RX_PW_P0, PAYLOAD_LEN);
+  nrf_write_rx_payload_len(NRF_RX_PW_P1, PAYLOAD_LEN);
 
   // Do some reading of fifo_status register
   fifo_status.reg = nrf_read_fifo_status();

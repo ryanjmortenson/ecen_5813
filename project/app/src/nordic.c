@@ -122,7 +122,7 @@ void nrf_read_tx_addr(uint8_t * tx_addr)
 
   // Disable chip select
   GPIO_NRF_CSN_DISABLE;
-} // nrf_read_config()
+} // nrf_read_tx_addr()
 
 void nrf_write_tx_addr(uint8_t * tx_addr)
 {
@@ -147,9 +147,9 @@ void nrf_write_tx_addr(uint8_t * tx_addr)
 
   // Disable chip select
   GPIO_NRF_CSN_DISABLE;
-} // nrf_read_config()
+} // nrf_write_tx_addr()
 
-void nrf_write_rx_addr(uint8_t * rx_addr, uint8_t pipe)
+void nrf_write_rx_addr(uint8_t * rx_addr, uint8_t pipe, uint8_t addr_len)
 {
   // Enable the chip select
   GPIO_NRF_CSN_ENABLE;
@@ -161,7 +161,7 @@ void nrf_write_rx_addr(uint8_t * rx_addr, uint8_t pipe)
   spi_receive_byte();
 
   // Loop over the next 5 bytes writing the tx addr
-  for(uint8_t i = 0; i < NRF_TXADDR_LEN; i++)
+  for(uint8_t i = 0; i < addr_len; i++)
   {
     // Send the no op command to shift out register contents
     spi_send_byte(*(rx_addr + i));
@@ -172,9 +172,9 @@ void nrf_write_rx_addr(uint8_t * rx_addr, uint8_t pipe)
 
   // Disable chip select
   GPIO_NRF_CSN_DISABLE;
-} // nrf_read_config()
+} //  nrf_write_rx_addr()
 
-void nrf_read_rx_payload(uint8_t * rx_payload)
+void nrf_read_rx_payload(uint8_t * rx_payload, uint8_t payload_len)
 {
   // Enable the chip select
   GPIO_NRF_CSN_ENABLE;
@@ -186,7 +186,7 @@ void nrf_read_rx_payload(uint8_t * rx_payload)
   spi_receive_byte();
 
   // Loop over the next 5 bytes reading in the tx addr
-  for(uint8_t i = 0; i < 32; i++)
+  for(uint8_t i = 0; i < payload_len; i++)
   {
     // Send the no op command to shift out register contents
     spi_send_byte(NRF_NO_OP);
@@ -197,7 +197,12 @@ void nrf_read_rx_payload(uint8_t * rx_payload)
 
   // Disable chip select
   GPIO_NRF_CSN_DISABLE;
-} // nrf_read_config()
+} // nrf_read_rx_payload()
+
+void nrf_write_rx_payload_len(uint8_t pipe, uint8_t payload_len)
+{
+  nrf_write_register(pipe, payload_len);
+} // nrf_write_rx_payload_len()
 
 uint8_t nrf_read_fifo_status()
 {
