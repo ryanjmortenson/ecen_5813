@@ -68,7 +68,7 @@ uint8_t distribute_cmd(command_msg * cmd)
     }
   }
   return SUCCESS;
-} // distribute_cmd
+} // distribute_cmd()
 
 void control_lib_main()
 {

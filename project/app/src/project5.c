@@ -1,9 +1,8 @@
 #include "project_defs.h"
 #include "data.h"
-#include "project3.h"
+#include "project5.h"
 #include "memory.h"
 #include "log.h"
-#include "string.h"
 #include "log_item.h"
 #include "nordic.h"
 #include "circbuf.h"
@@ -34,6 +33,7 @@
  * Function definitions see project5.h for documentation
  */
 
+// Circular buffer for receiving data from UART and via NRF module
 extern circbuf_t * receive;
 
 #ifdef FRDM
@@ -82,8 +82,6 @@ extern void PORTD_IRQHandler()
  *
  * \param id: log id for log message
  * \param reg: register to log
-#include "led_controller.h"
-#include "system_controller.h"
  *
  */
 static inline void log_reg(log_id_t id, uint8_t reg)
@@ -119,7 +117,6 @@ uint8_t project_5_setup()
   // Setup uart dma
   dma_uart_init();
 #endif // CIRCBUF_DMA
-
 #endif // FRDM
 
   // Init log and bail out if a failure occurs
@@ -148,7 +145,7 @@ uint8_t project_5_setup()
   LOG_ITEM(item);
 
   return SUCCESS;
-}
+} // project_5_setup()
 
 void project_5_wireless_comms()
 {
@@ -157,7 +154,7 @@ void project_5_wireless_comms()
   config_reg config;
   fifo_status_reg fifo_status;
 
-  // Do some reading and writing of config register
+  // Read the config register to update with new parameters
   config.reg = nrf_read_config();
   config.config.pwr_up = ON;
 
@@ -166,15 +163,16 @@ void project_5_wireless_comms()
   config.config.prim_rx = ON;
 #endif // FRDM
 
+  // Write new config info
   nrf_write_config(config.reg);
   config.reg = nrf_read_config();
   log_reg(LOG_ID_NRF_READ_CONFIG, config.reg);
 
-  // Do some reading of status register
+  // Read and log status register
   status.reg = nrf_read_status();
   log_reg(LOG_ID_NRF_READ_STATUS, status.reg);
 
-  // Do some reading and writing of the rf_ch register
+  // Read and change the rf channel
   rf_ch_reg rf_ch;
   rf_ch.reg = nrf_read_rf_ch();
   log_reg(LOG_ID_NRF_READ_RF_CH, rf_ch.reg);
@@ -183,7 +181,7 @@ void project_5_wireless_comms()
   rf_ch.reg = nrf_read_rf_ch();
   log_reg(LOG_ID_NRF_READ_RF_CH, rf_ch.reg);
 
-  // Do some reading and writing of the rf_setup register
+  // Read and change rf setup
   rf_setup_reg rf_setup;
   rf_setup.reg = nrf_read_rf_setup();
   log_reg(LOG_ID_NRF_READ_RF_SETUP, rf_setup.reg);
@@ -193,13 +191,14 @@ void project_5_wireless_comms()
   rf_setup.reg = nrf_read_rf_setup();
   log_reg(LOG_ID_NRF_READ_RF_SETUP, rf_setup.reg);
 
-  // Write payload length to receive payload length
+  // Write payload length to receiver payload length
   nrf_write_rx_payload_len(NRF_RX_PW_P0, PAYLOAD_LEN);
   nrf_write_rx_payload_len(NRF_RX_PW_P1, PAYLOAD_LEN);
 
-  // Do some reading of fifo_status register
+  // Read and display fifo status
   fifo_status.reg = nrf_read_fifo_status();
   log_reg(LOG_ID_NRF_READ_FIFO_STATUS, fifo_status.reg);
+
 #ifdef FRDM
   // Start a receiving on FRDM
   GPIO_NRF_CE_ENABLE;
@@ -209,10 +208,9 @@ void project_5_wireless_comms()
 #endif // FRDM
 
 #ifdef BBB
-  uint8_t payload[PAYLOAD_LEN];
-
   // This command turns on the red led
   uint8_t led_cmd[] = {0x03, 0x07, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04};
+  uint8_t payload[PAYLOAD_LEN];
   my_memset(payload, PAYLOAD_LEN, 0xff);
   my_memmove(led_cmd, payload, 11);
 
@@ -222,7 +220,7 @@ void project_5_wireless_comms()
     status.status.max_rt = ON;
     nrf_write_status(status.reg);
 
-    // Flush the tx fifo to start new
+    // Flush the tx fifo and load with new content
     nrf_flush_tx_fifo();
     nrf_write_tx_payload(payload, PAYLOAD_LEN);
 
@@ -233,7 +231,7 @@ void project_5_wireless_comms()
     // Turn on transmitter
     GPIO_NRF_CE_ENABLE;
 
-    // Loop for a bit
+    // While device is transmitting
     while(!(status.status.tx_ds))
     {
       status.reg = nrf_read_status();
@@ -242,16 +240,15 @@ void project_5_wireless_comms()
     // Turn off transmitter
     GPIO_NRF_CE_DISABLE;
 
-    // Do some reading of fifo_status register
+    // Read and display fifo status
     fifo_status.reg = nrf_read_fifo_status();
-    fifo_status = fifo_status;
     log_reg(LOG_ID_NRF_READ_FIFO_STATUS, fifo_status.reg);
 
-    // Do some reading of status register
+    // Read and display status
     status.reg = nrf_read_status();
     log_reg(LOG_ID_NRF_READ_STATUS, status.reg);
 
-    // Do some reading of status register
+    // Read and display status
     status.reg = nrf_read_status();
     log_reg(LOG_ID_NRF_READ_STATUS, status.reg);
   }
