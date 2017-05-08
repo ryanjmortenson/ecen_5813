@@ -30,7 +30,7 @@ static FILE * csn_value;
 static FILE * ce_value;
 static FILE * direction;
 
-int spi_init()
+uint8_t spi_init()
 {
   // Get access to the device
   if ((fd = open(DEVICE, O_RDWR)) < 0)

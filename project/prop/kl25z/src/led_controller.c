@@ -17,7 +17,6 @@
 #define R_TPM_REG (TPM2_C0SC)
 #define G_TPM_REG (TPM2_C1SC)
 #define B_TPM_REG (TPM0_C1SC)
-#define ON (1)
 
 // Array of states for LED on/off
 static const uint8_t state[] = {0, EDGE_ALIGNED_PWM_ON};
