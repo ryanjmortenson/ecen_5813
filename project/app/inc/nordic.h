@@ -18,8 +18,14 @@
 #define NRF_WRITE_MASK (0x20)
 #define NRF_FLUSH_TX (0xe1)
 #define NRF_FLUSH_RX (0xe2)
-#define NRF_W_TX_PAYLOAD (0xA0)
+#define NRF_W_TX_PAYLOAD (0xa0)
 #define NRF_R_RX_PAYLOAD (0x61)
+#define NRF_RX_PW_P0 (0x11)
+#define NRF_RX_PW_P1 (0x12)
+#define NRF_RX_PW_P2 (0x13)
+#define NRF_RX_PW_P3 (0x14)
+#define NRF_RX_PW_P4 (0x15)
+#define NRF_RX_PW_P5 (0x16)
 
 // The following are bit fields for the following registers STATUS, CONFIG,
 // RF_SETUP, RF_CH, FIFO_STATUS
