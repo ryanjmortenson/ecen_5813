@@ -40,6 +40,13 @@
 # * **3** - Project using SPI to communicate with a nordic module, DMA for UART and
 #           fast memory transfers, and profiling with timer.h (BBB) and TPM module
 #           (frdm).
+# **4** - Project using command structures passed over UART to control features of
+# 				the FRDM including the RGB LED, system reset, and RTC Timestamp.  Also
+# 				implement SPI on BBB.
+# **5** - Project using the control library functionality from Project 4 and the
+# 				Nordic library from Project 3 to send command instructions wirelessly
+# 				using the Nordic NRF24L01.
+#
 #  There are 5 different LOGGER options to build them use LOGGER=*logger_type*
 #  e.g. LOGGER=TEXT:
 #  * **INTERRUPTS** - Binary logger using interrupts and circular buffer

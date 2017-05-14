@@ -14,7 +14,7 @@
  * \param baud baud rate for spi communications
  *
  */
-int spi_init();
+uint8_t spi_init();
 
 /*
  * \brief spi_send_byte: sends one byte through spi communication
