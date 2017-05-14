@@ -28,6 +28,8 @@
 #define POWER_LEVEL (0)
 #define ON (1)
 #define OFF (0)
+#define LENGTH_OFFSET (1)
+#define NON_DATA_BYTES_LENGTH (4)
 
 /*
  * Function definitions see project5.h for documentation
@@ -52,8 +54,13 @@ extern void PORTD_IRQHandler()
   // Read the payload
   nrf_read_rx_payload(payload, PAYLOAD_LEN);
 
+  // The length of the data payload is the second byte. This doesn't
+  // include the checksum (uint16_t), command enum (uint8_t), or the
+  // lenght (uint8_t)
+  uint8_t length = *(payload + LENGTH_OFFSET);
+
   // Add payload to circular buffer
-  for(uint8_t i = 0; i < PAYLOAD_LEN; i++)
+  for(uint8_t i = 0; i < length + NON_DATA_BYTES_LENGTH; i++)
   {
     if (*(payload + i) == 0xff)
     {
