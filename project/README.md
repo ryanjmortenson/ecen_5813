@@ -16,8 +16,9 @@ Repository Contents
 Device Documentation
 --------------
 
-* **[Beagle Bone Black](https://beagleboard.org/black)** - Bealge Bone Black used for in class projects and homeowrk. 
+* **[Beagle Bone Black](https://beagleboard.org/black)** - Bealge Bone Black used for in class projects and homework.
 * **[FRDM-KL25Z](http://www.nxp.com/products/software-and-tools/hardware-development-tools/freedom-development-boards/freedom-development-platform-for-kinetis-kl14-kl15-kl24-kl25-mcus:FRDM-KL25Z?tid=vanFRDM-KL25Z)** - FRDM-KL25Z used for in class projects and homework.
+* **[NRF24L01](https://www.nordicsemi.com/eng/Products/2.4GHz-RF/nRF24L01-Evaluation-Kit)** - Wireless module for final project.
 
 Make instructions
 ------------
@@ -56,8 +57,10 @@ To build different use PROJECT=*project_number* e.g. PROJECT=2:
 * **1** - Project demonstrating data/memory manipulation and build systems. 
 * **2** - Project using UART and stdio to implement logging with circular buffer.
 * **3** - Project using SPI to communicate with a nordic module, DMA for UART and fast memory transfers, and profiling with timer.h (BBB) and TPM module (frdm).
+* **4** - Project using command structures passed over UART to control features of the FRDM including the RGB LED, system reset, and RTC Timestamp.  Also implement SPI on BBB.
+* **5** - Project using the control library functionality from Project 4 and the Nordic library from Project 3 to send command instructions wirelessly using the Nordic NRF24L01.
 
-  There are 4 different LOGGER options to build them use LOGGER=*logger_type* e.g. LOGGER=TEXT:
+  There are 5 different LOGGER options to build them use LOGGER=*logger_type* e.g. LOGGER=TEXT:
   * **INTERRUPTS** - Binary logger using interrupts and circular buffer
   * **BINARY** - Binary logger using circular buffer
   * **CIRCBUF** - Text logging with circular buffer

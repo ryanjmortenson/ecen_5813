@@ -4,10 +4,13 @@
 #include <stdint.h>
 #include "MKL25Z4.h"
 
+// Active Low
 #define GPIO_NRF_CSN_ENABLE (GPIOD_PDOR &= ~0x01)
 #define GPIO_NRF_CSN_DISABLE (GPIOD_PDOR |= 0x01)
-#define GPIO_NRF_CE_ENABLE (GPIOD_PDOR &= ~0x20)
-#define GPIO_NRF_CE_DISABLE (GPIOD_PDOR |= 0x20)
+
+// Active High
+#define GPIO_NRF_CE_DISABLE (GPIOD_PDOR &= ~0x20)
+#define GPIO_NRF_CE_ENABLE (GPIOD_PDOR |= 0x20)
 
 /*
  * \brief gpio_nrf_init: initializes pins on port d to be csn and ce

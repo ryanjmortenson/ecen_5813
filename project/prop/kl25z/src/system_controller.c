@@ -8,7 +8,7 @@ uint8_t system_reset(command_msg * cmd)
   // Reset System
   NVIC_SystemReset();
   return SUCCESS;
-}
+} // system_reset()
 
 void system_control_init()
 {
@@ -19,4 +19,4 @@ void system_control_init()
     .cb  = system_reset
   };
   register_cb(&reg);
-}
+} // system_control_init()

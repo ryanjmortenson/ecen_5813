@@ -18,12 +18,14 @@
 #define RTC_CLKIN (2)
 #define MCGIRCLK (4)
 
+#ifndef BINARY_LOGGER
 // Add some fun messages for the heartbeat
 const static uint8_t * messages[] = {
   (uint8_t *)"Owner of a lonely heart",
   (uint8_t *)"Much better than the",
   (uint8_t *)"Owner of a broken heart"
 };
+#endif
 
 // Count used to modulo 3 and print fun messages
 static volatile uint32_t count = 0;
@@ -73,6 +75,7 @@ void rtc_init()
   // Set the seconds register to the timestamp
   RTC_TSR = TIMESTAMP;
 
+#if 0
   // Enable the IRQ for the RTC seconds
   NVIC_EnableIRQ(RTC_Seconds_IRQn);
 
@@ -80,14 +83,15 @@ void rtc_init()
   // for printing the heartbeat
   NVIC_SetPriority(RTC_Seconds_IRQn, 10);
 
-  // Clear all interrupts then
-  RTC_IER = 0;
-
 #ifndef PROJECT4
   // Set the timer seconds interrupt if not project 4 which will set
   // dynamically
   RTC_IER |= RTC_IER_TSIE_MASK;
 #endif
+#endif
+
+  // Clear all interrupts then
+  RTC_IER = 0;
 
   // Start the RTC
   RTC_SR |= RTC_SR_TCE_MASK;

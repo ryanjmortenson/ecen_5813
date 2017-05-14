@@ -224,6 +224,7 @@ void project_3_spi()
   {
     log_reg(LOG_ID_NRF_READ_TX_ADDR, tx_addr[i]);
   }
+
   my_memset(tx_addr, 5, 0xaa);
   nrf_write_tx_addr(tx_addr);
   my_memset(tx_addr, 5, 0);

@@ -16,6 +16,10 @@
 #include "project4.h"
 #endif
 
+#ifdef PROJECT5
+#include "project5.h"
+#endif
+
 int main()
 {
 #ifdef PROJECT1
@@ -42,12 +46,23 @@ int main()
 #endif // PROJECT3
 
 #ifdef PROJECT4
+#if !defined(CIRCBUF_DMA) && !defined(UART_INTERRUPTS) && !defined(BBB)
+#error Project 4 must use CIRCBUF_DMA or UART_INTERRUPTS
+#endif
   // Execute the required functions for project4
   project_4_setup();
 #endif // PROJECT4
 
-  // Loop forever to show heartbeat
-  for(volatile uint8_t i = 0; i < 256; i++);
+#ifdef PROJECT5
+#if !defined(CIRCBUF_DMA) && !defined(UART_INTERRUPTS) && !defined(BBB)
+#error Project 5 must use CIRCBUF_DMA or UART_INTERRUPTS
+#endif
+  // Set up project 5
+  project_5_setup();
+
+  // Start wireless comms
+  project_5_wireless_comms();
+#endif // PROJECT5
 
   return 0;
 }

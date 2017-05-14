@@ -50,7 +50,7 @@
 /* Entry Point */
 ENTRY(Reset_Handler)
 
-HEAP_SIZE  = DEFINED(__heap_size__)  ? __heap_size__  : 0x1188;
+HEAP_SIZE  = DEFINED(__heap_size__)  ? __heap_size__  : 0x1400;
 TX_SIZE  = DEFINED(__rx_size__)  ? __rx_size__  : 0x200;
 RX_SIZE  = DEFINED(__rx_size__)  ? __rx_size__  : 0x200;
 STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x1400;

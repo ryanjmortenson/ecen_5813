@@ -16,8 +16,16 @@
 #define NRF_POWER_UP_MASK (0x02)
 #define NRF_NO_OP (0xff)
 #define NRF_WRITE_MASK (0x20)
-#define NRF_FLUSH_RX (0xe1)
-#define NRF_FLUSH_TX (0xe2)
+#define NRF_FLUSH_TX (0xe1)
+#define NRF_FLUSH_RX (0xe2)
+#define NRF_W_TX_PAYLOAD (0xa0)
+#define NRF_R_RX_PAYLOAD (0x61)
+#define NRF_RX_PW_P0 (0x11)
+#define NRF_RX_PW_P1 (0x12)
+#define NRF_RX_PW_P2 (0x13)
+#define NRF_RX_PW_P3 (0x14)
+#define NRF_RX_PW_P4 (0x15)
+#define NRF_RX_PW_P5 (0x16)
 
 // The following are bit fields for the following registers STATUS, CONFIG,
 // RF_SETUP, RF_CH, FIFO_STATUS
@@ -113,6 +121,14 @@ void nrf_write_register(uint8_t reg, uint8_t value);
 uint8_t nrf_read_status();
 
 /*
+ * \brief nrf_write_status: write the status register
+ *
+ * \param status: value to write to register
+ *
+ */
+void nrf_write_status(uint8_t status);
+
+/*
  * \brief nrf_write_config: writes the config register on the nrf module using spi
  *
  * \param config: config value to write to register
@@ -175,6 +191,44 @@ void nrf_write_tx_addr(uint8_t * tx_addr);
  *
  */
 void nrf_read_tx_addr(uint8_t * tx_addr);
+
+/*
+ * \brief nrf_write_tx_payload: writes the tx payload on the nrf module using spi
+ *
+ * \param payload: a uint8_t array of elements for payload
+ * \param len: a len of payload
+ *
+ */
+void nrf_write_tx_payload(uint8_t * payload, uint8_t len);
+
+/*
+ * \brief nrf_write_rx_addr: the rx address for a certain pipe
+ *
+ * \param rx_addr: pointer to rx_address
+ * \param pipe: data pipe you want to write the address to
+ * \param addr_len: len of address (only pipe 0 and 1 are 5 bytes the rest are
+ *                  1 byte)
+ *
+ */
+void nrf_write_rx_addr(uint8_t * rx_addr, uint8_t pipe, uint8_t addr_len);
+
+/*
+ * \brief nrf_read_rx_payload: reads an rx payload
+ *
+ * \param rx_payload: memory location to write payload to
+ * \param payload_len: length of payload to read
+ *
+ */
+void nrf_read_rx_payload(uint8_t * rx_payload, uint8_t payload_len);
+
+/*
+ * \brief nrf_write_rx_payload_len: writes payload length to pipe
+ *
+ * \param pipe: pipe to write length to
+ * \param payload_len: payload length
+ *
+ */
+void nrf_write_rx_payload_len(uint8_t pipe, uint8_t payload_len);
 
 /*
  * \brief nrf_read_fifo_status: reads the fifo_status register on the nrf module using spi

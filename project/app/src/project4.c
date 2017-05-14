@@ -5,15 +5,13 @@
 #include "log_item.h"
 
 #ifdef FRDM
+#include "memory_dma.h"
 #include "rtc.h"
 #include "gpio.h"
 #include "timer.h"
 #include "led_controller.h"
 #include "system_controller.h"
 #endif // FRDM
-
-extern circbuf_t * receive;
-extern circbuf_t * transmit;
 
 #ifdef VERBOSE
   // No need for a log item if not verbose
@@ -32,6 +30,11 @@ uint8_t project_4_setup()
   // System controller init (reset)
   system_control_init();
 #endif // FRDM
+
+#ifdef CIRCBUF_DMA
+  // Setup uart dma
+  dma_uart_init();
+#endif // CIRCBUF_DMA
 
   // Init log and bail out if a failure occurs
   if (log_init())

@@ -148,9 +148,15 @@ cb_enum_t circbuf_remove_item(circbuf_t * buf, uint8_t * payload)
   {
     buf->tail = buf->buffer;
   }
-  // No wrap is necessary increment head
-  else if (buf->count != 0)
+#ifndef CIRCBUF_DMA
+  // When normal circbuf is used head can equal tail with a count of 1
+  else  if (buf->count != 0)
+#else
+  // When circbuf dma is used head cannot equal tail with a count of 1
+  else
+#endif // CIRCBUF_DMA
   {
+    // No wrap is necessary increment head
     buf->tail++;
   }
 
