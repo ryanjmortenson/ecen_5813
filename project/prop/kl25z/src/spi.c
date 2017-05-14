@@ -5,14 +5,6 @@
 #include "project_defs.h"
 #include "spi.h"
 
-// Used to put the transmit/receive into GPIO
-#define ALT_2 (2)
-
-extern void SPI0_IRQHandler()
-{
-
-} // SPI0_IRQHandler()
-
 uint8_t spi_init()
 {
   // Set the SIM_SCGC5 register PORTD and PORTC bit to 1 which

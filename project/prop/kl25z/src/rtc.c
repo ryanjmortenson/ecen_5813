@@ -13,8 +13,6 @@
 #endif // VERBOSE
 
 // Used to set pins to GPIO setting
-#define ALT_1 (1)
-#define ALT_5 (5)
 #define RTC_CLKIN (2)
 #define MCGIRCLK (4)
 
