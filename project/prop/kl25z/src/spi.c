@@ -5,26 +5,19 @@
 #include "project_defs.h"
 #include "spi.h"
 
-// Used to put the transmit/receive into GPIO
-#define ALT_2 (2)
-
-extern void SPI0_IRQHandler()
-{
-
-} // SPI0_IRQHandler()
-
 uint8_t spi_init()
 {
-  // Set the SIM_SCGC5 register PORTD bit to 1 which allows
-  // the clock to go to port d
+  // Set the SIM_SCGC5 register PORTD and PORTC bit to 1 which
+  // allows the clock to go to port d and portc
   SIM_SCGC5 |= SIM_SCGC5_PORTD_MASK;
+  SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK;
 
   // Set the system gating clock control register SPI0 bit to 1
   // allowing clock to spi subsystem
   SIM_SCGC4 |= SIM_SCGC4_SPI0_MASK;
 
   // Select ALT_2 usage to enable SPI0 on pins
-  PORTD_PCR1 = PORT_PCR_MUX(ALT_2);
+  PORTC_PCR5 = PORT_PCR_MUX(ALT_2);
   PORTD_PCR2 = PORT_PCR_MUX(ALT_2);
   PORTD_PCR3 = PORT_PCR_MUX(ALT_2);
 

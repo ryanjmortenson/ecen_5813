@@ -1,9 +1,6 @@
 #include "MKL25Z4.h"
+#include "project_defs.h"
 
-// Used to set pins to GPIO setting
-#define ALT_1 (1)
-#define ALT_3 (3)
-#define ALT_4 (4)
 
 void gpio_nrf_init()
 {

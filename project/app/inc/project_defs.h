@@ -21,4 +21,11 @@
 #define PRINTF(...)
 #endif // FRDM
 
+// Used to set pins to the correct settings
+#define ALT_1 (1)
+#define ALT_2 (2)
+#define ALT_3 (3)
+#define ALT_4 (4)
+#define ALT_5 (5)
+
 #endif // __PROJECT_DEFS_H__

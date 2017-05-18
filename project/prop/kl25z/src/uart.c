@@ -15,9 +15,6 @@
 // Shift for high byte of bdrm
 #define BRMD_HIGH_SHIFT (8)
 
-// Used to put the transmit/receive pins into UART mode
-#define ALT_2 (2)
-
 extern circbuf_t * receive;
 extern circbuf_t * transmit;
 
