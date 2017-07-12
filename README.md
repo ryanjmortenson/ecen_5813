@@ -1,7 +1,7 @@
 ECEN-5013 Embedded Software Fundamentals
 ========================================
 
-[ECEN-5013 Embedded Software Fundamentals](https://ecee.colorado.edu/academics/courses/ECEN_5013.html)
+[ECEN-5013 Embedded Software Fundamentals (now ECEN-5813)](https://sites.google.com/colorado.edu/ecen5813/home)
 
 Repository Contents
 -------------------
