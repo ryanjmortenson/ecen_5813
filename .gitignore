@@ -25,3 +25,7 @@ cmocka-out
 .metadata/
 .settings/
 homework/
+
+GPATH
+GRTAGS
+GTAGS
