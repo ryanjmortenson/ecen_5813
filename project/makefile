@@ -128,6 +128,7 @@ CFLAGS=-I$(APP_INC_DIR) \
        -Wall \
        -Werror \
        -D PROJECT$(PROJECT) \
+       -D SAMMICH \
        -std=c99
 
 # Set a map flag to be added CFLAGS for certain targets
@@ -232,6 +233,8 @@ BUILD_WITH=@echo "Building with $<"
 # Set PHONY for all targets that don't have outputs for tracking
 .PHONY: build compile-all debug allasm alli allobjdump clean super-clean test
 
+-include $(OBJS:.o=.d)
+
 # Build will build project
 build: $(OBJS)
 	$(MAKE) $(PROJECT_OUT_FILE)
@@ -264,6 +267,8 @@ $(CMOCKA_LIB):
 build-lib: $(OBJS)
 	$(MAKE) $(LIB_OUT_FILE)
 
+
+
 # Debug target is just used for debugging the make file
 debug:
 	@echo "Debug output"
@@ -272,9 +277,11 @@ debug:
 	@echo $(OUT_DIR)
 	@echo $(TEST_OBJS)
 
+
+
 # Compiles the project into project binary which can be executed with ./project*.out
 $(PROJECT_OUT_FILE): CFLAGS+=$(MAP_FLAG) $(DEFINE) $(VERB)
-$(PROJECT_OUT_FILE): $(OBJS)
+$(PROJECT_OUT_FILE): $(OBJS) makefile
 	$(BUILD_TARGET)
 	$(CC) $(CFLAGS) -o "$@" $(OBJS)
 	$(SIZE) $@
@@ -310,7 +317,7 @@ alli :
 	$(MAKE) $(patsubst %.c,%.i,$(SRC_LIST))
 
 # Builds .o file when a .c file is specified by command line
-%.o: $(APP_SRC_DIR)/%.c
+%.o: $(APP_SRC_DIR)/%.c makefile
 	$(BUILD_TARGET)
 	$(BUILD_WITH)
 	$(CC) $(CFLAGS) -c -o "$@" "$<"
@@ -328,18 +335,20 @@ allobjdump: $(OBJS) $(PROJECT_OUT_FILE)
 	$(OBJDUMP) -D "$<" > "$@"
 
 # Do an objdump on the project output file
-%.out.objdump: %.out
+%.out.objdump: %.out makefile
 	$(BUILD_TARGET)
 	$(BUILD_WITH)
 	$(OBJDUMP) -D "$<" > "$@"
 
 # Builds .o files from .c files
 $(OUT_DIR)/%.o: CFLAGS+=-MD -MP $(DEFINE) $(VERB)
-$(OUT_DIR)/%.o: $(APP_SRC_DIR)/%.c
+$(OUT_DIR)/%.o: $(APP_SRC_DIR)/%.c makefile
 	$(BUILD_TARGET)
 	$(BUILD_WITH)
 	$(shell $(MK_DIR) $(OUT_DIR))
 	$(CC) $(CFLAGS) -c -o "$@" "$<"
+
+
 
 # List of items that need to be cleaned
 CLEAN+=$(OUT) \
